@@ -4,7 +4,7 @@
 
 | Skill | What it does | Turkish equivalent |
 | --- | --- | --- |
-| [Prompter](prompter/README.md) | Turns a request into a context-aware prompt, asks for approval, then executes in the same conversation. | [Yordamla](../tr/yordamla/README.md) |
+| [Prompter](prompter/README.md) | Drafts a contextual prompt, recommends an execution model, asks for approval, and executes in the same conversation. | [Yordamla](../tr/yordamla/README.md) |
 
 Each skill folder contains the latest instructions, an introduction, UI metadata, optional supporting resources, a changelog, and its own `archived/` folder. The current version is recorded in `SKILL.md` under `metadata.version`.
 

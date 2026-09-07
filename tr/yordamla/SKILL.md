@@ -1,8 +1,8 @@
 ---
 name: yordamla
-description: "/yordamla veya $yordamla çağrısıyla isteği sohbet bağlamına uygun, yeterli ayrıntıda ve ekonomik bir prompta dönüştür; kullanıcı onayından sonra aynı sohbette uygula. Bekleyen promptun düzeltme, onay ve iptal yanıtlarını da ele al. Sıradan görevleri kendiliğinden prompta çevirme."
+description: "/yordamla veya $yordamla çağrısıyla bağlama uygun ekonomik prompt üret, yürütme için model öner ve kullanıcı onayından sonra aynı sohbette uygula. Bekleyen promptun düzeltme, onay ve iptal yanıtlarını ele al. Sıradan görevleri kendiliğinden prompta çevirme."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   language: "tr"
   family: "contextual-prompting"
   counterpart: "en/prompter"
@@ -35,6 +35,15 @@ Amaç: kullanıcının istediği sonucu, kalite ve kapsamı koruyarak en az gere
 - Önce en küçük anlamlı doğrulamayı yap. Yeni değişiklik, hata veya çözülmemiş risk yoksa başarılı kontrolleri tekrarlama. Aynı yöntem iki kez sonuç vermediyse yeni kanıt olmadan tekrarlama. Kabul ölçütleri sağlanınca ek iyileştirme işi açmadan bitir; gerekli iş tamamlanmadan bitmiş sayma.
 - Prompt hazırlamak için her seferinde doküman taraması, token sayacı veya değerlendirme ajanı çalıştırma. Kesin token/kota/tasarruf yüzdesi vaat etme. Ölçüm yoksa sayısal tüketim uydurma. Skill, görünmeyen bağlam maliyetini veya çalışma ortamının kesin token sınırını tek başına yönetemez.
 - Modeli, düşünme ayarını, aboneliği, global yapılandırmayı veya goal bütçesini kendiliğinden değiştirme. Kullanıcının verdiği bütçeyi koru; ölçemiyorsan kesin sınır uyguladığını söyleme. Zorunlu yeni kapsam veya kaynak ihtiyacı ortaya çıkarsa tamamlanan kısmı koru ve genişlemeden önce gereken kararı al.
+
+## Yürütme modeli öner
+
+- Her hazır prompta tek bir birincil model önerisi ekle. Kullanıcının açık model tercihini koru. Önce gerekli araç/girdi türü desteğini, bağlam ihtiyacını ve kaliteyi karşılayan adayları seç; sonra gecikme, bilinen maliyet ve hata nedeniyle yeniden iş yapma ihtimalini değerlendir. Basit işlerde yeterli küçük modeli, belirsiz ve çok bağımlılıklı işlerde gerektiği kadar güçlü modeli tercih et; en yeni/en büyük modeli otomatik seçme.
+- Önce oturumda doğrulanmış, bu ortam için geçerli model kataloğunu ve yetenek bilgisini kullan. Model adlarını, fiyat sırasını veya erişimi ezberden üretme; araç varlığını yalnız model adına bakarak varsayma. Eksik veya eskimiş bilgi kararı etkiliyorsa dar bir ortam kontrolü veya resmî kaynak kontrolü yap; geçerli ortam kurallarının gerektirdiği doğrulamayı atlama. Sırf öneri için benchmark, ek ajan veya geniş katalog taraması başlatma.
+- Doğrulanmış ad yoksa erişimi doğrulanmamış resmî adayı koşullu öneri olarak işaretle; adayın yetenekleri de bilinmiyorsa gereken model profilini söyle ve adın doğrulanamadığını belirt. Sırf model bilgisi eksik diye prompt taslağını bekletme. API kataloğu, fiyatı veya ayarı kullanıcının Codex erişimini, kotasını veya desteklenen seçeneklerini kanıtlamaz.
+- Düşünme seviyesi için yalnız seçilen modelin bu ortamda desteklediği değerleri öner; bilgi yoksa `ortam varsayılanı` yaz. Göreve yeterli seviyeyi seç; azami seviyeyi varsayılan yapma. Yetenek gereksinimi veya değerlendirme karmaşıksa [model seçimi notlarına](references/model-selection.md) bak; normal kullanımda bu ek dosyayı okumak gerekmez.
+- Prompt bloğunun dışında, onay sorusundan önce şu kısa bilgileri göster: `Önerilen model: ...`, `Düşünme: ...`, `Gerekçe: işe özgü tek cümle`. Erişim veya mevcut modelle fark önemliyse kısa bir durum notu ekle. Öneriyi ölçülmüş optimum/tasarruf garantisi olarak sunma. Yalnız model önerisi değişiyorsa prompt metnini tekrar üretme veya sürümünü artırma.
+- Model seçimi arayüzde yapılır; prompt onayı modeli veya düşünme ayarını değiştirmez. Mevcut modelin yetersiz olduğu bilinmiyorsa normal prompt onayıyla mevcut ortamda ilerle ve önerilen modele geçtiğini iddia etme. Mevcut modelin zorunlu yeteneği eksikse veya kullanıcı belirli bir modeli yürütme şartı yaptıysa, karşılanmayan koşulu sessizce geçme; gerekli model seçimini iste. Mevcut modelin kimliği görülemiyorsa kullanıldığını doğrulayamadığın bir model adıyla başarı bildirme.
 
 ## Göster ve onay bekle
 

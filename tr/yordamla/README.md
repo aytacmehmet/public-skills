@@ -23,11 +23,17 @@ $yordamla Bu sohbette konuştuğumuz geliştirmeyi, onaylı kararları koruyarak
 Gönderilen mesajın başındaki `/yordamla` da metinsel takma ad olarak tanınır. Bu, slash menüsüne yeni komut eklemez. Arayüz bu metni kabul etmiyorsa `$yordamla` kullanın veya skill'i seçin.
 
 1. Yordamla isteği ve ilgili sohbet bağlamını değerlendirir.
-2. **AP1.v1** gibi bir kimlikle tek prompt gösterir ve onay ister.
+2. **AP1.v1** gibi bir kimlikle tek prompt, model/düşünme önerisi ve kısa gerekçe gösterir; onay ister.
 3. Uygulamak için **“Onaylıyorum”** deyin, değişiklik isteyin veya **“İptal”** yazın.
 4. Onaylanan iş aynı sohbette devam eder.
 
 Revizyonda yeni sürüm gösterilir ve o sürümün onayı beklenir. Tamamlanan prompta tekrar onay vermek işi yeniden çalıştırmaz. Aktif akış dışındaki sıradan mesajlar normal şekilde ele alınır.
+
+## Model önerisi
+
+Her hazır promptun yanında **önerilen model**, **desteklenen düşünme seviyesi** ve **tek cümlelik gerekçe** bulunur. Seçim önce gereken yetenekleri ve kaliteyi, ardından maliyet ve hızı dikkate alır. Sabit bir model listesi kullanılmaz; model/erişim bilgisi doğrulanamıyorsa öneri koşullu sunulur veya gerekli model profili belirtilir.
+
+Önerilen modeli kullanmak için arayüzden seçin. **“Onaylıyorum” demek modeli otomatik değiştirmez; prompt mevcut ortamda uygulanır.** Belirli bir modeli şart koştuysanız veya mevcut modelin gerekli yeteneği olmadığı biliniyorsa, bu koşul karşılanmadan başka modelle sessizce devam edilmez. Öneri, ölçülmüş bir maliyet veya doğruluk garantisi değildir.
 
 ## Gereksiz işi nasıl sınırlar?
 
@@ -41,6 +47,7 @@ Prompt; istenen sonucu, kaynak otoritesini, kısıtları ve yeterli doğrulamay�
 - [Arayüz bilgileri](agents/openai.yaml): görünen ad, açıklama ve hazır çağrı.
 - [Davranış kontrolleri](references/behavior-checks.md): bakım senaryolarıdır; tüm senaryoların her ortamda geçtiği iddiası değildir.
 - [Kaynaklar](references/source-notes.md): tasarım dayanakları ve sınırlar.
+- [Model seçimi notları](references/model-selection.md): yetenek, kalite ve ekonomi ölçütleri.
 - [Değişiklik geçmişi](CHANGELOG.md) ve [arşivlenmiş sürümler](archived/README.md).
 - [GPL-3.0 lisansı](LICENSE).
 

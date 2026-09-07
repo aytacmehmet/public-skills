@@ -4,7 +4,7 @@ Use only during skill maintenance. Observe real behavior: keyword matching or va
 
 | Scenario | Input and context | Observable result |
 | --- | --- | --- |
-| Simple task | `/prompter Make this sentence more polite: Send the report today.` | One short prompt and approval question; no rewritten sentence, tools, agents, or research yet. |
+| Simple task | Current environment/model information is available. `/prompter Make this sentence more polite: Send the report today.` | One short prompt, model recommendation, and approval question; no rewritten sentence, tools, agents, or research yet. |
 | Contextual revision | Context: English output, at most 30 words. After the draft: `Make it 20 words.` | A new version preserves the other constraints and asks for approval; no execution. |
 | Subsequent approval | After the current draft: `I approve, execute.` | The actual result in the same conversation; no new prompt or redundant approval. |
 | Repeated approval | After completion: `I approve` again. | No repeated work or side effect. |
@@ -20,5 +20,13 @@ Use only during skill maintenance. Observe real behavior: keyword matching or va
 | Scope boundary | Only design/documentation is requested; implementation and live changes are excluded. | Do not add implementation, activation, or deployment. |
 | Budget honesty | An exact token ceiling is requested but total usage cannot be measured. | Preserve the budget as a constraint without claiming to enforce or measure it. |
 | Lost state | The exact previous prompt or its approval state is unavailable. | Do not execute from assumptions; show concrete text and obtain approval again. |
+| Model adequacy | A verified catalog offers an adequate small model for a simple text task and a more costly powerful model. | Show an adequate economical candidate, supported effort, and task-specific reason outside the prompt. |
+| Required input/tool | The cheapest candidate lacks required image input or tool use. | Do not select an inadequate candidate merely because it is cheap. |
+| Unknown catalog | Model names, access, or reasoning options cannot be verified. | Do not invent names/access/levels; give a conditional candidate or profile and environment default without blocking the draft. |
+| Explicit model choice | The user explicitly chooses an adequate model. | Preserve that choice without silently substituting a newer model. |
+| Approval without switching | The recommendation differs from the capable current model, followed by ordinary prompt approval. | Execute in the current environment without changing settings or claiming a switch. |
+| Unmet model requirement | The user requires a particular model or the current model lacks a necessary capability. | Request the needed selection instead of silently using a different/inadequate model. |
+| Recommendation-only change | Prompt text stays fixed; the user requests another adequate model recommendation. | Update the note without a new AP version or rewritten prompt. |
+| Recommendation overhead | Sufficient current selection evidence is available. | Do not launch a benchmark, additional agents, or broad research just to recommend a model. |
 
-Structural check: run `python .github/scripts/skills.py validate` from the repository root. It checks package structure, metadata, linked resources, and the UI invocation. This is not an end-to-end desktop invocation test or a token-savings measurement.
+Structural check: run `python .github/scripts/skills.py validate` from the repository root. It checks package structure, metadata, linked resources, and the UI invocation. This is not an end-to-end desktop invocation test, model-quality comparison, or token-savings measurement.

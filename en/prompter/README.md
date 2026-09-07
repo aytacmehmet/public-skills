@@ -23,11 +23,17 @@ $prompter Prepare the implementation we discussed, preserving the approved decis
 `/prompter` at the start of a submitted message is also recognized as a text alias. It does not create a slash-menu command. Use `$prompter` or select the skill if your interface does not accept that text.
 
 1. Prompter considers the request and relevant conversation context.
-2. It shows one prompt, such as **AP1.v1**, and asks for approval.
+2. It shows one prompt, such as **AP1.v1**, a model/reasoning recommendation, and a brief reason; then asks for approval.
 3. Reply **“I approve”** to execute, request a revision, or say **“Cancel.”**
 4. Approved work continues in the same conversation.
 
 Revisions receive a new version and require approval of that version. Approval of a completed prompt does not rerun its work. Ordinary messages outside an active workflow are handled normally.
+
+## Model recommendation
+
+Each ready prompt includes a **recommended model**, **supported reasoning effort**, and **one-sentence reason**. Selection considers required capabilities and quality first, then cost and speed. There is no fixed model list; unverifiable model/access information produces a conditional recommendation or a required capability profile.
+
+Select the recommended model in the interface if you want to use it. **Saying “I approve” does not automatically change the model; execution uses the current environment.** If you require a particular model, or the current model is known to lack a required capability, the skill does not silently continue under an unmet condition. The recommendation is not a measured cost or accuracy guarantee.
 
 ## How it controls unnecessary work
 
@@ -41,6 +47,7 @@ There is no measured guarantee of token savings or an enforceable token ceiling.
 - [UI metadata](agents/openai.yaml): display name, description, and default invocation.
 - [Behavior checks](references/behavior-checks.md): maintenance scenarios, not a claim that every scenario has passed on every host.
 - [Sources](references/source-notes.md): design references and limitations.
+- [Model-selection notes](references/model-selection.md): capability, quality, and economy criteria.
 - [Changelog](CHANGELOG.md) and [archived releases](archived/README.md).
 - [GPL-3.0 license](LICENSE).
 

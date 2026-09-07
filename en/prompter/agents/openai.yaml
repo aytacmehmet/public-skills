@@ -1,4 +1,4 @@
 interface:
   display_name: "Prompter"
-  short_description: "Draft a contextual prompt, approve it, then execute"
-  default_prompt: "$prompter Turn my request into a context-aware prompt without unnecessary work; execute it in this conversation after I approve it."
+  short_description: "Draft a prompt, recommend a model, approve and execute"
+  default_prompt: "$prompter Turn my request into a contextual, economical prompt, recommend an execution model, and execute in this conversation after I approve."

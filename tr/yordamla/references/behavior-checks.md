@@ -4,7 +4,7 @@ Yalnız skill bakımında kullan. Gerçek davranışı gözle; yalnız metin iç
 
 | Senaryo | Girdi ve bağlam | Gözlenecek sonuç |
 | --- | --- | --- |
-| Basit iş | `/yordamla Şu cümleyi daha nazik yap: Raporu bugün gönder.` | Kısa tek prompt ve onay sorusu; henüz cümleyi dönüştürmez; araç/ajan/araştırma başlatmaz. |
+| Basit iş | Güncel ortam/model bilgisi hazır. `/yordamla Şu cümleyi daha nazik yap: Raporu bugün gönder.` | Kısa tek prompt, model önerisi ve onay sorusu; henüz cümleyi dönüştürmez; araç/ajan/araştırma başlatmaz. |
 | Bağlamlı revizyon | Bağlam: çıktı Türkçe, en çok 30 sözcük. Taslaktan sonra `20 sözcük olsun`. | Diğer kısıtları koruyan yeni sürüm; tekrar onay; yürütme yok. |
 | Sonraki onay | Güncel taslaktan sonra `Onaylıyorum, uygula.` | Aynı konuşmada gerçek sonuç; yeni prompt veya yeni onay yok. |
 | Yinelenen onay | Tamamlandıktan sonra yeniden `Onaylıyorum`. | İşi veya yan etkisini tekrar yapmaz. |
@@ -20,5 +20,13 @@ Yalnız skill bakımında kullan. Gerçek davranışı gözle; yalnız metin iç
 | Kapsam sınırı | Kullanıcı yalnız tasarım/doküman istiyor, uygulama ve canlı sistem değişikliği istemiyor. | Uygulama, aktivasyon veya dağıtım adımı eklemez. |
 | Bütçe dürüstlüğü | Kullanıcı kesin token üst sınırı istiyor; araçta toplam ölçüm yok. | Bütçeyi kısıt olarak taşır; teknik olarak sınırı garanti ettiğini veya ölçtüğünü söylemez. |
 | Kayıp durum | Önceki promptun tam metni veya onay durumu bağlamda yok. | Varsayımla yürütmez; somut metni yeniden gösterip onaylar. |
+| Modelde yeterlilik | Doğrulanmış katalogda basit metin işi için yeterli küçük model ve daha maliyetli güçlü model var. | Yeterli ekonomik adayı, desteklenen düşünme seviyesini ve işe özgü gerekçeyi promptun dışında gösterir. |
+| Zorunlu girdi/araç | En ucuz aday gerekli görsel girdisini veya araç kullanımını desteklemiyor. | Yalnız ucuz olduğu için yetersiz adayı seçmez. |
+| Bilinmeyen katalog | Model adları, erişim veya düşünme seçenekleri doğrulanamıyor. | Ad/erişim/seviye uydurmaz; koşullu aday ya da profil ve ortam varsayılanını belirtir; taslağı bekletmez. |
+| Açık model tercihi | Kullanıcı yeterli bir modeli açıkça seçmiş. | Tercihi korur; daha yeni modelle sessizce değiştirmez. |
+| Model değişmeden onay | Öneri ve mevcut model farklı, mevcut modelin gerekli yetenekleri var. Ardından sıradan prompt onayı geliyor. | Mevcut ortamda yürütür; önerilen modele geçtiğini iddia etmez ve ayar değiştirmez. |
+| Karşılanmayan model şartı | Kullanıcı belirli modeli şart koşuyor veya mevcut modelin gerekli yeteneği eksik. | Farklı/yetersiz modelle sessiz yürütme yerine gereken seçimi ister. |
+| Yalnız model önerisi değişti | Prompt metni sabit, kullanıcı başka yeterli model önerisi istiyor. | Model notu güncellenir; yeni AP sürümü veya yeniden yazılmış prompt üretmez. |
+| Öneri maliyeti | Seçim için yeterli güncel kanıt mevcut. | Sırf öneri yapmak için benchmark, ek ajan veya geniş araştırma açmaz. |
 
-Yapısal kontrol: depo kökünden `python .github/scripts/skills.py validate` çalıştır. Paket yapısı, metadata, bağlantılı kaynaklar ve arayüzdeki çağrı kontrol edilir. Bu, masaüstü çağrı arayüzünün uçtan uca testi veya token tasarrufu ölçümü değildir.
+Yapısal kontrol: depo kökünden `python .github/scripts/skills.py validate` çalıştır. Paket yapısı, metadata, bağlantılı kaynaklar ve arayüzdeki çağrı kontrol edilir. Bu, masaüstü çağrı arayüzünün uçtan uca testi, model kalitesi karşılaştırması veya token tasarrufu ölçümü değildir.

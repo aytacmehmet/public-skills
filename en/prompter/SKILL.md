@@ -1,8 +1,8 @@
 ---
 name: prompter
-description: "Use /prompter or $prompter to turn a request into a context-aware, sufficiently detailed, economical prompt; execute it in the same conversation after user approval. Handle revisions, approval, and cancellation of a pending prompt. Do not automatically turn ordinary tasks into prompts."
+description: "Use /prompter or $prompter to draft a contextual, economical prompt, recommend an execution model, and execute in the same conversation after approval. Handle revisions, approval, and cancellation. Do not automatically turn ordinary tasks into prompts."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   language: "en"
   family: "contextual-prompting"
   counterpart: "tr/yordamla"
@@ -35,6 +35,15 @@ Goal: produce an execution prompt that achieves the user's requested outcome wit
 - Start with the smallest meaningful verification. Do not repeat passing checks without a new change, failure, or unresolved risk. If the same approach fails twice, do not repeat it without new evidence. Stop when the acceptance criteria are met without opening additional improvement work; do not call unfinished required work complete.
 - Do not browse documentation, run a token counter, or launch an evaluator every time a prompt is prepared. Do not promise exact token, quota, or percentage savings. Do not invent consumption figures without measurements. A skill alone cannot control hidden context costs or enforce the runtime's exact token limit.
 - Do not automatically change the model, reasoning settings, subscription, global configuration, or goal budget. Preserve a user-specified budget and do not claim exact enforcement if it cannot be measured. If necessary new scope or resources emerge, preserve completed work and obtain the needed decision before expanding.
+
+## Recommend an execution model
+
+- Add one primary model recommendation to each ready prompt. Preserve the user's explicit model choice. First filter for required tool/input support, context needs, and quality; then consider latency, known cost, and likely rework from errors. Prefer an adequate smaller model for simple work and sufficient capability for ambiguous, interdependent work; do not automatically choose the newest/largest model.
+- Start with model availability and capability information already verified in the session for this environment. Do not invent model names, price rankings, or access from memory; a model name alone does not prove tool availability. If missing or stale information affects the decision, perform a narrow environment or official-source check; retain verification required by applicable instructions. Do not start a benchmark, additional agents, or a broad catalog search just to make the recommendation.
+- Without a verified available name, label an official candidate with unverified access as conditional; if its capabilities are also unknown, describe the required model profile and state that a name could not be verified. Do not block prompt drafting solely because model information is missing. An API catalog, price, or setting does not prove the user's Codex access, quota, or supported options.
+- Recommend only reasoning values supported by the selected model in this environment; use `environment default` when unknown. Choose sufficient effort for the task without defaulting to the maximum. For complex capability requirements or tradeoffs, consult the [model-selection notes](references/model-selection.md); ordinary use does not require reading that file.
+- Outside the prompt block, before the approval question, show these short fields: `Recommended model: ...`, `Reasoning: ...`, `Why: one task-specific sentence`. Add a brief status note when access or a difference from the current model matters. Do not present the recommendation as a measured optimum or savings guarantee. A change to the recommendation alone does not require regenerating or versioning the prompt text.
+- Model selection happens in the interface; prompt approval does not change the model or reasoning setting. If the current model is not known to be inadequate, ordinary prompt approval proceeds in the current environment without claiming a switch to the recommendation. If the current model lacks a required capability, or the user makes a specific model an execution requirement, do not silently bypass the unmet condition; request the necessary model selection. If the active model's identity is unavailable, do not claim execution under an unverified model name.
 
 ## Present the prompt and await approval
 

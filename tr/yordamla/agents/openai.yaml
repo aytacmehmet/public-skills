@@ -1,4 +1,4 @@
 interface:
   display_name: "Yordamla"
-  short_description: "Bağlama uygun prompt üret, onayla ve uygula"
-  default_prompt: "$yordamla İsteğimi sohbet bağlamına uygun, gereksiz iş üretmeyen bir prompta dönüştür; onayımı aldıktan sonra bu sohbette uygula."
+  short_description: "Prompt hazırla, model öner, onayla ve uygula"
+  default_prompt: "$yordamla İsteğimi bağlama uygun ekonomik bir prompta dönüştür, çalıştırmak için model öner ve onayımdan sonra aynı sohbette uygula."
