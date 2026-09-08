@@ -5,6 +5,7 @@
 | Skill | Ne yapar? | İngilizce karşılığı |
 | --- | --- | --- |
 | [Yordamla](yordamla/README.md) | Bağlama uygun prompt üretir, yürütme modeli önerir, onay ister ve aynı sohbette uygular. | [Prompter](../en/prompter/README.md) |
+| [SAP Geliştirme Dokümantasyonu](sap-gelistirme-dokumantasyonu/README.md) | İngilizce SAP geliştirme tasarımını, ilerleyişini, kararlarını, bağımlılıklarını ve devam hafızasını proje içindeki Obsidian Vault'ta tutar. | [SAP Development Documentation](../en/sap-development-documentation/README.md) |
 
 Her skill klasöründe en güncel yönerge, tanıtım, arayüz bilgileri, gerektiğinde destek kaynakları, değişiklik geçmişi ve kendi `archived/` klasörü bulunur. Güncel sürüm `SKILL.md` içindeki `metadata.version` alanında kayıtlıdır.
 

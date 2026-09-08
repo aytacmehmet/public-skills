@@ -1,0 +1,4 @@
+interface:
+  display_name: "SAP Geliştirme Dokümantasyonu"
+  short_description: "Proje Vault'unda İngilizce SAP geliştirme kayıtları"
+  default_prompt: "$sap-gelistirme-dokumantasyonu ile projenin İngilizce Obsidian geliştirme kayıtlarını güncelle ve ilgili Current State kaydından devam et."

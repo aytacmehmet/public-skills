@@ -1,0 +1,7 @@
+## SAP development documentation
+
+Use `$sap-development-documentation` for English development documentation and resumable project memory. The documentation root is `obsidian/`. At task start, read `obsidian/Home.md`, find the relevant entity in `Development-Index.md` or `Shared-Index.md`, then read its `Current-State.md`. Open linked evidence and dependency contracts only as needed. Recheck sources flagged as changed before relying on a summary.
+
+Keep development records in `obsidian/developments/<ID>-<slug>/`, reusable components in `obsidian/shared/<ID>-<slug>/`, and shared architecture in `obsidian/architecture/`. Put screenshots and evidence assets in `obsidian/assets/<ID>/`. Reuse existing IDs and pages. After meaningful changes, update affected records, append the history, refresh Current State, and verify links/indexes before handing off. Documentation follows the same scope and authorization as the requested work.
+
+Create development narratives only in this Vault. Required AGENTS/skill files, existing package READMEs/changelogs, source comments, and explicitly requested deliverables keep their appropriate locations. Temporary analysis belongs in the task's designated scratch area and must not become a second documentation authority. Classify legacy Markdown before migration; preserve canonical sources. If the skill is unavailable, follow `obsidian/Documentation-Policy.md` and report the missing helper without inventing execution.

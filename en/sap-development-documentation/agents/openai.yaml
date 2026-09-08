@@ -1,0 +1,4 @@
+interface:
+  display_name: "SAP Development Documentation"
+  short_description: "English SAP development records in a project Vault"
+  default_prompt: "Use $sap-development-documentation to maintain this project's English Obsidian development records and resume from the relevant Current State."
