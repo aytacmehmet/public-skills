@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 — 2026-09-10
+
+- Smaller core with on-demand preparation/continuation references and internal task profiles.
+- Separate model-note edits, prompt revisions, and explanations; handle paused tasks and unknown operation outcomes.
+- Verified execution status separate from the recommended model.
+- Paired bilingual evaluation inputs and a maintenance-only summarizer for supplied results/metrics, with no model calls.
+- Regression checks for missing entrypoints and incorrect default invocations in shared repository validation.
+- Archived 1.1.0. Reduced core instructions; no claim of measured total-token savings or automatic model switching.
+
 ## 1.1.0 — 2026-09-07
 
 - Added an execution model, supported reasoning effort, and brief reason to each ready prompt.

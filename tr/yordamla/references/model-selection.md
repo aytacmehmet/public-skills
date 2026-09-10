@@ -17,9 +17,9 @@ Katalog eksikse öneriyi koşullu olarak sun veya gerekli yetenek profilini beli
 
 ## Çıktı ve yürütme
 
-Model, desteklenen düşünme seviyesi ve tek cümlelik gerekçe prompt metninin dışında yer alır. Alternatif listeyi ancak birincil öneri kullanılamıyorsa veya kullanıcı karşılaştırma istiyorsa ekle. Belirsizliği ilgili alanın yanında belirt; bir açıklama raporu üretme.
+Model, desteklenen düşünme seviyesi ve tek cümlelik gerekçe prompt metninin dışında yer alır. Ayrı yürütme notunda doğrulanmış mevcut modeli veya kimliğinin doğrulanamadığını belirt. Alternatif listeyi ancak birincil öneri kullanılamıyorsa veya kullanıcı karşılaştırma istiyorsa ekle. Belirsizliği ilgili alanın yanında belirt; bir açıklama raporu üretme.
 
-Normal prompt onayı, mevcut ortamda yürütme onayıdır. Önerilen modeli kullanmak isteyen kullanıcı onu arayüzde seçer. Modelin değiştiği doğrulanmadıysa değiştiğini söyleme. Kullanıcı belirli modeli şart koşmuşsa veya bilinen bir yetenek eksikliği varsa, karşılanmayan koşulu açıklayıp gerekli kullanıcı eylemini iste. Model önerisinin değişmesi tek başına yeni AP sürümü veya tekrar prompt onayı gerektirmez.
+Normal prompt onayı, mevcut ortamda yürütme onayıdır. Önerilen modeli kullanmak isteyen kullanıcı onu arayüzde seçer. Modelin değiştiği doğrulanmadıysa değiştiğini söyleme. Kullanıcı belirli modeli şart koşmuşsa veya bilinen bir yetenek eksikliği varsa, karşılanmayan koşulu açıklayıp gerekli kullanıcı eylemini iste. Yalnız model önerisi değiştiğinde promptu yeniden üretme veya AP sürümünü artırma; geçerli metin onayını koru.
 
 ## Dayanak
 

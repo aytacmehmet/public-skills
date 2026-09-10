@@ -17,9 +17,9 @@ When the catalog is missing, make the recommendation conditional or describe the
 
 ## Output and execution
 
-Place the model, supported reasoning effort, and a one-sentence reason outside the prompt. Add alternatives only when the primary recommendation is unavailable or the user requests a comparison. Mark uncertainty beside the affected field instead of creating an explanatory report.
+Place the model, supported reasoning effort, and a one-sentence reason outside the prompt. In a separate execution note, identify the verified active model or state that its identity is unverified. Add alternatives only when the primary recommendation is unavailable or the user requests a comparison. Mark uncertainty beside the affected field instead of creating an explanatory report.
 
-Ordinary prompt approval authorizes execution in the current environment. A user who wants the recommended model selects it in the interface. Do not claim the model changed without confirmation. If the user requires a specific model or a required capability is known to be absent, explain the unmet condition and request the necessary user action. A recommendation change alone does not require a new AP version or renewed prompt approval.
+Ordinary prompt approval authorizes execution in the current environment. A user who wants the recommended model selects it in the interface. Do not claim the model changed without confirmation. If the user requires a specific model or a required capability is known to be absent, explain the unmet condition and request the necessary user action. For a model-note-only change, do not regenerate the prompt or increment AP; preserve valid text approval.
 
 ## Sources
 

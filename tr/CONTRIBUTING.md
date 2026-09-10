@@ -60,3 +60,5 @@ Kontroller metadata, arayüz çağrısı, yerel bağlantılar, dil eşliği, sü
 ## Eski sürümü inceleme
 
 Eski ZIP'leri ilgili skill'in `archived/` klasöründe tutun. İncelemek için yalnız skill keşif yollarının dışındaki ayrı bir klasöre açın. Geri dönüş veya ayrı kurulum hazırlamadan önce manifestini doğrulayın. Arşivdeki `SKILL.md` dosyalarını aktif kurulumun altında açmayın.
+
+Dil köklerinin hemen altındaki her klasör bir skill paketidir ve SKILL.md içermelidir. Hazır çağrı tam skill adını belirtmelidir; örneğin $yordamla-eski, $yordamla yerine geçmez.

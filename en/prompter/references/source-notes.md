@@ -11,6 +11,6 @@ Discovery and installation paths may vary by Codex surface and version. Follow t
 
 `agents/openai.yaml` preserves the default discovery policy. Setting `allow_implicit_invocation: false` preserves explicit `$` invocation but may weaken discovery of the `/prompter` text alias. SKILL.md defines the usage boundary.
 
-AP identifiers, version-bound approval, word ranges, and revisiting the diagnosis after two unsuccessful attempts are this skill's design choices, not official product guarantees. The ranges have not been measured as optimal and no percentage of token savings has been established. A skill alone cannot enforce an exact total token ceiling.
+AP identifiers, version-bound approval, task profiles, and revisiting the diagnosis after two unsuccessful attempts are this skill's design choices, not official product guarantees. The profiles have not been measured as optimal and no percentage of token savings has been established. A skill alone cannot enforce an exact total token ceiling.
 
 Sources checked on 2026-09-07 for model recommendations in 1.1.0 and the selection boundaries are in the [model-selection notes](model-selection.md). No fixed model list is maintained; recommendations and actual model selection are separate.

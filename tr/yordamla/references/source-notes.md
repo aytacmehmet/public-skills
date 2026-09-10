@@ -11,6 +11,6 @@ Keşif ve kurulum yolları Codex yüzeyine ve sürümüne göre değişebilir. K
 
 `agents/openai.yaml` varsayılan keşif politikasını korur. `allow_implicit_invocation: false`, `$` ile açık çağrıyı korurken `/yordamla` metinsel takma adının keşfini zayıflatabilir. Kullanım sınırı SKILL.md içindedir.
 
-AP kimlikleri, sürüme bağlı onay, sözcük aralıkları ve iki sonuçsuz denemeden sonra yeniden teşhis bu skill'in tasarım tercihleridir; resmî ürün garantisi değildir. Sözcük aralıklarının optimum olduğu veya belirli oranda token tasarrufu sağlandığı ölçülmüş değildir. Bir skill tek başına kesin toplam token sınırı uygulayamaz.
+AP kimlikleri, sürüme bağlı onay, iş profilleri ve iki sonuçsuz denemeden sonra yeniden teşhis bu skill'in tasarım tercihleridir; resmî ürün garantisi değildir. İş profillerinin optimum olduğu veya belirli oranda token tasarrufu sağlandığı ölçülmüş değildir. Bir skill tek başına kesin toplam token sınırı uygulayamaz.
 
 1.1.0 model önerisi için 2026-09-07 tarihinde kontrol edilen kaynaklar ve seçim sınırları [model seçimi notlarında](model-selection.md) bulunur. Sabit model listesi tutulmaz; öneri ile gerçek model seçimi ayrı ele alınır.

@@ -60,3 +60,5 @@ Checks cover metadata, UI invocation, local links, language pairing, version ali
 ## Inspect an old release
 
 Keep historical ZIPs inside their skill's `archived/` folder. Extract one only into an isolated directory outside skill discovery paths. Verify its manifest before preparing a rollback or a separate installation. Never unpack archived `SKILL.md` files underneath an active installation.
+
+Every directory directly under a language root is a skill package and must contain SKILL.md. Default invocations must mention the exact skill name; $prompter-old does not count as $prompter.

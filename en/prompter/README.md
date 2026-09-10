@@ -37,6 +37,8 @@ Select the recommended model in the interface if you want to use it. **Saying â€
 
 ## How it controls unnecessary work
 
+Version 1.2.0 chooses a simple/ordinary/complex profile internally. The smaller core always preserves approval and scope; source-selection and interruption details load only for the relevant situation. It does not fill a fixed word quota.
+
 The prompt preserves the requested outcome, source authority, constraints, and sufficient verification. It avoids automatic extra reports, broad scans, extra agents, and repeated passing checks. Short tasks receive short prompts; a request for a detailed deliverable retains the required detail.
 
 There is no measured guarantee of token savings or an enforceable token ceiling. The workflow itself adds drafting and approval overhead, which can be significant for very small tasks. It does not automatically change your model or account settings. Approval covers the displayed task; existing host permissions still apply.
@@ -48,7 +50,11 @@ There is no measured guarantee of token savings or an enforceable token ceiling.
 - [Behavior checks](references/behavior-checks.md): maintenance scenarios, not a claim that every scenario has passed on every host.
 - [Sources](references/source-notes.md): design references and limitations.
 - [Model-selection notes](references/model-selection.md): capability, quality, and economy criteria.
+- [Preparation boundaries](references/preparation.md) and [continuation](references/continuation.md): conditional instructions.
+- [Evaluation](references/evaluation.md): compare versions on matching cases; the summarizer does not treat missing metrics as zero.
 - [Changelog](CHANGELOG.md) and [archived releases](archived/README.md).
 - [GPL-3.0 license](LICENSE).
 
 The current version lives here, not under a `latest/` or version-number directory. Older published versions are immutable ZIP snapshots in `archived/`. Do not extract them inside a directory scanned for skills.
+
+The execution note identifies the verified active model or states that its identity is unverified. Model-note-only edits do not regenerate the prompt. Paused tasks resume from remaining steps; uncertain external outcomes are checked before resubmission. **Automatic model switching is not implemented in this release**; it requires a separate integration tested for same-conversation execution and model identity.

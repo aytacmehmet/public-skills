@@ -37,6 +37,8 @@ Her hazır promptun yanında **önerilen model**, **desteklenen düşünme seviy
 
 ## Gereksiz işi nasıl sınırlar?
 
+1.2.0, basit/olağan/karmaşık profili kendisi seçer. Küçük çekirdek yönerge onay ve kapsam kurallarını her zaman korur; kaynak seçimi ve kesinti ayrıntıları yalnız ilgili durumda okunur. Sabit sözcük kotası doldurulmaz.
+
 Prompt; istenen sonucu, kaynak otoritesini, kısıtları ve yeterli doğrulamayı korur. Kendiliğinden ek rapor, geniş tarama, ek ajan veya başarılı kontrollerin tekrarını istemez. Kısa işlerde kısa prompt üretir; ayrıntılı teslimat istendiğinde gerekli ayrıntıyı korur.
 
 Ölçülmüş token tasarrufu garantisi veya teknik olarak uygulanan kesin token üst sınırı yoktur. Prompt hazırlama ve onaylaşma da tüketim oluşturur; bu yük çok küçük işlerde belirgin olabilir. Modelinizi veya hesap ayarlarınızı kendiliğinden değiştirmez. Onay, gösterilen işi kapsar; ortamın mevcut izin kuralları geçerlidir.
@@ -48,7 +50,11 @@ Prompt; istenen sonucu, kaynak otoritesini, kısıtları ve yeterli doğrulamay�
 - [Davranış kontrolleri](references/behavior-checks.md): bakım senaryolarıdır; tüm senaryoların her ortamda geçtiği iddiası değildir.
 - [Kaynaklar](references/source-notes.md): tasarım dayanakları ve sınırlar.
 - [Model seçimi notları](references/model-selection.md): yetenek, kalite ve ekonomi ölçütleri.
+- [Hazırlık sınırı](references/preparation.md) ve [kesintiden devam](references/continuation.md): koşula bağlı yönergeler.
+- [Değerlendirme](references/evaluation.md): iki sürümü aynı senaryolarla karşılaştırma; eksik ölçümü sıfır saymayan özetleme aracı.
 - [Değişiklik geçmişi](CHANGELOG.md) ve [arşivlenmiş sürümler](archived/README.md).
 - [GPL-3.0 lisansı](LICENSE).
 
 Güncel sürüm `latest/` veya sürüm numaralı bir alt klasörde değil, doğrudan burada bulunur. Önceki yayımlanmış sürümler `archived/` içinde değiştirilmeyen ZIP kopyaları olarak saklanır. Bu ZIP'leri skill keşfi yapılan bir dizinin içinde açmayın.
+
+Yürütme notu doğrulanmış mevcut modeli veya kimliğin doğrulanamadığını belirtir. Yalnız model notu değişirse prompt yeniden yazılmaz. Duraklatılan iş kalan adımdan sürer; dış işlem sonucu belirsizse yeniden göndermeden önce sonuç kontrol edilir. **Otomatik model geçişi bu sürümde uygulanmış değildir**; ayrı bir entegrasyonun aynı sohbet ve model kimliğini doğrulayarak sınanması gerekir.

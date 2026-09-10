@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = "ARCHIVE-MANIFEST.json"
 SKILL_PATH = re.compile(r"^(en|tr)/[a-z0-9]+(?:-[a-z0-9]+)*$")
 VERSION = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+INVOCATION = re.compile(r"(?<![\w$/\\.-])\$([a-z0-9]+(?:-[a-z0-9]+)*)(?![\w-])")
 REQUIRED = (
     "SKILL.md", "README.md", "CHANGELOG.md", "LICENSE",
     "agents/openai.yaml", "archived/README.md",
@@ -176,8 +177,10 @@ def validate(root, base=None):
     skills = {}
     for language in ("en", "tr"):
         require((root / language / "README.md").is_file(), f"Missing {language} catalog.")
-        for skill_file in sorted((root / language).glob("*/SKILL.md")):
-            folder = skill_file.parent
+        # Every directory immediately under a language root is a package.
+        # Discovering only SKILL.md would silently omit incomplete packages.
+        for folder in sorted(p for p in (root / language).iterdir() if p.is_dir()):
+            skill_file = folder / "SKILL.md"
             relative = folder.relative_to(root).as_posix()
             checked_path(root, relative)
             for name in REQUIRED:
@@ -193,7 +196,8 @@ def validate(root, base=None):
             require(version in (folder / "CHANGELOG.md").read_text(encoding="utf-8"), f"Missing changelog version: {relative}")
             ui = yaml.safe_load((folder / "agents/openai.yaml").read_text(encoding="utf-8"))["interface"]
             require(25 <= len(ui["short_description"]) <= 64, f"Invalid UI description: {relative}")
-            require(f"${folder.name}" in ui["default_prompt"], f"Invalid default invocation: {relative}")
+            prompt = ui.get("default_prompt")
+            require(isinstance(prompt, str) and folder.name in INVOCATION.findall(prompt), f"Invalid default invocation: {relative}")
             require((folder / "LICENSE").read_bytes() == (root / "LICENSE").read_bytes(), f"License differs: {relative}")
             working_payload(folder)
             archives = folder / "archived"

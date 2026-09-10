@@ -168,6 +168,34 @@ class ReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Invalid skill path"):
             tools.archive(self.root, "../prompter")
 
+    def test_catalogued_folder_requires_entrypoint(self):
+        folder = self.root / "en/incomplete"
+        folder.mkdir()
+        (folder / "README.md").write_text("# Incomplete\n", encoding="utf-8")
+        (self.root / "en/README.md").write_text("[Incomplete](incomplete/README.md)\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "missing SKILL.md"):
+            tools.validate(self.root)
+
+    def test_default_invocation_requires_exact_skill_name(self):
+        path = self.root / "en/prompter/agents/openai.yaml"
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        for prompt in ("$prompter-not-installed Do this.", "$prompter2 Do this.",
+                       "$prompter_extra Do this.", "prefix$prompter Do this."):
+            with self.subTest(prompt=prompt):
+                data["interface"]["default_prompt"] = prompt
+                path.write_text(yaml.safe_dump(data), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "Invalid default invocation"):
+                    tools.validate(self.root)
+
+    def test_default_invocation_allows_surrounding_prose(self):
+        path = self.root / "en/prompter/agents/openai.yaml"
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        for prompt in ("$prompter Do this.", "Use $prompter to do this.", "Use ($prompter)."):
+            with self.subTest(prompt=prompt):
+                data["interface"]["default_prompt"] = prompt
+                path.write_text(yaml.safe_dump(data), encoding="utf-8")
+                self.assertEqual(tools.validate(self.root), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

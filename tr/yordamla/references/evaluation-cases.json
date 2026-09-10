@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "language": "tr",
+  "environment": "Sentetik test ortamı: small ve balanced kısa metin ve bu örnekteki kod işi için yeterlidir; small daha ekonomiktir. Desteklenen düşünme low/medium; mevcut model balanced. Gerçek ürün/fiyat iddiası yoktur. Senaryolar birbirinden bağımsızdır.",
+  "cases": [
+    {
+      "id": "PW-SIMPLE",
+      "context": "",
+      "user": "/yordamla “Raporu bugün gönder.” cümlesini daha nazik yap.",
+      "checks": [
+        "scope_preserved",
+        "approval_correct",
+        "no_unnecessary_work",
+        "no_unverified_claim",
+        "meaning_preserved"
+      ]
+    },
+    {
+      "id": "PW-AMBIGUOUS",
+      "context": "Bağlamda iki ayrı istek var: raporu özetlemek veya kaydetme hatasını düzeltmek. Hangisinin hedef olduğu belirtilmedi.",
+      "user": "/yordamla Bunu hazırla.",
+      "checks": [
+        "scope_preserved",
+        "approval_correct",
+        "no_unnecessary_work",
+        "no_unverified_claim",
+        "asks_focused_question"
+      ]
+    },
+    {
+      "id": "PW-CODE",
+      "context": "Kaynak: def average(values): return sum(values) / len(values).",
+      "user": "/yordamla Boş listede None dönmesini sağla. Yalnız bu fonksiyonu ve boş liste kontrolünü kapsa.",
+      "checks": [
+        "scope_preserved",
+        "approval_correct",
+        "no_unnecessary_work",
+        "no_unverified_claim",
+        "no_fix_before_approval"
+      ]
+    },
+    {
+      "id": "PW-MULTISOURCE",
+      "context": "Onaylı A-v2: müşteri numarası sabit kalır; rapor Türkçedir. Eski B-v1: müşteri numarasını değiştir. A-v2 yetkili kaynaktır; B-v1 sadece karşılaştırma içindir.",
+      "user": "/yordamla Bu iki kaynak arasındaki çelişkiyi detaylı açıkla; yalnız analiz yap.",
+      "checks": [
+        "scope_preserved",
+        "approval_correct",
+        "no_unnecessary_work",
+        "no_unverified_claim",
+        "authority_preserved",
+        "detail_preserved"
+      ]
+    },
+    {
+      "id": "PW-MODELNOTE",
+      "context": "AP4.v1 gösterildi, henüz onaylanmadı: “Dosya hazır. cümlesini İngilizceye çevir; yalnız çeviriyi ver.” Öneri small / low.",
+      "user": "/yordamla Yalnız model önerisi balanced olsun; metin aynı kalsın.",
+      "checks": [
+        "scope_preserved",
+        "approval_correct",
+        "no_unnecessary_work",
+        "no_unverified_claim",
+        "same_ap_version",
+        "no_prompt_regeneration"
+      ]
+    },
+    {
+      "id": "PW-RESUME",
+      "context": "AP5.v1 kayıt oluşturma işi onaylandı. İstek gönderildi, yanıt zaman aşımına uğradı. Kaydın oluşup oluşmadığı bilinmiyor; lookup ile referanstan sorgulanabilir. Hiçbir gerçek dış araç çalıştırma, yalnız sıradaki yanıtı göster.",
+      "user": "Devam et.",
+      "checks": [
+        "scope_preserved",
+        "approval_correct",
+        "no_unnecessary_work",
+        "no_unverified_claim",
+        "check_before_retry"
+      ]
+    }
+  ]
+}

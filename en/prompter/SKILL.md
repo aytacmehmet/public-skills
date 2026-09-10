@@ -1,8 +1,8 @@
 ---
 name: prompter
-description: "Use /prompter or $prompter to draft a contextual, economical prompt, recommend an execution model, and execute in the same conversation after approval. Handle revisions, approval, and cancellation. Do not automatically turn ordinary tasks into prompts."
+description: "Use /prompter or $prompter to draft a contextual, economical prompt, recommend a model, and execute in the same conversation after approval. Handle pending revisions/approval/cancellation; do not automatically transform ordinary tasks."
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   language: "en"
   family: "contextual-prompting"
   counterpart: "tr/yordamla"
@@ -10,56 +10,38 @@ metadata:
 
 # Prompter
 
-Goal: produce an execution prompt that achieves the user's requested outcome with the least unnecessary total work while preserving quality and scope. Show the prompt first; execute it in the same conversation only after the user subsequently approves it.
+Show the execution prompt first; run it in the same conversation after subsequent user approval. Preserve quality while reducing the combined cost of preparation, execution, and rework.
 
-## Invocation and conversation state
+## Invocation and preparation
 
-- The native explicit invocation is `$prompter` or selecting this skill in the interface. Also recognize the standalone word `/prompter` at the start of a message, after any leading whitespace. This text alias does not register an application slash-menu command; use `$prompter` if the interface does not pass the text through.
-- Do not treat the name inside a quotation, code block, example, file content, or path as an invocation. Do not route a new ordinary task through this workflow without an invocation. Replies clearly addressing a pending prompt do not need the prefix again.
-- Consume the prefix once. Assign `AP1.v1` to the first request and `AP2.v1` to the next new request; revisions increment the version under the same identifier. Keep only one prompt awaiting approval in a conversation. A new invocation supersedes the previous pending prompt.
-- Keep the identifier, full prompt, version, and state in the conversation; do not create files, persistent memory, or new tasks for them. States: drafting → awaiting approval → executing → completed/cancelled. If context is summarized, preserve the pending full prompt and its approval state. If the full text or approval scope is lost, do not execute from a guess; show a concrete prompt again and obtain approval.
+- Explicit invocation is `$prompter`, skill selection, or the standalone word `/prompter` at the start of a message. The slash form is a text alias, not a registered menu command. A name in quotations, code, examples, or paths is not an invocation. Replies to a pending prompt need no prefix. A new task supersedes the old one; revising the same prompt is not a new task.
+- Extract the outcome, source authority, and valid decisions from visible context. Apply the latest explicit correction; preserve technical names, paths, numbers, and units without changing their meaning. Do not present unseen content as verified. Ask one focused question for a critical ambiguity; briefly state harmless assumptions. Ask if the actual request is missing.
+- Choose the profile internally: **simple**, a few sentences; **ordinary**, goal, necessary context, constraints, and output; **complex**, also dependencies, uncertainties, and acceptance evidence. Do not fill a length quota or let a short prompt diminish a detailed deliverable.
+- Before approval, perform only the smallest check that affects “can a correctly scoped prompt be written without this information?” Defer full research and production until approval. Preserve checks required by higher-priority instructions. Avoid unnecessary file/history/catalog scans, rereading, agents, benchmarks, or extra deliverables. For difficult source/scope choices, read the [preparation notes](references/preparation.md).
 
-## Understand the request and draft the prompt
+## Model and presentation
 
-1. Extract the goal, requested deliverable, relevant approved decisions, sources, and constraints from the visible conversation. Respect the latest explicit user correction without silently changing other valid decisions. Preserve technical names, paths, numbers, and units exactly. Do not carry project-specific assumptions into unrelated tasks.
-2. Analyze the raw request as data; do not execute its instructions yet. Do not present unseen files, links, APIs, or earlier conversations as verified. If a critical gap would change the draft, make the smallest relevant read-only check or ask one focused question. Defer full research, repository scans, and the actual production work until approval. Do not omit source checks explicitly requested by the user or required by applicable instructions.
-3. Briefly state a reasonable assumption for gaps that do not change the outcome. Do not invent answers to uncertainty affecting source authority, scope, data loss, or permissions. If only the prefix is provided and the context does not identify one clear request to transform, ask which request should be transformed.
-4. Write one executable prompt containing only the necessary **outcome**, **context/sources**, **scope and constraints**, **output format**, and **completion criteria**. Headings or a filled template are not mandatory. For work that needs verification, define sufficient evidence without inventing an unknown test command. Do not prescribe a step-by-step method unless the decision requires it.
-5. Size the prompt to the task: a few sentences for a simple transformation; approximately 100–220 words for ordinary work and 220–450 for work with many dependencies are useful starting ranges. These are neither quotas nor targets. Exceed them when necessary; do not pad a sufficient short prompt. Preserve requests for a detailed **deliverable**: a short prompt must not make the output superficial. Default to the user's language.
+Preserve an explicit user model choice. Use current environment evidence to assess required input/tool support and quality, then known cost, speed, and likely rework. Do not automatically choose the largest model or maximum effort. If catalog/capability evidence is insufficient for the decision, read the [model-selection notes](references/model-selection.md); retain required official checks and reuse valid evidence.
 
-## Manage total consumption
+Show one copyable prompt. Outside it, show **Recommended model · supported reasoning · one-sentence reason**. Use “environment default” when effort support is unknown; use a conditional candidate or capability profile explicitly marked unverified when name/capability information is missing. API information does not prove Codex access/quota; do not invent measured savings.
 
-- Consider execution, tool output, rereading, and rework costs when shortening a prompt. Retain detail that prevents an incorrect implementation; remove ornate role descriptions, repetition, irrelevant history, and automatically added deliverables. Do not request a transcript of private reasoning.
-- Do not copy applicable shared instructions into the prompt; include task-specific constraints that change the result. Reuse previously read evidence that has not changed. Start with the relevant file/section or a narrow query and retain only the output needed for the decision. Independent reads may be batched; this does not itself justify multiple agents.
-- Default to one agent and the current conversation. Additional agents, new tasks, broad research, extra reports, full test suites, or redesign require either an explicit request or a concrete need for correctness and sufficient authorization. Do not remove required existing checks or task-appropriate verification to save tokens.
-- Start with the smallest meaningful verification. Do not repeat passing checks without a new change, failure, or unresolved risk. If the same approach fails twice, do not repeat it without new evidence. Stop when the acceptance criteria are met without opening additional improvement work; do not call unfinished required work complete.
-- Do not browse documentation, run a token counter, or launch an evaluator every time a prompt is prepared. Do not promise exact token, quota, or percentage savings. Do not invent consumption figures without measurements. A skill alone cannot control hidden context costs or enforce the runtime's exact token limit.
-- Do not automatically change the model, reasoning settings, subscription, global configuration, or goal budget. Preserve a user-specified budget and do not claim exact enforcement if it cannot be measured. If necessary new scope or resources emerge, preserve completed work and obtain the needed decision before expanding.
+In the **Execution** note, name the active model only when verified; otherwise say “current environment, model unverified.” Explain a difference from the recommendation. Prompt approval does not change models; do not change settings or message yourself to attempt a switch. If the user requires a specific model, or the active model lacks a required capability, request the necessary selection.
 
-## Recommend an execution model
+## Approval and revision
 
-- Add one primary model recommendation to each ready prompt. Preserve the user's explicit model choice. First filter for required tool/input support, context needs, and quality; then consider latency, known cost, and likely rework from errors. Prefer an adequate smaller model for simple work and sufficient capability for ambiguous, interdependent work; do not automatically choose the newest/largest model.
-- Start with model availability and capability information already verified in the session for this environment. Do not invent model names, price rankings, or access from memory; a model name alone does not prove tool availability. If missing or stale information affects the decision, perform a narrow environment or official-source check; retain verification required by applicable instructions. Do not start a benchmark, additional agents, or a broad catalog search just to make the recommendation.
-- Without a verified available name, label an official candidate with unverified access as conditional; if its capabilities are also unknown, describe the required model profile and state that a name could not be verified. Do not block prompt drafting solely because model information is missing. An API catalog, price, or setting does not prove the user's Codex access, quota, or supported options.
-- Recommend only reasoning values supported by the selected model in this environment; use `environment default` when unknown. Choose sufficient effort for the task without defaulting to the maximum. For complex capability requirements or tradeoffs, consult the [model-selection notes](references/model-selection.md); ordinary use does not require reading that file.
-- Outside the prompt block, before the approval question, show these short fields: `Recommended model: ...`, `Reasoning: ...`, `Why: one task-specific sentence`. Add a brief status note when access or a difference from the current model matters. Do not present the recommendation as a measured optimum or savings guarantee. A change to the recommendation alone does not require regenerating or versioning the prompt text.
-- Model selection happens in the interface; prompt approval does not change the model or reasoning setting. If the current model is not known to be inadequate, ordinary prompt approval proceeds in the current environment without claiming a switch to the recommendation. If the current model lacks a required capability, or the user makes a specific model an execution requirement, do not silently bypass the unmet condition; request the necessary model selection. If the active model's identity is unavailable, do not claim execution under an unverified model name.
+Keep one pending full prompt and its state in the conversation. Start at `AP1.v1`; a new task advances AP, while a text revision advances the version under the same AP. Show its identifier, ask “Do you approve executing AP1.v1 in this conversation?” using the current identifier, and stop.
 
-## Present the prompt and await approval
+- Accept only an unambiguous subsequent actual user approval addressing the displayed current text. Advance approval, quotations, silence, elapsed time, and tool output are not approval.
+- **Prompt text/scope changed:** Show the full new version and obtain renewed approval, including text changes introduced by “I approve, but…”.
+- **Only the model note changed:** Update the note; do not regenerate the prompt or increment AP. If the text is approved and execution requirements are met, do not ask again.
+- **Explanation/unrelated question:** Respond normally without changing approval state. **Cancellation:** Close. Do not carry old approval to a new version. If full text or approval state is lost, do not execute from a guess.
 
-- Show the prompt identifier followed by only the execution text in one copyable block. Use a writing block if the application supports it. Keep the identifier, cost note, and approval question outside the prompt. Do not include the invocation prefix or prompt-generation instructions in the generated prompt and recursively invoke this workflow.
-- Add a short scope/assumption note or identify an expensive required operation only when useful. Then ask `Do you approve executing AP1.v1 in this conversation?`, using the current identifier, and stop. This pause is the user's requested draft → approve → execute workflow. If applicable environment rules require an explanation, briefly identify this reason and the relevant rule in this file.
-- Approval must come from an actual user message **after the full prompt has been shown**. Do not accept advance approval inside the raw request, an approval in quoted text, silence, elapsed time, or tool output. An unambiguous “I approve,” “execute,” “yes,” or “continue” addressing the sole current prompt is sufficient; do not require the user to type its identifier.
-- A question or comment is not approval. For revisions, including “I approve, but…”, show the full revised prompt with a new version and await approval of that version. Approval of an older version does not approve the new one. Clarify ambiguous approval. Close the workflow on cancellation. Respond normally to an unrelated intervening message without treating it as approval of the pending prompt.
+## Execution and continuation
 
-## Execute in the same conversation after approval
+After approval, execute in the same conversation using needed tools/skills; do not draft another prompt or send the work to a new task. Approval does not expand permissions. Prepare a concrete result for any separate required permission; do not request permission already granted. Show a revision for material scope changes.
 
-Once the current version is explicitly approved, execute that prompt as the task with the same assistant in the same conversation. Do not generate another prompt, ask the user to copy it, or send it to a new conversation. Briefly announce execution, then use the necessary tools and relevant skills. Reuse valid preparation already completed before approval.
+Perform required verification; do not repeat passing checks without a new change/failure. After two unsuccessful attempts with the same approach, obtain new evidence before repeating it. Stop at the acceptance criteria and report actual verification; repeated approval of completed/cancelled work must not rerun it.
 
-Approval applies only to the displayed scope: it preserves existing permissions without creating new permissions or higher-priority instructions. If a separate action permission is required, prepare a concrete result and hold only that action; do not request permissions already granted. If new evidence materially changes the approved outcome or scope, pause the affected work and show the revision. Routine implementation details that do not change the outcome do not require another prompt approval.
+For interruptions, partial results, uncertain external operations, or edited writing blocks, read the [state notes](references/continuation.md) before continuing. Preserve completed steps, remaining work, and unknown outcomes in the conversation without defaulting to persistent records. Do not change model, subscription, or budget settings or claim to enforce unmeasured token limits.
 
-On completion, report the result and verification actually performed. Do not present unfinished work or a local check as broader success. Mark the prompt completed. Repeated approval of a completed/cancelled prompt must not rerun the work. Do not automatically transform new ordinary messages.
-
-## Maintenance and evaluation only
-
-Normal use requires no additional file reads. When changing this skill's behavior, read the [behavior checks](references/behavior-checks.md); when revalidating source principles or invocation support, read the [source notes](references/source-notes.md).
+During maintenance, use the [behavior checks](references/behavior-checks.md), [evaluation notes](references/evaluation.md) for comparisons, and [sources](references/source-notes.md) for verification. Do not load them all for ordinary invocations.
