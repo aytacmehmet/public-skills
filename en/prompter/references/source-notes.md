@@ -13,4 +13,9 @@ Discovery and installation paths may vary by Codex surface and version. Follow t
 
 AP identifiers, version-bound approval, task profiles, and revisiting the diagnosis after two unsuccessful attempts are this skill's design choices, not official product guarantees. The profiles have not been measured as optimal and no percentage of token savings has been established. A skill alone cannot enforce an exact total token ceiling.
 
-Sources checked on 2026-09-07 for model recommendations in 1.1.0 and the selection boundaries are in the [model-selection notes](model-selection.md). No fixed model list is maintained; recommendations and actual model selection are separate.
+Model-recommendation sources, checked on 2026-09-07 (introduced in 1.1.0, kept in 2.0.0):
+
+- [OpenAI — Model selection](https://developers.openai.com/api/docs/guides/model-selection): assess cost and latency among options meeting the quality requirement.
+- [OpenAI — Models](https://learn.chatgpt.com/docs/models): environment model/reasoning selection and the time/token impact of higher effort.
+
+No fixed model list is maintained; recommendations and actual model selection are separate. Since 2.0.0 the preparation, model-selection and continuation notes live inside SKILL.md as the `<preparation>`, `<model_note>` and `<recovery>` sections; the runtime file links to nothing, and the files in `references/` are maintenance material only.

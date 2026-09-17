@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0 — 2026-09-17
+
+- Single runtime file: `SKILL.md` has no links and loads no references; preparation, model-selection and continuation notes were merged into its `<preparation>`, `<model_note>` and `<recovery>` sections and the three reference files were removed.
+- Slot template with mandatory `Sources`, `Out of scope`, `Output`, `Acceptance` and `Stop` slots (plus `Dependencies` and `Uncertainties` for complex tasks), a fixed tool-budget line, conversion of vague qualifiers into measurable statements, and a three-item self-check before the prompt is shown.
+- Explicit profile criteria; single-slot ambiguities are asked together with a `[?]`-marked draft.
+- Behavior change: simple tasks with no side effects are shown and executed in the same turn; all other tasks keep version-bound approval. Short positive replies count as approval of the single pending prompt; approval of an older version asks instead of executing.
+- One-line model note when the recommendation equals the current model; the approved text is the sole execution scope; the finish report is at most three lines.
+- Instructions rewritten in English-style imperative form with XML sections and two good/bad examples; the output language follows the user (default English).
+- Maintenance: behavior checks PW29–PW34, updated structural checks, model-selection sources moved into the source notes. Archived 1.2.0.
+
 ## 1.2.0 — 2026-09-10
 
 - Smaller core with on-demand preparation/continuation references and internal task profiles.

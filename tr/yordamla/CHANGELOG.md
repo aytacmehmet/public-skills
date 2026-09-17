@@ -1,5 +1,15 @@
 # Değişiklik geçmişi
 
+## 2.0.0 — 2026-09-17
+
+- Tek çalışma zamanı dosyası: `SKILL.md` bağlantı içermez ve referans yüklemez; hazırlık, model seçimi ve devam notları `<preparation>`, `<model_note>` ve `<recovery>` bölümlerine taşındı, üç referans dosyası kaldırıldı.
+- Zorunlu `Kaynaklar`, `Kapsam dışı`, `Çıktı`, `Kabul` ve `Durma` alanlı şablon (karmaşık işte ayrıca `Bağımlılıklar` ve `Belirsizlikler`), sabit araç bütçesi satırı, belirsiz niteliklerin ölçülebilir ifadeye çevrilmesi ve prompt gösterilmeden önce üç maddelik öz-kontrol.
+- Açık profil ölçütleri; tek alanlı belirsizlik `[?]` işaretli taslakla birlikte sorulur.
+- Davranış değişikliği: yan etkisiz basit işler gösterilir ve aynı turda uygulanır; diğer işlerde sürüme bağlı onay korunur. Kısa olumlu yanıt bekleyen tek promptun onayı sayılır; eski sürüme onay yürütmek yerine sorar.
+- Öneri mevcut modelle aynıysa tek satırlık model notu; onaylanan metin yürütmenin tek kapsamı; bitiş raporu en fazla üç satır.
+- Yönerge emir kipinde, XML bölümleriyle ve iki iyi/kötü örnekle yeniden yazıldı; çıktı dili kullanıcıyı izler (varsayılan Türkçe).
+- Bakım: PW29–PW34 davranış kontrolleri, güncellenmiş yapısal kontroller, model seçimi kaynakları kaynak notlarına taşındı. 1.2.0 arşivlendi.
+
 ## 1.2.0 — 2026-09-10
 
 - Küçük çekirdek ve yalnız gerektiğinde okunan hazırlık/devam referansları; göreve göre iç profil seçimi.
