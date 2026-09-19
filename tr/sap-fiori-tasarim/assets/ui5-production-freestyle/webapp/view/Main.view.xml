@@ -1,0 +1,24 @@
+<mvc:View controllerName="__APP_ID__.controller.Main" xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f" xmlns="sap.m">
+  <f:DynamicPage id="mainPage" preserveHeaderStateOnScroll="true">
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading><Title id="pageTitle" text="{i18n>pageTitle}" level="H1" /></f:heading>
+      </f:DynamicPageTitle>
+    </f:title>
+    <f:header>
+      <f:DynamicPageHeader id="pageHeader">
+        <VBox id="filterArea">
+          <Label id="searchLabel" text="{i18n>searchLabel}" labelFor="searchField" />
+          <SearchField id="searchField" width="100%" placeholder="{i18n>searchPlaceholder}" search=".onSearch" />
+        </VBox>
+      </f:DynamicPageHeader>
+    </f:header>
+    <f:content>
+      <Table id="itemsTable" items="{path: '/__ENTITY_SET__', parameters: {$count: true}}" growing="true" growingThreshold="50" noDataText="{i18n>noDataText}">
+        <headerToolbar><OverflowToolbar id="tableToolbar"><Title id="tableTitle" text="{i18n>tableTitle}" level="H2" /><ToolbarSpacer /><Button id="refreshButton" icon="sap-icon://refresh" tooltip="{i18n>refreshTooltip}" press=".onRefresh" /></OverflowToolbar></headerToolbar>
+        <columns><Column id="itemColumn"><Text text="{i18n>itemColumn}" /></Column></columns>
+        <items><ColumnListItem id="itemTemplate" type="Navigation" press=".onItemPress"><cells><ObjectIdentifier title="{path: '', formatter: '.formatItemTitle'}" /></cells></ColumnListItem></items>
+      </Table>
+    </f:content>
+  </f:DynamicPage>
+</mvc:View>

@@ -1,0 +1,27 @@
+{
+  "name": "__APP_ID__",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ui5 serve --port 8080",
+    "build": "ui5 build --all --clean-dest",
+    "lint": "ui5lint",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "playwright test tests/unit",
+    "test:integration": "playwright test tests/integration",
+    "test:install-browser": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "__PLAYWRIGHT_VERSION__",
+    "@sapui5/types": "__UI5_TYPES_VERSION__",
+    "@types/qunit": "__QUNIT_TYPES_VERSION__",
+    "@ui5/cli": "__UI5_CLI_VERSION__",
+    "@ui5/linter": "__UI5_LINTER_VERSION__",
+    "typescript": "__TYPESCRIPT_VERSION__",
+    "ui5-tooling-transpile": "__TRANSPILE_VERSION__"
+  },
+  "engines": {
+    "node": "^20.11.0 || >=22.0.0",
+    "npm": ">=10"
+  }
+}

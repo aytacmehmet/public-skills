@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sap-fiori-design:abap-backend-contract:1.0",
+  "title": "SAP Fiori ABAP Backend Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "$schemaVersion", "source", "inventory", "model", "behavior", "service", "uiSemantics", "security", "recommendation", "traceability", "gaps"],
+  "properties": {
+    "$schema": {"const": "./abap-backend-contract.schema.json"},
+    "$schemaVersion": {"const": "1.0"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "label", "packageName", "snapshotSha256", "activeSourcesOnly", "complete"],
+      "properties": {
+        "mode": {"enum": ["local-export", "live-adt-snapshot"]},
+        "label": {"type": "string", "minLength": 1},
+        "packageName": {"type": "string", "minLength": 1},
+        "snapshotSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "activeSourcesOnly": {"type": "boolean"},
+        "complete": {"type": "boolean"}
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "required": ["objectCount", "objects"],
+      "properties": {
+        "objectCount": {"type": "integer"},
+        "objects": {"type": "array"}
+      }
+    },
+    "model": {"type": "object"},
+    "behavior": {"type": "object"},
+    "service": {
+      "type": "object",
+      "required": ["definition", "uri", "protocol", "entitySet", "exposedEntities", "bindings"],
+      "properties": {
+        "definition": {"type": "string"},
+        "uri": {"type": "string"},
+        "protocol": {"enum": ["odata-v2", "odata-v4", "unknown"]},
+        "entitySet": {"type": "string"},
+        "exposedEntities": {"type": "array"},
+        "bindings": {"type": "array"}
+      }
+    },
+    "uiSemantics": {"type": "object"},
+    "security": {"type": "object"},
+    "recommendation": {
+      "type": "object",
+      "required": ["framework", "readiness", "reason"],
+      "properties": {
+        "framework": {"enum": ["fiori-elements-odata-v4", "undecided"]},
+        "readiness": {"enum": ["ready", "partial", "blocked"]},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "traceability": {"type": "array"},
+    "gaps": {"type": "array", "items": {"type": "string"}}
+  }
+}

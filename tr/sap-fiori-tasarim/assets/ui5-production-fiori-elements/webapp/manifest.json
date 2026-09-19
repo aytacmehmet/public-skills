@@ -1,0 +1,47 @@
+{
+  "_version": "__MANIFEST_VERSION__",
+  "sap.app": {
+    "id": "__APP_ID__",
+    "type": "application",
+    "i18n": {"bundleUrl": "i18n/i18n.properties", "supportedLocales": ["tr", "en"], "fallbackLocale": "en"},
+    "applicationVersion": {"version": "1.0.0"},
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {"uri": "__SERVICE_URI__", "type": "OData", "settings": {"odataVersion": "4.0"}}
+    }
+  },
+  "sap.ui": {"technology": "UI5", "deviceTypes": {"desktop": true, "tablet": true, "phone": true}},
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "__UI5_VERSION__",
+      "libs": {"sap.ui.core": {}, "sap.m": {}, "sap.f": {}, "sap.fe.core": {}, "sap.fe.templates": {}}
+    },
+    "contentDensities": {"compact": true, "cozy": true},
+    "models": {
+      "i18n": {"type": "sap.ui.model.resource.ResourceModel", "settings": {"bundleName": "__APP_ID__.i18n.i18n", "supportedLocales": ["tr", "en"], "fallbackLocale": "en", "async": true}},
+      "": {"dataSource": "mainService", "preload": true, "settings": {"operationMode": "Server", "autoExpandSelect": true, "earlyRequests": true}}
+    },
+    "routing": {
+      "config": {"routerClass": "sap.f.routing.Router"},
+      "routes": [
+        {"pattern": ":?query:", "name": "ListReport", "target": "ListReport"},
+        {"pattern": "__ENTITY_SET__({key}):?query:", "name": "ObjectPage", "target": "ObjectPage"}
+      ],
+      "targets": {
+        "ListReport": {
+          "type": "Component",
+          "id": "ListReport",
+          "name": "sap.fe.templates.ListReport",
+          "options": {"settings": {"contextPath": "/__ENTITY_SET__", "variantManagement": "Page", "navigation": {"__ENTITY_SET__": {"detail": {"route": "ObjectPage"}}}}}
+        },
+        "ObjectPage": {
+          "type": "Component",
+          "id": "ObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {"settings": {"contextPath": "/__ENTITY_SET__", "editableHeaderContent": false}}
+        }
+      }
+    }
+  }
+}

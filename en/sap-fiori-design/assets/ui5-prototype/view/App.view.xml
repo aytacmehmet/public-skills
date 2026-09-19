@@ -1,0 +1,88 @@
+<mvc:View
+  controllerName="__APP_ID__.controller.App"
+  displayBlock="true"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:f="sap.f"
+  xmlns="sap.m">
+  <f:DynamicPage
+    id="mainDynamicPage"
+    headerExpanded="true"
+    preserveHeaderStateOnScroll="true"
+    toggleHeaderOnTitleClick="true">
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title id="pageTitle" text="{i18n>pageTitle}" level="H1" />
+        </f:heading>
+        <f:expandedContent>
+          <Text id="pageSubtitle" text="{i18n>pageSubtitle}" />
+        </f:expandedContent>
+        <f:actions>
+          <Button
+            id="createButton"
+            text="{i18n>createButtonText}"
+            type="Emphasized"
+            press=".onCreate" />
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
+    <f:header>
+      <f:DynamicPageHeader id="mainHeader" pinnable="true">
+        <VBox id="filterArea" class="sapUiSmallMarginBottom">
+          <Label id="searchLabel" text="{i18n>searchLabel}" labelFor="searchField" />
+          <SearchField
+            id="searchField"
+            width="100%"
+            placeholder="{i18n>searchPlaceholder}"
+            liveChange=".onSearch" />
+        </VBox>
+      </f:DynamicPageHeader>
+    </f:header>
+    <f:content>
+      <Table
+        id="itemsTable"
+        ariaLabelledBy="tableTitle"
+        items="{sample>/items}"
+        growing="true"
+        growingThreshold="20"
+        noDataText="{i18n>noDataText}">
+        <headerToolbar>
+          <OverflowToolbar id="tableToolbar">
+            <Title id="tableTitle" text="{i18n>tableTitle}" level="H2" />
+            <ToolbarSpacer />
+            <Button
+              id="refreshButton"
+              icon="sap-icon://refresh"
+              tooltip="{i18n>refreshTooltip}"
+              type="Transparent"
+              press=".onRefresh" />
+          </OverflowToolbar>
+        </headerToolbar>
+        <columns>
+          <Column id="idColumn" width="9rem">
+            <Text text="{i18n>idColumn}" />
+          </Column>
+          <Column id="nameColumn" minScreenWidth="Tablet" demandPopin="true">
+            <Text text="{i18n>nameColumn}" />
+          </Column>
+          <Column id="ownerColumn" minScreenWidth="Desktop" demandPopin="true">
+            <Text text="{i18n>ownerColumn}" />
+          </Column>
+          <Column id="statusColumn" hAlign="End" width="10rem">
+            <Text text="{i18n>statusColumn}" />
+          </Column>
+        </columns>
+        <items>
+          <ColumnListItem id="itemTemplate" type="Navigation" press=".onItemPress">
+            <cells>
+              <ObjectIdentifier title="{sample>id}" />
+              <Text text="{sample>name}" />
+              <Text text="{sample>owner}" />
+              <ObjectStatus text="{sample>statusText}" state="{sample>statusState}" />
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+    </f:content>
+  </f:DynamicPage>
+</mvc:View>

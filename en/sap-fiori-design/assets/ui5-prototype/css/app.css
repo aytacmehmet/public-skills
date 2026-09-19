@@ -1,0 +1,17 @@
+html,
+body,
+#content,
+.appHost,
+.sapUiComponentContainer {
+  height: 100%;
+}
+
+.sapUiComponentContainer > div,
+.sapUiComponentContainer > div > .sapUiView,
+.sapUiComponentContainer > div > .sapUiView > .sapFDynamicPage {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}

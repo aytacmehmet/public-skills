@@ -1,0 +1,4 @@
+interface:
+  display_name: "SAP Fiori Design"
+  short_description: "Evidence-backed Fiori/UI5 design from an ABAP package"
+  default_prompt: "Use $sap-fiori-design to analyze the ABAP package and service contract, then produce the matching SAP Fiori design, prototype, and UI5 code for the target version."

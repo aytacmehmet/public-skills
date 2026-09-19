@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {"__APP_PATH__/*": ["webapp/*"]},
+    "strict": true,
+    "noEmit": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "types": ["@sapui5/types", "qunit"]
+  },
+  "include": ["webapp/**/*.ts", "tests/**/*.ts", "playwright.config.ts"]
+}

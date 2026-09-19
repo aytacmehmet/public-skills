@@ -1,0 +1,295 @@
+{
+  "$schema": "./design-contract.schema.json",
+  "$schemaVersion": "2.0",
+  "project": {
+    "id": "__APP_ID__",
+    "name": "__APP_NAME__",
+    "language": "tr",
+    "outputs": [
+      "png",
+      "interactive",
+      "code"
+    ]
+  },
+  "context": {
+    "primaryRole": "Replace with primary role",
+    "jobToBeDone": "Replace with the decision or task the user must complete",
+    "businessObject": "Replace with business object",
+    "successCriteria": [
+      "Replace with measurable user outcome"
+    ],
+    "targetSystem": {
+      "product": "unknown",
+      "edition": "unknown",
+      "release": "unknown",
+      "ui5Runtime": "unknown",
+      "fioriGuidelineVersion": "unknown",
+      "launchContext": "flp"
+    },
+    "evidence": [
+      {
+        "fact": "Target runtime is not yet verified",
+        "status": "assumed",
+        "source": "conversation"
+      }
+    ],
+    "constraints": [],
+    "outOfScope": []
+  },
+  "architecture": {
+    "framework": "freestyle-sapui5-prototype",
+    "floorplan": "dynamic-page-list-with-detail-dialog",
+    "layout": "full-screen",
+    "frontendLanguage": "javascript",
+    "serviceProtocol": "odata-v4",
+    "draft": "unknown",
+    "decisionRationale": "Replace with task, data, device and lifecycle rationale",
+    "alternativesRejected": [
+      {
+        "option": "freestyle-sapui5",
+        "reason": "Standard floorplan currently appears sufficient"
+      }
+    ]
+  },
+  "informationArchitecture": {
+    "pages": [
+      {
+        "id": "main",
+        "titleKey": "mainPageTitle",
+        "purpose": "Replace with page purpose",
+        "sections": [
+          {
+            "id": "primaryContent",
+            "titleKey": "primaryContentTitle",
+            "priority": 1,
+            "contentType": "table"
+          }
+        ]
+      },
+      {
+        "id": "item-detail-dialog",
+        "titleKey": "itemDetailTitle",
+        "purpose": "Display the selected planning item",
+        "sections": []
+      }
+    ],
+    "navigation": [
+      {
+        "from": "main",
+        "to": "item-detail-dialog",
+        "trigger": "row-press",
+        "deepLinkable": false
+      }
+    ]
+  },
+  "fieldsAndActions": {
+    "fields": [
+      {
+        "id": "objectId",
+        "labelKey": "objectIdLabel",
+        "semanticType": "identifier",
+        "required": false,
+        "readOnly": true,
+        "valueHelp": false,
+        "priority": 1,
+        "authorization": "backend"
+      }
+    ],
+    "actions": [
+      {
+        "id": "primaryAction",
+        "labelKey": "primaryActionLabel",
+        "scope": "page",
+        "placement": "header-right",
+        "emphasis": "emphasized",
+        "destructive": false,
+        "backendAuthorization": true,
+        "confirmation": false
+      }
+    ]
+  },
+  "states": [
+    {
+      "id": "initial",
+      "trigger": "first-load",
+      "visual": "skeleton-or-local-busy",
+      "nextAction": "wait"
+    },
+    {
+      "id": "populated",
+      "trigger": "data-loaded",
+      "visual": "primary-content",
+      "nextAction": "perform-task"
+    },
+    {
+      "id": "empty",
+      "trigger": "no-business-data",
+      "visual": "illustrated-message",
+      "nextAction": "create-or-explain"
+    },
+    {
+      "id": "no-results",
+      "trigger": "filters-return-zero",
+      "visual": "contextual-no-results",
+      "nextAction": "clear-filters"
+    },
+    {
+      "id": "error",
+      "trigger": "service-error",
+      "visual": "error-with-retry",
+      "nextAction": "retry"
+    },
+    {
+      "id": "no-auth",
+      "trigger": "authorization-denied",
+      "visual": "access-denied-message",
+      "nextAction": "return-or-request-access"
+    }
+  ],
+  "responsive": {
+    "strategy": "mobile-first",
+    "density": {
+      "touch": "cozy",
+      "mouseKeyboard": "compact"
+    },
+    "breakpoints": [
+      {
+        "name": "S",
+        "range": "<=599",
+        "behavior": "single-column; preserve identity and primary action"
+      },
+      {
+        "name": "M",
+        "range": "600-1023",
+        "behavior": "reflow; collapse secondary filters"
+      },
+      {
+        "name": "L",
+        "range": "1024-1439",
+        "behavior": "desktop primary layout"
+      },
+      {
+        "name": "XL",
+        "range": ">=1440",
+        "behavior": "bounded width or expanded columns without whitespace imbalance"
+      }
+    ],
+    "tableMobileAlternative": "responsive-table",
+    "rtl": true,
+    "longText": true
+  },
+  "visualSystem": {
+    "themesToVerify": [
+      "sap_horizon",
+      "sap_horizon_dark",
+      "sap_horizon_hcb",
+      "sap_horizon_hcw"
+    ],
+    "hardCodedVisualTokensAllowed": false,
+    "primaryActionCountPerPage": 1,
+    "semanticColorRequiresTextOrIcon": true
+  },
+  "accessibility": {
+    "standard": "WCAG-2.2-AA",
+    "headingHierarchy": true,
+    "persistentLabels": true,
+    "keyboardComplete": true,
+    "visibleFocus": true,
+    "screenReaderNames": true,
+    "highContrast": true,
+    "zoomAndTextResize": true,
+    "focusPlan": [
+      "initial focus",
+      "dialog focus trap and return",
+      "error focus or message navigation"
+    ]
+  },
+  "backendEvidence": {
+    "applicable": false,
+    "status": "not-provided",
+    "contractFile": "unknown",
+    "sha256": "unknown",
+    "sourceMode": "unknown",
+    "packageName": "unknown",
+    "complete": false,
+    "activeSourcesOnly": false,
+    "gaps": [
+      "ABAP package intake is not in scope"
+    ]
+  },
+  "dataContract": {
+    "mainService": {
+      "name": "replace-with-service-name",
+      "uri": "/replace-with-odata-v4-service/",
+      "protocol": "odata-v4",
+      "entitySet": "ReplaceWithEntitySet",
+      "draftEnabled": "unknown"
+    },
+    "initialSelect": [
+      "ReplaceWithRequiredProperty"
+    ],
+    "expands": [],
+    "serverCapabilities": {
+      "count": true,
+      "skip": true,
+      "top": true,
+      "filter": true,
+      "sort": true
+    },
+    "paging": {
+      "serverSide": true,
+      "pageSize": 50
+    },
+    "actions": [],
+    "sideEffects": [],
+    "authorization": "backend-enforced",
+    "releasedApisVerified": false
+  },
+  "verification": {
+    "viewports": [
+      "390x844",
+      "768x1024",
+      "1280x800",
+      "1600x1000"
+    ],
+    "states": [
+      "initial",
+      "populated",
+      "empty",
+      "no-results",
+      "error",
+      "no-auth"
+    ],
+    "commands": [],
+    "manualChecks": [
+      "visual hierarchy",
+      "keyboard-only",
+      "visible focus",
+      "high contrast",
+      "long localization",
+      "RTL",
+      "browser console and network"
+    ]
+  },
+  "traceability": [
+    {
+      "requirementId": "REQ-001",
+      "requirement": "Replace with user requirement",
+      "screenOrControl": "main/primaryContent",
+      "serviceOrAnnotation": "Replace with entity or annotation",
+      "test": "Replace with test ID"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.sap.com/design-system/fiori-design-web",
+      "version": "verify-live",
+      "checkedOn": "YYYY-MM-DD"
+    },
+    {
+      "url": "https://ui5.sap.com/",
+      "version": "verify-target-runtime",
+      "checkedOn": "YYYY-MM-DD"
+    }
+  ]
+}

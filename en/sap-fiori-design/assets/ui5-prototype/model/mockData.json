@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "100001",
+      "name": "Planlama kalemi A",
+      "owner": "Üretim Ekibi",
+      "statusText": "Hazır",
+      "statusState": "Success"
+    },
+    {
+      "id": "100002",
+      "name": "Planlama kalemi B",
+      "owner": "Kalite Ekibi",
+      "statusText": "İnceleme gerekli",
+      "statusState": "Warning"
+    },
+    {
+      "id": "100003",
+      "name": "Uzun yerelleştirme metnini sınamak için örnek planlama kalemi",
+      "owner": "Tedarik Zinciri",
+      "statusText": "Bloke",
+      "statusState": "Error"
+    }
+  ]
+}

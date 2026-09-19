@@ -1,0 +1,15 @@
+html,
+body,
+#content,
+.appHost,
+.sapUiComponentContainer {
+  height: 100%;
+}
+
+.sapUiComponentContainer > div {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
