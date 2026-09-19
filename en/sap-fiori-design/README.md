@@ -57,8 +57,15 @@ The tests cover scaffold inputs, ABAP package reading (abapGit/ADT service bindi
 
 The inspector is a lexical reader; it is not the ABAP compiler, ADT activation, a service preview, or runtime authorization evidence. A `ready` result does not replace the real `$metadata`, the target release, or released-object verification. The static validator does not replace build, tests, browser rendering, and visual inspection. The skill does not write to an SAP system and performs no activation, transport, or deployment; it never asks for a password or key in the conversation. The version notes in `references/official-sources.md` belong to their research date; verify the target version against the live source.
 
-## Package
+## Files and versions
 
-[Instructions](SKILL.md) · [Design foundations](references/design-foundations.md) · [Floorplans and patterns](references/floorplans-and-patterns.md) · [UI5 engineering](references/ui5-engineering.md) · [ABAP package intake](references/abap-package-intake.md) · [RAP backend contract](references/rap-backend-contract.md) · [Delivery and quality](references/delivery-and-quality.md) · [Official sources](references/official-sources.md) · [Changelog](CHANGELOG.md) · [Archives](archived/README.md) · [GPL-3.0 license](LICENSE)
+- [SKILL.md](SKILL.md): imperative instructions in XML sections — invariants, reference routing, scope slots, evidence, contract, architecture, prototype, production, verification, self-check, and delivery — plus version metadata.
+- [UI metadata](agents/openai.yaml): display name, description, and default prompt.
+- Domain references, read at runtime only when needed: [design foundations](references/design-foundations.md), [floorplans and patterns](references/floorplans-and-patterns.md), [UI5 engineering](references/ui5-engineering.md), [ABAP package intake](references/abap-package-intake.md), [RAP backend contract](references/rap-backend-contract.md), [delivery and quality](references/delivery-and-quality.md), [official sources](references/official-sources.md).
+- [Behavior checks](references/behavior-checks.md): FD01–FD26 are maintenance scenarios, not a claim that every scenario passes in every environment. Not read at runtime.
+- [Source and design notes](references/source-notes.md): foundations, structural choices, and limits. Not read at runtime.
+- `scripts/`, `assets/`, `tests/`: scripts, schemas, UI5 templates, and script tests that are byte-identical in both languages.
+- [Changelog](CHANGELOG.md) and [archived releases](archived/README.md).
+- [GPL-3.0 license](LICENSE).
 
-This is the first public release, version 1.0.0. Current files live in the package root. For later updates, the previous committed release is archived following the repository's [versioning instructions](../CONTRIBUTING.md).
+The current version is 1.1.0 and lives directly here, not in `latest/` or a version-numbered subfolder. Previously published releases are kept in `archived/` as unmodified ZIP copies following the repository's [versioning instructions](../CONTRIBUTING.md). Do not extract those ZIPs inside a skill discovery directory.

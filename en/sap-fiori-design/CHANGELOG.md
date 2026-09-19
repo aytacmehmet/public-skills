@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 — 2026-09-19
+
+- Instructions moved to the Prompter 2.0.0 structure: imperative mood, XML sections in workflow order (`<invariants>` … `<resources>`), scope slots, reference and output/prerequisite tables, two good/bad examples, a self-check, and a result-first delivery report. Rules and behavior are unchanged.
+- References split into two kinds: seven domain references are read at runtime only when needed; the new FD01–FD26 behavior checks and the source and design notes are for maintenance only and are not linked from the instructions.
+- The scaffold command appears in the instructions in full (`--language`, `--backend-contract`); the PNG naming pattern moved into the instructions.
+- Maintenance: the repository test checks the same section order in both languages, that maintenance references are not linked from the instructions, and the FD scenario numbering. 1.0.0 archived.
+
 ## 1.0.0 — 2026-09-19
 
 - First public release, paired with Turkish SAP Fiori Tasarım.

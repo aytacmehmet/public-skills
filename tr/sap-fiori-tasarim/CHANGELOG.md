@@ -1,5 +1,12 @@
 # Değişiklik geçmişi
 
+## 1.1.0 — 2026-09-19
+
+- Yönerge Yordamla 2.0.0 yapısına geçirildi: emir kipi, iş akışı sırasını izleyen XML bölümleri (`<invariants>` … `<resources>`), kapsam alanları, referans ve çıktı/ön koşul tabloları, iki iyi/kötü örnek, öz-kontrol ve sonuç-önce teslim raporu. Kurallar ve davranış değişmedi.
+- Referanslar iki türe ayrıldı: yedi alan referansı çalışma zamanında yalnız gerektiğinde okunur; yeni FD01–FD26 davranış kontrolleri ile kaynak ve tasarım notları yalnız bakım içindir ve yönergeden bağlantı almaz.
+- Scaffold komutu yönergede tam biçimiyle (`--language`, `--backend-contract`) verildi; PNG adlandırma kalıbı yönergeye taşındı.
+- Bakım: depo testi iki dilde aynı bölüm sırasını, bakım referanslarının yönergeden bağlanmadığını ve FD senaryo numaralarını denetler. 1.0.0 arşivlendi.
+
 ## 1.0.0 — 2026-09-19
 
 - İngilizce SAP Fiori Design ile eşleştirilmiş ilk herkese açık yayın.

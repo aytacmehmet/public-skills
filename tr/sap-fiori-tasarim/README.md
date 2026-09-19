@@ -57,8 +57,15 @@ Testler scaffold girdilerini, ABAP paket okumayı (abapGit/ADT service binding b
 
 Inspector lexical bir okuyucudur; ABAP derleyicisi, ADT aktivasyonu, service preview veya çalışma zamanı yetki kanıtı değildir. `ready` sonucu gerçek `$metadata`, hedef release ve released-object doğrulamasının yerine geçmez. Statik doğrulayıcı build, test, tarayıcı render'ı ve gözle incelemenin yerini tutmaz. Skill SAP sistemine yazmaz, aktivasyon, transport veya deploy yapmaz; sohbette parola veya anahtar istemez. `references/official-sources.md` içindeki sürüm notları araştırma tarihine aittir; hedef sürümü canlı kaynaktan doğrulayın.
 
-## Paket
+## Dosyalar ve sürümler
 
-[Yönerge](SKILL.md) · [Tasarım temelleri](references/design-foundations.md) · [Floorplan ve pattern'ler](references/floorplans-and-patterns.md) · [UI5 mühendisliği](references/ui5-engineering.md) · [ABAP paketi okuma](references/abap-package-intake.md) · [RAP backend sözleşmesi](references/rap-backend-contract.md) · [Teslim ve kalite](references/delivery-and-quality.md) · [Resmî kaynaklar](references/official-sources.md) · [Değişiklik geçmişi](CHANGELOG.md) · [Arşivler](archived/README.md) · [GPL-3.0 lisansı](LICENSE)
+- [SKILL.md](SKILL.md): emir kipinde, XML bölümlü yönerge — değişmez kurallar, referans yönlendirmesi, kapsam alanları, kanıt, sözleşme, mimari, prototip, üretim, doğrulama, öz-kontrol ve teslim — ve sürüm bilgileri.
+- [Arayüz bilgileri](agents/openai.yaml): görünen ad, açıklama ve hazır çağrı.
+- Çalışma zamanında yalnız gerektiğinde okunan alan referansları: [tasarım temelleri](references/design-foundations.md), [floorplan ve pattern'ler](references/floorplans-and-patterns.md), [UI5 mühendisliği](references/ui5-engineering.md), [ABAP paketi okuma](references/abap-package-intake.md), [RAP backend sözleşmesi](references/rap-backend-contract.md), [teslim ve kalite](references/delivery-and-quality.md), [resmî kaynaklar](references/official-sources.md).
+- [Davranış kontrolleri](references/behavior-checks.md): FD01–FD26 bakım senaryolarıdır; tüm senaryoların her ortamda geçtiği iddiası değildir. Çalışma zamanında okunmaz.
+- [Kaynak ve tasarım notları](references/source-notes.md): dayanaklar, yapı tercihleri ve sınırlar. Çalışma zamanında okunmaz.
+- `scripts/`, `assets/`, `tests/`: iki dilde bayt düzeyinde aynı betikler, şemalar, UI5 şablonları ve betik testleri.
+- [Değişiklik geçmişi](CHANGELOG.md) ve [arşivlenmiş sürümler](archived/README.md).
+- [GPL-3.0 lisansı](LICENSE).
 
-Bu, 1.0.0 sürümlü ilk herkese açık yayındır. Güncel dosyalar paket kökünde bulunur. Sonraki güncellemelerde önceki commit'li sürüm, deponun [sürüm yönetimi talimatlarına](../CONTRIBUTING.md) göre arşivlenir.
+Güncel sürüm 1.1.0'dır ve `latest/` veya sürüm numaralı bir alt klasörde değil, doğrudan burada bulunur. Önceki yayımlanmış sürümler, deponun [sürüm yönetimi talimatlarına](../CONTRIBUTING.md) göre `archived/` içinde değiştirilmeyen ZIP kopyaları olarak saklanır. Bu ZIP'leri skill keşfi yapılan bir dizinin içinde açmayın.
