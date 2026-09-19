@@ -42,8 +42,8 @@ Ana kaynak: [When to Use Which Floorplan](https://www.sap.com/design-system/fior
 Kaynaklar:
 
 - [List Report](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/list-report-floorplan-sap-fiori-element)
-- [Analytical List Page](https://experience.sap.com/fiori-design-web/analytical-list-page/)
-- [Object Page](https://experience.sap.com/fiori-design-web/object-page/)
+- [Analytical List Page](https://experience.sap.com/fiori-design-web/analytical-list-page/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
+- [Object Page](https://experience.sap.com/fiori-design-web/object-page/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
 - [Worklist](https://www.sap.com/design-system/fiori-design-web/v1-120/page-types/floorplans/work-list/usage)
 - [Initial Page](https://www.sap.com/design-system/fiori-design-web/v1-96/page-types/floorplans/initial-page-floorplan/usage)
 - [Wizard](https://www.sap.com/design-system/fiori-design-web/v1-108/ui-elements/wizard/usage)
@@ -122,8 +122,8 @@ Kaynak: [Object Page Content Area](https://www.sap.com/design-system/fiori-desig
 
 Kaynaklar:
 
-- [Form Layout](https://experience.sap.com/fiori-design-web/explore_group/form-layout-container/)
-- [Form Field Validation](https://experience.sap.com/fiori-design-web/form-field-validation/)
+- [Form Layout](https://experience.sap.com/fiori-design-web/explore_group/form-layout-container/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
+- [Form Field Validation](https://experience.sap.com/fiori-design-web/form-field-validation/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
 
 ### Tablo/list seçimi
 
@@ -171,7 +171,7 @@ Kaynak: [Filter Bar](https://www.sap.com/design-system/fiori-design-web/ui-eleme
 - Genellikle 1–2 action kullan; primary emphasized olabilir, Cancel emphasized olmasın.
 - Uzun formda görünmeyen validation hataları için Message Popover sağla.
 
-Kaynak: [Dialog](https://experience.sap.com/fiori-design-web/dialog/)
+Kaynak: [Dialog](https://experience.sap.com/fiori-design-web/dialog/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
 
 ### Navigation
 

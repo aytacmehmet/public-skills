@@ -8,7 +8,8 @@
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
     "dataSources": {
-      "mainService": {"uri": "__SERVICE_URI__", "type": "OData", "settings": {"odataVersion": "4.0"}}
+      "mainService": {"uri": "__SERVICE_URI__", "type": "OData", "settings": {"annotations": ["annotation"], "odataVersion": "4.0"}},
+      "annotation": {"uri": "annotations/annotation.xml", "type": "ODataAnnotation", "settings": {"localUri": "annotations/annotation.xml"}}
     }
   },
   "sap.ui": {"technology": "UI5", "deviceTypes": {"desktop": true, "tablet": true, "phone": true}},

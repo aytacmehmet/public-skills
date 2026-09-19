@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "100001",
+      "name": "Planning item A",
+      "owner": "Production Team",
+      "statusText": "Ready",
+      "statusState": "Success"
+    },
+    {
+      "id": "100002",
+      "name": "Planning item B",
+      "owner": "Quality Team",
+      "statusText": "Review required",
+      "statusState": "Warning"
+    },
+    {
+      "id": "100003",
+      "name": "Sample planning item with a long name that tests how localized text wraps",
+      "owner": "Supply Chain",
+      "statusText": "Blocked",
+      "statusState": "Error"
+    }
+  ]
+}

@@ -34,9 +34,16 @@
     },
     "rootView": {"viewName": "__APP_ID__.view.App", "type": "XML", "id": "app"},
     "routing": {
-      "config": {"routerClass": "sap.m.routing.Router", "type": "View", "viewType": "XML", "path": "__APP_ID__.view", "controlId": "appControl", "controlAggregation": "pages"},
-      "routes": [{"name": "main", "pattern": "", "target": "main"}],
-      "targets": {"main": {"id": "main", "name": "Main"}}
+      "config": {"routerClass": "sap.m.routing.Router", "type": "View", "viewType": "XML", "path": "__APP_ID__.view", "controlId": "appControl", "controlAggregation": "pages", "bypassed": {"target": "notFound"}},
+      "routes": [
+        {"name": "main", "pattern": "", "target": "main"},
+        {"name": "detail", "pattern": "items/{key}", "target": "detail"}
+      ],
+      "targets": {
+        "main": {"id": "main", "name": "Main"},
+        "detail": {"id": "detail", "name": "Detail"},
+        "notFound": {"id": "notFound", "name": "NotFound"}
+      }
     }
   }
 }

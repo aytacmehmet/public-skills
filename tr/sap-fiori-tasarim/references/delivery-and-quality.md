@@ -32,7 +32,11 @@ design-contract.json
     └─ tests + verification report
 ```
 
-Sözleşmede `verified`, `assumed`, `blocked` ayrımı yap. Hedef sürüm, servis veya yetki doğrulanmadıysa bunu kaybetme.
+Sözleşmede kanıt durumu yalnız şu dört değerden biridir (şema zorlar): `verified` bu işte gözlendi · `assumed` kanıtsız kabul edildi · `unknown` henüz bilinmiyor · `blocked` bilinmeden ilerlenemiyor. Hedef sürüm, servis veya yetki doğrulanmadıysa bunu kaybetme.
+
+Tasarlanacak durumlar da tek listedir: `initial`, `loading`, `populated`, `empty`, `no-results`, `error`, `no-auth` ve varsa edit/draft durumları. `states` ile `verification.states` aynı kimlikleri taşır; PNG adları ve prototipin `?state=` anahtarı bu kimlikleri kullanır.
+
+Çalışma alanı artımlıdır: `design-contract.json` bir kez oluşur ve sonraki scaffold çalıştırmaları onu korur. Prototipten üretim koduna geçerken aynı klasörde `--output all` çalıştır; sözleşmeyi elle kopyalama ve `--reset-contract` kullanma.
 
 ## 2. PNG sözleşmesi
 
@@ -92,7 +96,8 @@ Teknik:
 - Async bootstrap ve manifest-first
 - Stable ID ve i18n
 - Üretim servisine yazma yok
-- Mock state seçimi veya fixture ile deterministik demo
+- `?state=loading|empty|no-results|error|no-auth` ile deterministik durum gösterimi (şablon bunu taşır); her tasarlanan durum bu yolla yeniden üretilebilir ve PNG'si alınabilir olmalı
+- Dialog fragment olarak yüklenir; zorunlu alan hatası alanın `valueState`'inde görünür ve odak ilk hatalı alana gider
 - Klavye ve görünür focus
 
 Prototype “sahte shell” içeriyorsa bunu yalnız bağlam sunumu için işaretle. Üretim app kodunda FLP shell'i tekrar etme.
@@ -185,7 +190,7 @@ python -B "<skill kökü>/scripts/validate_fiori_delivery.py" <delivery-root> --
 
 Bu script strict JSON, sözleşme/manifest semantiği ve temel yapısal riskleri denetler; uyarılar varsayılan olarak kapıyı kapatır. `--allow-warnings` yalnız geliştirme sırasında geçici kaçış kapısıdır; gerçek build/test/render'ın yerine geçmez.
 
-Sürüm denetimi iki ayrı değeri karşılaştırır: manifest `minUI5Version`, sözleşmedeki `architecture.minUI5Version` ile aynı olmalı (`SEMANTIC_MIN_UI5`) ve hedef `context.targetSystem.ui5Runtime` değerinden yeni olmamalıdır (`SEMANTIC_UI5_VERSION`). Runtime `unknown` ise `CONTRACT_TARGET_UNKNOWN` uyarısı teslim kapısını kapalı tutar. Renk denetimi yalnız CSS değerlerini ve tırnaklı renk literal'lerini işaretler; route hash'i veya ID seçicisi renk sayılmaz.
+Sürüm denetimi iki ayrı değeri karşılaştırır: manifest `minUI5Version`, sözleşmedeki `architecture.minUI5Version` ile aynı olmalı (`SEMANTIC_MIN_UI5`) ve hedef `context.targetSystem.ui5Runtime` değerinden yeni olmamalıdır (`SEMANTIC_UI5_VERSION`). Runtime `unknown` ise `CONTRACT_TARGET_UNKNOWN` kod tesliminde uyarıdır ve kapıyı kapalı tutar; yalnız PNG/prototip tesliminde `info` düzeyindedir, çünkü prototip hedefini henüz bilmeyebilir. Renk denetimi yalnız CSS değerlerini ve tırnaklı renk literal'lerini işaretler; route hash'i veya ID seçicisi renk sayılmaz.
 
 ABAP paketi kapsamdaysa doğrulayıcı ayrıca `abap-backend-contract.json` şemasını, dosya SHA-256 bütünlüğünü, active/complete durumunu, paket envanter hash'ini, servis protokolü/URI/entity set uyumunu ve backend → tasarım izlenebilirliğini kontrol eder. `partial` backend sözleşmesi uyarı üretir ve strict teslim kapısını kapatır.
 
@@ -253,3 +258,28 @@ Kısa ama kanıtlı raporla:
 - App/PNG'yi gör
 - İlk, son ve en tuhaf senaryoyu örnekle
 - Asıl istekle yeniden karşılaştır
+
+## 10. Doğrulayıcı bulguları
+
+Önem düzeyi: `error` ve `warning` kapıyı kapatır (`--allow-warnings` yalnız uyarıları geçici açar), `info` kapatmaz. Sık karşılaşılanlar:
+
+| Bulgu | Anlamı | Ne yapılır |
+|---|---|---|
+| `CONTRACT_PLACEHOLDER` | Sözleşmede `Replace …`, `pending-…`, `verify-…` veya `YYYY-MM-DD` kaldı | Gerçek değeri yaz; bilinmiyorsa `unknown`, engelse `blocked` |
+| `CONTRACT_STATE_RECOMMENDED` | `loading` veya `no-results` tasarlanmadı | Durumu tasarla ve `verification.states` ile eşitle |
+| `SEMANTIC_STATES` | `states` ile `verification.states` farklı | İki listeyi aynı kimliklere getir |
+| `SEMANTIC_I18N_KEY` | Sözleşmedeki `labelKey`/`titleKey` i18n paketinde yok | Anahtarı ekle veya sözleşmeyi düzelt (Fiori elements app'te metinler annotation'dan gelir, denetlenmez) |
+| `SEMANTIC_ACTION_ID` | Sözleşmedeki eylemin aynı stabil ID'li kontrolü yok | Eylemi UI'a ekle veya kapsam dışıysa sözleşmeden çıkar |
+| `CONTRACT_A11Y_EVIDENCE` | `verification.accessibilityEvidence` boş | Gerçekten yaptığın kontrolü `check`/`method`/`result` ile yaz; yapmadıysan yap |
+| `CONTRACT_DATA_BUDGET` / `CONTRACT_COMMANDS` | Kod tesliminde `initialSelect` veya `verification.commands` boş | İlk render alanlarını ve çalıştırılan komutları yaz |
+| `CONTRACT_RELEASED_UNVERIFIED` | ABAP kanıtı var ama `releasedApisVerified` doğrulanmadı | Hedef sistemde kontrol et; `true` veya `not-applicable` yaz |
+| `SEMANTIC_FLP_INBOUND` | `launchContext: flp` ama manifest'te `launchIntent` ile eşleşen inbound yok | `--semantic-object/--action` ile üret veya manifest'e ekle; bağımsız app ise `launchContext`'i düzelt |
+| `SEMANTIC_SEARCH_UNVERIFIED` | App `$search` gönderiyor, `serverCapabilities.search` `true` değil | `@Search.searchable` kanıtını bul veya `$filter` kullan |
+| `PNG_NAME` | Capture adı kalıba uymuyor veya sözleşmede olmayan bir durumu adlandırıyor | Dosyayı yeniden adlandır |
+| `BACKEND_INVENTORY_UNVERIFIED` (`info`) | Paket kaynağı sistem envanteri beyan etmiyor | Raporda belirt; kapıyı kapatmaz |
+
+Bir bulguyu kapıyı geçmek için uydurma değerle susturma. Sözleşmeye yazdığın her `verified` ve her erişilebilirlik sonucu gözlem olmalıdır.
+
+## 11. Mevcut projeyi inceleme
+
+`validate_fiori_delivery.py <proje-kökü> --review` sözleşme istemez, dosya üretmez ve yalnız `error` bulgusunda başarısız olur. Betik statik kalıpları görür (deprecated/global API, senkron yükleme, inline stil, sabit metin/renk, stabil ID, manifest yapısı). Floorplan uygunluğu, eylem yerleşimi, durum kapsamı, erişilebilirlik ve OData kullanımı için projeyi oku ve bulguyu `dosya:satır · önem · kural ve kaynağı · gözlem · öneri` biçiminde yaz. Görmediğin runtime davranışını bulgu sayma.

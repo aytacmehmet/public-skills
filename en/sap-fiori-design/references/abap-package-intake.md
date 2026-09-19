@@ -86,6 +86,12 @@ If the package inventory exceeds 200 items, state the paging and comprehensive r
 - `behavior.actions` are business actions only; `draftActions` (Edit, Activate, Discard, Resume, Prepare) belong to the framework and are not designed as buttons.
 - `dynamicFeatureControl`: operations and actions whose enablement is determined at runtime. Plan the disabled/hidden state and its test for these.
 - `etag` and `totalEtag` are separate fields; write the concurrency scenario according to both.
+- `model.entities[].kind`: `view-entity`, `custom-entity`, `abstract-entity` or `classic-view`. An abstract entity is an action parameter, not a screen object; the query of a custom entity lives in an ABAP class, so verify its filter/sort/paging support with `$metadata` and a test.
+- `uiSemantics.fields`: the field → annotation mapping read from DDLS and DDLX. Its summaries are the lists `lineItemFields`, `selectionFields`, `identificationFields`, `fieldGroupFields`, `hiddenFields`, `valueHelpFields`, `textFields`, `amountFields`, `quantityFields` (`Entity.Field`). Derive List Report columns, filters and value helps from them; read the source for the annotation values themselves (position, importance, qualifier).
+- `uiSemantics.searchableEntities`: entities that carry `@Search.searchable: true`. Do not send `$search` to an entity set that is not listed.
+- `service.bindings[].serviceDefinition`: the definition the binding points at. With several definitions, the inspector selects one only when every readable binding points at the same definition; that is evidence, not a guess. If the binding cannot be read (`unknown`), the choice remains yours.
+- `source.inventoryVerified` and `notes`: only an ADT snapshot that declares its object count can be compared with the inventory. For a local export the value stays `false`; completeness is the provider's statement and the validator reports it as `info`.
+- ZIP input is limited to 2 MB per member, 50 MB in total and a compression ratio of 200; a package beyond that is rejected unread.
 
 ## Converting into a UI decision
 

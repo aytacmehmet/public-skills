@@ -58,6 +58,7 @@ class Report:
     def mark(self, path: Path) -> None:
         self.checked_files.add(path.resolve())
 
+    # Severities: error and warning close the gate (warning unless --allow-warnings); info never does.
     def count(self, severity: str) -> int:
         return sum(item.severity == severity for item in self.findings)
 
@@ -164,6 +165,121 @@ def validate_against_schema(data: object, schema_path: Path, data_path: Path, re
     validate_schema_value(data, schema, "$", report, data_path)
 
 
+PLACEHOLDER = re.compile(r"^(?:Replace\b|replace-with|ReplaceWith|pending-|verify-|YYYY-MM-DD$)")
+REQUIRED_STATES = ("initial", "populated", "empty", "error", "no-auth")
+RECOMMENDED_STATES = ("loading", "no-results")
+PNG_NAME = r"^(?P<app>[a-z0-9]+(?:-[a-z0-9]+)*?)-(?P<state>{states})-(?P<breakpoint>S|M|L|XL)-(?P<theme>[a-z0-9_]+)-(?P<density>cozy|compact)\.png$"
+
+
+def walk_strings(value: object, pointer: str = "$") -> Iterable[tuple[str, str, str]]:
+    """Yield (pointer, key, string) for every string in a JSON document."""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if isinstance(child, str):
+                yield f"{pointer}/{key}", key, child
+            else:
+                yield from walk_strings(child, f"{pointer}/{key}")
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            if isinstance(child, str):
+                yield f"{pointer}/{index}", "", child
+            else:
+                yield from walk_strings(child, f"{pointer}/{index}")
+
+
+def validate_completeness(data: dict, outputs: list, report: Report, path: Path) -> None:
+    """A delivery gate is only as good as what it refuses: template text and empty evidence are not a design."""
+    placeholders = [pointer for pointer, _, text in walk_strings(data) if PLACEHOLDER.match(text.strip())]
+    for pointer in placeholders[:12]:
+        report.add("warning", "CONTRACT_PLACEHOLDER", f"{pointer} still holds template or pending text", path)
+    if len(placeholders) > 12:
+        report.add("warning", "CONTRACT_PLACEHOLDER", f"{len(placeholders) - 12} more template or pending values remain", path)
+
+    states = data.get("states") if isinstance(data.get("states"), list) else []
+    state_ids = [item.get("id") for item in states if isinstance(item, dict)]
+    for recommended in RECOMMENDED_STATES:
+        if recommended not in state_ids:
+            report.add("warning", "CONTRACT_STATE_RECOMMENDED", f"State is not designed: {recommended}", path)
+    verification = data.get("verification") if isinstance(data.get("verification"), dict) else {}
+    verified_states = verification.get("states") if isinstance(verification.get("states"), list) else []
+    if sorted(map(str, verified_states)) != sorted(map(str, state_ids)):
+        report.add("warning", "SEMANTIC_STATES", "verification.states differs from the designed states", path)
+    evidence = verification.get("accessibilityEvidence")
+    if not isinstance(evidence, list) or not evidence or any(
+        not isinstance(row, dict) or not all(row.get(key) for key in ("check", "method", "result")) for row in evidence
+    ):
+        report.add("warning", "CONTRACT_A11Y_EVIDENCE", "verification.accessibilityEvidence needs check, method and result for what was really tested", path)
+
+    if "code" in outputs:
+        data_contract = data.get("dataContract") if isinstance(data.get("dataContract"), dict) else {}
+        if not verification.get("commands"):
+            report.add("warning", "CONTRACT_COMMANDS", "verification.commands is empty for a code delivery", path)
+        if not data_contract.get("initialSelect"):
+            report.add("warning", "CONTRACT_DATA_BUDGET", "dataContract.initialSelect is empty: name the fields of the first render", path)
+        backend = data.get("backendEvidence") if isinstance(data.get("backendEvidence"), dict) else {}
+        if backend.get("applicable") is True and data_contract.get("releasedApisVerified") not in (True, "not-applicable"):
+            report.add("warning", "CONTRACT_RELEASED_UNVERIFIED", "dataContract.releasedApisVerified must be true or not-applicable once it was checked in the target system", path)
+
+
+def i18n_keys(tree: Path) -> set[str] | None:
+    bundles = [item for item in tree.rglob("i18n.properties") if not is_skipped(tree, item)]
+    if not bundles:
+        return None
+    keys: set[str] = set()
+    for line in bundles[0].read_text(encoding="utf-8").splitlines():
+        if "=" in line and not line.lstrip().startswith("#"):
+            keys.add(line.split("=", 1)[0].strip())
+    return keys
+
+
+def validate_contract_against_tree(contract: dict, tree: Path, report: Report, metadata_driven: bool) -> None:
+    """Every text key and action the contract names has to exist in the delivered UI."""
+    if metadata_driven:
+        return  # Fiori elements takes labels and actions from annotations, not from the app's bundle or views.
+    keys = i18n_keys(tree)
+    scope = {name: contract.get(name) for name in ("informationArchitecture", "fieldsAndActions")}
+    wanted = unique_sorted(text for _, key, text in walk_strings(scope) if key.endswith("Key"))
+    if keys is not None:
+        for key in wanted:
+            if key not in keys:
+                report.add("warning", "SEMANTIC_I18N_KEY", f"Contract text key is missing from the i18n bundle: {key}", tree)
+    xml_ids: set[str] = set()
+    for view in tree.rglob("*.xml"):
+        if not is_skipped(tree, view):
+            xml_ids.update(re.findall(r"\bid\s*=\s*\"([^\"]+)\"", view.read_text(encoding="utf-8", errors="replace")))
+    actions = contract.get("fieldsAndActions", {}).get("actions", [])
+    for action in actions if isinstance(actions, list) else []:
+        if isinstance(action, dict) and action.get("id") and action["id"] not in xml_ids:
+            report.add("warning", "SEMANTIC_ACTION_ID", f"Contract action has no control with the same stable ID: {action['id']}", tree)
+
+
+def unique_sorted(values: Iterable[str]) -> list[str]:
+    return sorted({value for value in values if value})
+
+
+def validate_launch_and_search(contract: dict, app_root: Path, report: Report) -> None:
+    target = contract.get("context", {}).get("targetSystem", {})
+    manifest_path = app_root / "webapp" / "manifest.json"
+    if target.get("launchContext") == "flp" and manifest_path.is_file():
+        try:
+            inbounds = json.loads(manifest_path.read_text(encoding="utf-8")).get("sap.app", {}).get("crossNavigation", {}).get("inbounds", {})
+        except json.JSONDecodeError:
+            inbounds = {}
+        intent = target.get("launchIntent") if isinstance(target.get("launchIntent"), dict) else {}
+        matches = [
+            row for row in inbounds.values()
+            if isinstance(row, dict) and row.get("semanticObject") == intent.get("semanticObject") and row.get("action") == intent.get("action")
+        ] if isinstance(inbounds, dict) else []
+        if not intent or not matches:
+            report.add("warning", "SEMANTIC_FLP_INBOUND", "launchContext is flp but the manifest has no inbound for context.targetSystem.launchIntent", manifest_path)
+    capabilities = contract.get("dataContract", {}).get("serverCapabilities", {})
+    if capabilities.get("search") is not True:
+        for source in (app_root / "webapp").rglob("*"):
+            if source.suffix.lower() in {".ts", ".js"} and not is_skipped(app_root, source) and "$search" in source.read_text(encoding="utf-8", errors="replace"):
+                report.add("warning", "SEMANTIC_SEARCH_UNVERIFIED", "The app sends $search but dataContract.serverCapabilities.search is not true; verify @Search.searchable or filter instead", source)
+                break
+
+
 def require_object(data: dict, key: str, report: Report, path: Path) -> dict:
     value = data.get(key)
     if not isinstance(value, dict):
@@ -224,13 +340,17 @@ def validate_contract(path: Path, schema_path: Path, report: Report) -> dict | N
     if not isinstance(target, dict):
         report.add("error", "CONTRACT_TARGET", "context.targetSystem must be an object", path)
     else:
+        # A prototype may honestly not know its target yet; production code may not.
+        severity = "warning" if isinstance(outputs, list) and "code" in outputs else "info"
         for key in ("product", "edition", "release", "ui5Runtime", "fioriGuidelineVersion", "launchContext"):
             if str(target.get(key, "")).strip().lower() in {"", "unknown"}:
-                report.add("warning", "CONTRACT_TARGET_UNKNOWN", f"context.targetSystem.{key} is not verified", path)
+                report.add(severity, "CONTRACT_TARGET_UNKNOWN", f"context.targetSystem.{key} is not verified", path)
+        if target.get("launchContext") == "flp" and not isinstance(target.get("launchIntent"), dict):
+            report.add(severity, "CONTRACT_TARGET_UNKNOWN", "context.targetSystem.launchIntent is not verified", path)
 
     states = data.get("states")
     ids = {item.get("id") for item in states if isinstance(item, dict)} if isinstance(states, list) else set()
-    for required in ("initial", "populated", "empty", "error", "no-auth"):
+    for required in REQUIRED_STATES:
         if required not in ids:
             report.add("error", "CONTRACT_STATE", f"Required state is missing: {required}", path)
     breakpoints = objects["responsive"].get("breakpoints")
@@ -252,8 +372,7 @@ def validate_contract(path: Path, schema_path: Path, report: Report) -> dict | N
         for index, row in enumerate(rows, 1):
             if not isinstance(row, dict) or any(not row.get(field) for field in required_fields):
                 report.add("warning", f"CONTRACT_{key.upper()}", f"{key} row {index} is incomplete", path)
-            if key == "sources" and str(row.get("checkedOn", "")).upper() == "YYYY-MM-DD":
-                report.add("warning", "CONTRACT_SOURCE_DATE", f"sources row {index} has no real check date", path)
+    validate_completeness(data, outputs if isinstance(outputs, list) else [], report, path)
     return data
 
 
@@ -322,6 +441,8 @@ def validate_backend_evidence(root: Path, contract: dict, report: Report) -> dic
         report.add("error", "BACKEND_FALSE_VERIFIED", "Source-verified backend evidence must be complete, active-only, and gap-free", contract_path)
     if status == "partial":
         report.add("warning", "BACKEND_PARTIAL", f"ABAP backend evidence remains partial with {len(gaps)} gap(s)", contract_path)
+    if source.get("inventoryVerified") is not True:
+        report.add("info", "BACKEND_INVENTORY_UNVERIFIED", "The package source declares no system inventory; completeness of the export is the provider's statement", contract_path)
 
     backend_service = backend.get("service") if isinstance(backend.get("service"), dict) else {}
     design_service = contract.get("dataContract", {}).get("mainService", {})
@@ -552,7 +673,7 @@ def validate_artifact(root: Path, report: Report, contract: dict | None, product
         validate_text(path, text, report, production)
 
 
-def validate_png_artifacts(root: Path, report: Report) -> None:
+def validate_png_artifacts(root: Path, report: Report, contract: dict | None = None) -> None:
     visuals = root / "visuals"
     png_files = sorted(visuals.glob("*.png")) if visuals.is_dir() else []
     if not png_files:
@@ -567,6 +688,15 @@ def validate_png_artifacts(root: Path, report: Report) -> None:
         width, height = struct.unpack(">II", data[16:24])
         if width < 1 or height < 1:
             report.add("error", "PNG_DIMENSIONS", "PNG dimensions must be positive", path)
+        # "list-populated" and "no-auth" are both two words: only the contract says which part is the state.
+        states = sorted((str(item.get("id")) for item in (contract or {}).get("states", []) if isinstance(item, dict) and item.get("id")), key=len, reverse=True)
+        designed = "|".join(re.escape(state) for state in states) or "[a-z]+(?:-[a-z]+)?"
+        if not re.match(PNG_NAME.format(states=designed), path.name):
+            generic = re.match(PNG_NAME.format(states="[a-z]+"), path.name)
+            report.add("warning", "PNG_NAME", (
+                f"Capture names a state the contract does not design: {generic.group('state')}" if generic
+                else "Name captures <app>-<screen>-<state>-<S|M|L|XL>-<theme>-<cozy|compact>.png"
+            ), path)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -574,6 +704,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("root", type=Path, help="Delivery root")
     parser.add_argument("--contract", type=Path, help="Path to design-contract.json")
     parser.add_argument("--allow-warnings", action="store_true", help="Development-only escape hatch; errors still fail")
+    parser.add_argument("--review", action="store_true", help="Review an existing UI5 project that has no design contract; only errors fail")
     parser.add_argument("--json", action="store_true", help="Print JSON report")
     return parser
 
@@ -588,19 +719,22 @@ def main() -> int:
     report = Report(root)
     contract_path = args.contract.resolve() if args.contract else root / "design-contract.json"
     schema_path = root / "design-contract.schema.json"
-    contract = validate_contract(contract_path, schema_path, report) if contract_path.is_file() else None
-    if contract is None and not contract_path.is_file():
+    contract = validate_contract(contract_path, schema_path, report) if contract_path.is_file() and not args.review else None
+    if args.review:
+        validate_artifact(root, report, None, production=True)
+    elif contract is None and not contract_path.is_file():
         report.add("error", "CONTRACT_MISSING", f"Design contract not found: {contract_path}")
     if isinstance(contract, dict):
         validate_backend_evidence(root, contract, report)
 
     outputs = contract.get("project", {}).get("outputs", []) if isinstance(contract, dict) else []
     if "png" in outputs:
-        validate_png_artifacts(root, report)
+        validate_png_artifacts(root, report, contract)
     if "interactive" in outputs:
         prototype_root = root / "prototype"
         if prototype_root.is_dir():
             validate_artifact(prototype_root, report, contract, production=False)
+            validate_contract_against_tree(contract, prototype_root, report, metadata_driven=False)
         else:
             report.add("error", "PROTOTYPE_MISSING", "Contract requests interactive output but prototype/ is missing", prototype_root)
     if "code" in outputs:
@@ -609,17 +743,19 @@ def main() -> int:
             validate_artifact(app_root, report, contract, production=True)
             framework = contract.get("architecture", {}).get("framework", "") if isinstance(contract, dict) else ""
             validate_package(app_root, report, framework)
+            validate_contract_against_tree(contract, app_root, report, metadata_driven=str(framework).startswith("fiori-elements-"))
+            validate_launch_and_search(contract, app_root, report)
         else:
             report.add("error", "APP_MISSING", "Contract requests code output but app/ is missing", app_root)
-    if not outputs:
+    if not outputs and not args.review:
         validate_artifact(root, report, contract, production=False)
 
     errors, warnings = report.count("error"), report.count("warning")
-    passed = errors == 0 and (args.allow_warnings or warnings == 0)
+    passed = errors == 0 and (args.allow_warnings or args.review or warnings == 0)
     result = {
         "root": str(root), "passed": passed,
-        "policy": "errors-only" if args.allow_warnings else "fail-on-warning",
-        "summary": {"errors": errors, "warnings": warnings, "filesChecked": len(report.checked_files)},
+        "policy": "review" if args.review else ("errors-only" if args.allow_warnings else "fail-on-warning"),
+        "summary": {"errors": errors, "warnings": warnings, "info": report.count("info"), "filesChecked": len(report.checked_files)},
         "findings": [asdict(item) for item in report.findings],
     }
     if args.json:
@@ -627,7 +763,7 @@ def main() -> int:
     else:
         print(f"Policy: {result['policy']}")
         print(f"Files checked: {len(report.checked_files)}")
-        print(f"Errors: {errors}; Warnings: {warnings}")
+        print(f"Errors: {errors}; Warnings: {warnings}; Info: {report.count('info')}")
         for finding in report.findings:
             location = finding.path or "."
             if finding.line:

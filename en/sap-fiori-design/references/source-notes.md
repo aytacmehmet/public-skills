@@ -25,6 +25,13 @@ Source check date: 2026-08-27 (SAP sources), 2026-09-19 (package structure). Thi
 - The inspector is not an ABAP compiler, an ADT activation, a service preview or runtime authorization evidence; it does not cover the whole CDS/BDEF syntax. When a new syntax gap is found, add a test first, then extend the parser; when in doubt, produce `gaps`.
 - There is a single reviewed profile (`assets/version-profiles.json`). The template lockfiles belong to that profile; a new profile requires its own lockfile. For older LTS runtimes, the production scaffold is refused until a profile is added.
 - The static validator does not replace build, test, browser rendering, Support Assistant and visual inspection.
-- It is not claimed that the behavior checks (FD01–FD26) pass in every environment; they are maintenance scenarios. The skill cannot guarantee that a model will follow the rule in every session.
+- It is not claimed that the behavior checks (FD01–FD32) pass in every environment; they are maintenance scenarios. The skill cannot guarantee that a model will follow the rule in every session.
 - The version notes in `official-sources.md` belong to the research date; links with version numbers may become outdated.
 - The skill does not write to the SAP system; activation, transport and deploy are out of scope.
+
+## Distribution and single source
+
+- This repository (`public-skills`) is the single source of the skill. A copy that goes to another host (for example into a plugin) is not edited by hand; it is produced with `python .github/scripts/skills.py export en/sap-fiori-design --dest <folder> [--name <skill-name>] [--overlay <extra.md>]`. `--name` changes the front matter name and the default invocation; `--overlay` appends the host-specific section to the end of `SKILL.md`. The exported copy carries the source version and commit in `EXPORT-MANIFEST.json`.
+- Host-specific rules (authority root, tool gateway, write permission) live in the overlay file; they are not moved into the core instructions.
+- The templates are really installed, linted, type-checked, built and browser-tested by a separate workflow in the repository CI; the 1.2.0 templates were verified this way and by hand in Chromium (the prototype's six states, the fragment dialog, the freestyle list → detail and not-found journeys, the Fiori elements smoke test).
+- The shared `scripts/`, `assets/` and `tests/` are deliberately duplicated in both language packages: the repository rule requires every skill folder to be installable on its own. The repository test guards their equality.

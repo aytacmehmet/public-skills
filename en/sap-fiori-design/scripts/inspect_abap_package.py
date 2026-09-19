@@ -15,6 +15,8 @@ from pathlib import Path, PurePosixPath
 
 MAX_FILE_BYTES = 2_000_000
 MAX_FILES = 5_000
+MAX_TOTAL_BYTES = 50_000_000
+MAX_COMPRESSION_RATIO = 200
 
 SUFFIX_TYPES = (
     (".ddls.asddls", "DDLS"),
@@ -119,6 +121,7 @@ def read_directory(root: Path) -> list[SourceObject]:
 
 def read_zip(path: Path) -> list[SourceObject]:
     objects: list[SourceObject] = []
+    total = 0
     with zipfile.ZipFile(path) as archive:
         for info in sorted(archive.infolist(), key=lambda item: item.filename):
             if info.is_dir():
@@ -131,6 +134,11 @@ def read_zip(path: Path) -> list[SourceObject]:
                 continue
             if info.file_size > MAX_FILE_BYTES:
                 raise ValueError(f"Source exceeds {MAX_FILE_BYTES} bytes: {info.filename}")
+            if info.file_size > MAX_COMPRESSION_RATIO * max(info.compress_size, 1):
+                raise ValueError(f"Suspicious compression ratio in ZIP member: {info.filename}")
+            total += info.file_size
+            if total > MAX_TOTAL_BYTES:
+                raise ValueError(f"Package sources exceed {MAX_TOTAL_BYTES} bytes in total")
             source = decode_source(archive.read(info), info.filename)
             objects.append(SourceObject(inferred_name(info.filename), object_type, member.as_posix(), source))
             if len(objects) > MAX_FILES:
@@ -138,7 +146,7 @@ def read_zip(path: Path) -> list[SourceObject]:
     return objects
 
 
-def read_adt_snapshot(path: Path) -> tuple[list[SourceObject], str | None, list[str]]:
+def read_adt_snapshot(path: Path) -> tuple[list[SourceObject], str | None, list[str], bool]:
     payload = strict_json(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict) or not isinstance(payload.get("objects"), list):
         raise ValueError("ADT snapshot must be an object containing an objects array")
@@ -180,7 +188,8 @@ def read_adt_snapshot(path: Path) -> tuple[list[SourceObject], str | None, list[
     declared_count = payload.get("objectCount")
     if isinstance(declared_count, int) and declared_count != len(payload["objects"]):
         gaps.append(f"ADT package inventory is incomplete: declared {declared_count}, snapshot has {len(payload['objects'])}")
-    return objects, str(payload.get("packageName") or "").strip().upper() or None, gaps
+    declared = isinstance(declared_count, int) and declared_count == len(payload["objects"])
+    return objects, str(payload.get("packageName") or "").strip().upper() or None, gaps, declared
 
 
 def strip_comments(source: str, object_type: str) -> str:
@@ -302,11 +311,28 @@ def split_top_level(text: str, separator: str) -> list[str]:
     return parts
 
 
+ENTITY_HEADER = re.compile(
+    r"\bdefine\s+(?P<root>root\s+)?"
+    r"(?:(?P<kind>(?:transient\s+)?(?:projection\s+)?view|custom|abstract)\s+entity|(?P<classic>view))"
+    r"\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)",
+    re.I,
+)
+
+
+def entity_header(text: str) -> dict | None:
+    match = ENTITY_HEADER.search(text)
+    if not match:
+        return None
+    word = (match.group("kind") or "").lower().split()
+    kind = "classic-view" if match.group("classic") else f"{word[-1]}-entity"
+    return {"name": match.group("name"), "root": bool(match.group("root")), "kind": kind, "end": match.end()}
+
+
 def select_list(text: str) -> str | None:
-    header = re.search(r"\bdefine\s+(?:root\s+)?(?:projection\s+)?view\s+entity\s+[A-Za-z_][A-Za-z0-9_]*", text, re.I)
+    header = entity_header(text)
     if not header:
         return None
-    index = header.end()
+    index = header["end"]
     while index < len(text):
         char = text[index]
         if char == "'":
@@ -322,19 +348,26 @@ def select_list(text: str) -> str | None:
 
 ELEMENT_PATTERN = re.compile(
     r"[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
-    r"(?:\s*:\s*[A-Za-z_][A-Za-z0-9_.]*(?:\([^)]*\))?)?"
+    r"(?:\s*:\s*[A-Za-z_][A-Za-z0-9_.]*(?:\([^)]*\))?(?:\s+not\s+null)?)?"
 )
+
+
+def annotation_names(segment: str) -> list[str]:
+    return unique(re.findall(r"@<?([A-Za-z][A-Za-z0-9_.]*)", re.sub(r"'[^']*'", "''", segment)))
 
 
 def projection_elements(text: str) -> dict:
     """Read the element list; what the lexical reader cannot classify is reported, never dropped."""
-    body = select_list(strip_annotations(text))
+    header = entity_header(text)
+    # Custom and abstract entities declare typed elements that end with a semicolon.
+    separator = ";" if header and header["kind"] in {"custom-entity", "abstract-entity"} else ","
     fields: list[str] = []
     keys: list[str] = []
     exposed: list[str] = []
     unparsed: list[str] = []
-    for segment in split_top_level(body or "", ","):
-        candidate = " ".join(segment.split())
+    annotations: dict[str, list[str]] = {}
+    for segment in split_top_level(select_list(text) or "", separator):
+        candidate = " ".join(strip_annotations(segment).split())
         if not candidate or re.match(r"^(?:association|composition)\b", candidate, re.I):
             continue
         is_key = bool(re.match(r"^key\s+", candidate, re.I))
@@ -354,7 +387,52 @@ def projection_elements(text: str) -> dict:
         fields.append(name)
         if is_key:
             keys.append(name)
-    return {"fields": unique(fields), "keys": unique(keys), "exposedAssociations": unique(exposed), "unparsed": unparsed}
+        names = annotation_names(segment)
+        if names:
+            annotations[name] = unique(annotations.get(name, []) + names)
+    return {
+        "fields": unique(fields), "keys": unique(keys), "exposedAssociations": unique(exposed),
+        "unparsed": unparsed, "annotations": annotations,
+    }
+
+
+def metadata_extension(text: str) -> tuple[str | None, dict[str, list[str]]]:
+    """Return the annotated entity and the annotation names per element of a metadata extension."""
+    header = re.search(r"\bannotate\s+(?:view\s+|entity\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+with\b", text, re.I)
+    if not header:
+        return None, {}
+    opening = text.find("{", header.end())
+    if opening < 0:
+        return header.group(1), {}
+    annotations: dict[str, list[str]] = {}
+    for segment in split_top_level(text[opening + 1:skip_balanced(text, opening) - 1], ";"):
+        name = " ".join(strip_annotations(segment).split())
+        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name) and not name.startswith("_"):
+            names = annotation_names(segment)
+            if names:
+                annotations[name] = names
+    return header.group(1), annotations
+
+
+UI_ROLES = (
+    ("lineItemFields", "ui.lineitem"),
+    ("selectionFields", "ui.selectionfield"),
+    ("identificationFields", "ui.identification"),
+    ("fieldGroupFields", "ui.fieldgroup"),
+    ("hiddenFields", "ui.hidden"),
+    ("valueHelpFields", "consumption.valuehelpdefinition"),
+    ("textFields", "objectmodel.text.element"),
+    ("amountFields", "semantics.amount.currencycode"),
+    ("quantityFields", "semantics.quantity.unitofmeasure"),
+)
+
+
+def service_definition_of_binding(text: str) -> str | None:
+    """Service bindings name their service definition in an attribute (ADT) or an element (abapGit)."""
+    attribute = re.search(r"serviceDefinition\b[^>]*?\bname\s*=\s*[\"']([A-Za-z_/][A-Za-z0-9_/]*)[\"']", text, re.I)
+    element = re.search(r"<(?:[\w.-]+:)?(?:SERVICE_DEFINITION|SERVICEDEFINITION|SRVD_NAME|SERVICE_DEF)\s*>\s*([A-Za-z_/][A-Za-z0-9_/]*)\s*<", text, re.I)
+    found = attribute or element
+    return found.group(1).upper() if found else None
 
 
 SRVB_TYPE_PATTERN = re.compile(
@@ -490,7 +568,8 @@ def package_from_devc(objects: list[SourceObject]) -> str | None:
 
 def analyze(objects: list[SourceObject], package_name: str | None, source_mode: str, source_label: str,
             service_uri: str | None, protocol_override: str | None, initial_gaps: list[str],
-            service_definition: str | None = None, entity_set: str | None = None) -> dict:
+            service_definition: str | None = None, entity_set: str | None = None,
+            inventory_verified: bool = False) -> dict:
     inventory: list[dict] = []
     entities: list[dict] = []
     annotations: list[dict] = []
@@ -501,6 +580,8 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
     traceability: list[dict] = []
     bindings: list[dict] = []
     parse_gaps: list[str] = []
+    field_annotations: list[dict] = []
+    searchable: list[str] = []
 
     for obj in objects:
         inventory.append({
@@ -514,12 +595,9 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
             annotations.append({"name": name, "object": obj.name, "path": obj.path})
 
         if obj.object_type == "DDLS":
-            entity_match = re.search(
-                r"\bdefine\s+(root\s+)?(?:(projection)\s+)?view\s+entity\s+([A-Za-z_][A-Za-z0-9_]*)",
-                text, re.I,
-            )
-            if entity_match:
-                entity = entity_match.group(3)
+            header = entity_header(text)
+            if header:
+                entity = header["name"]
                 elements = projection_elements(text)
                 if elements["unparsed"]:
                     parse_gaps.append(
@@ -528,8 +606,9 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
                     )
                 entities.append({
                     "name": entity,
-                    "root": bool(entity_match.group(1)),
-                    "projection": bool(entity_match.group(2)) or bool(re.search(r"\bas\s+projection\s+on\b", text, re.I)),
+                    "kind": header["kind"],
+                    "root": header["root"],
+                    "projection": bool(re.search(r"\bas\s+projection\s+on\b", text, re.I)),
                     "fields": elements["fields"],
                     "keys": elements["keys"],
                     "exposedAssociations": elements["exposedAssociations"],
@@ -537,6 +616,10 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
                     "sourceObject": obj.name,
                     "path": obj.path,
                 })
+                for field, names in elements["annotations"].items():
+                    field_annotations.append({"entity": entity, "field": field, "annotations": names, "path": obj.path})
+                if re.search(r"@Search\.searchable\s*:\s*true\b", text, re.I):
+                    searchable.append(entity)
                 traceability.append({"backendObject": entity, "sourcePath": obj.path, "uiImpact": "entity-and-fields"})
             for target, alias in re.findall(
                 r"\bassociation(?:\s+\[[^\]]+\])?\s+to(?:\s+parent)?\s+([A-Za-z_][A-Za-z0-9_]*)\s+as\s+(_[A-Za-z_][A-Za-z0-9_]*)",
@@ -545,8 +628,12 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
                 associations.append({"sourceObject": obj.name, "target": target, "alias": alias, "path": obj.path})
 
         elif obj.object_type == "DDLX":
-            target = first_match(r"\bannotate\s+(?:view\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+with\b", text)
+            target, extension = metadata_extension(text)
             if target:
+                for field, names in extension.items():
+                    field_annotations.append({"entity": target, "field": field, "annotations": names, "path": obj.path})
+                if re.search(r"@Search\.searchable\s*:\s*true\b", text, re.I):
+                    searchable.append(target)
                 traceability.append({"backendObject": target, "sourcePath": obj.path, "uiImpact": "ui-annotations"})
 
         elif obj.object_type == "BDEF":
@@ -570,7 +657,10 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
             traceability.append({"backendObject": definition, "sourcePath": obj.path, "uiImpact": "service-boundary"})
 
         elif obj.object_type == "SRVB":
-            bindings.append({"name": obj.name, "protocol": detect_binding_protocol(text), "path": obj.path})
+            bindings.append({
+                "name": obj.name, "protocol": detect_binding_protocol(text),
+                "serviceDefinition": service_definition_of_binding(text) or "unknown", "path": obj.path,
+            })
 
         elif obj.object_type == "DCLS":
             role = first_match(r"\bdefine\s+role\s+([A-Za-z_][A-Za-z0-9_]*)", text) or obj.name
@@ -587,6 +677,11 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
             gaps.append(f"Explicit service definition {service_definition} was not observed in the package")
     elif len(services) == 1:
         main_service = services[0]
+    elif len(bound := {item["serviceDefinition"] for item in bindings if item["serviceDefinition"] != "unknown"}) == 1:
+        # Several definitions but every readable service binding points at the same one: that is evidence, not a guess.
+        main_service = next((item for item in services if item["name"].upper() in bound), None)
+        if main_service is None:
+            gaps.append(f"Service binding refers to {next(iter(bound))}, which is not part of the package source")
     elif services:
         gaps.append(
             "Multiple service definitions were observed; name the UI service with --service-definition: "
@@ -611,7 +706,7 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
         gaps.append(f"Explicit protocol {protocol_override} conflicts with observed service binding protocol(s): {', '.join(detected_protocols)}")
     if len(detected_protocols) > 1:
         gaps.append(f"Multiple service binding protocols were observed: {', '.join(detected_protocols)}")
-    if not entities:
+    if not any(item["kind"] != "abstract-entity" for item in entities):
         gaps.append("No CDS view entity was observed")
     if not services:
         gaps.append("No service definition was observed")
@@ -630,6 +725,9 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
     if any(obj.truncated for obj in objects):
         gaps.append("At least one source object is truncated")
     gaps = unique(gaps)
+    notes: list[str] = []
+    if not inventory_verified:
+        notes.append("Package completeness cannot be verified: the source declares no system inventory to compare with")
 
     framework = "fiori-elements-odata-v4" if protocol == "odata-v4" and main_service else "undecided"
     readiness = "ready" if framework != "undecided" and service_uri and ui_annotations and not gaps else (
@@ -651,6 +749,8 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
             "snapshotSha256": snapshot_sha,
             "activeSourcesOnly": all(obj.version == "active" for obj in objects),
             "complete": not any(obj.truncated for obj in objects) and not initial_gaps,
+            # Only a snapshot that declares the package inventory can be compared with it.
+            "inventoryVerified": inventory_verified,
         },
         "inventory": {"objectCount": len(inventory), "objects": inventory},
         "model": {"entities": entities, "associations": associations},
@@ -670,6 +770,15 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
             "annotations": ui_annotations,
             "annotationCount": len(ui_annotations),
             "valueHelpObserved": any("valuehelp" in item["name"].lower() for item in ui_annotations),
+            "fields": field_annotations,
+            **{
+                role: unique([
+                    f"{row['entity']}.{row['field']}" for row in field_annotations
+                    if any(name.lower().startswith(prefix) for name in row["annotations"])
+                ])
+                for role, prefix in UI_ROLES
+            },
+            "searchableEntities": unique(searchable),
         },
         "security": {
             "accessControls": access_controls,
@@ -683,6 +792,7 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
         },
         "traceability": traceability,
         "gaps": gaps,
+        "notes": notes,
     }
 
 
@@ -709,6 +819,7 @@ def main() -> int:
         if args.service_uri and not args.service_uri.startswith("/"):
             raise ValueError("--service-uri must begin with /")
         gaps: list[str] = []
+        inventory_verified = False
         if source.is_dir():
             objects = read_directory(source)
             package_name = None
@@ -718,7 +829,7 @@ def main() -> int:
             package_name = None
             source_mode = "local-export"
         elif source.is_file() and source.suffix.lower() == ".json":
-            objects, package_name, gaps = read_adt_snapshot(source)
+            objects, package_name, gaps, inventory_verified = read_adt_snapshot(source)
             source_mode = "live-adt-snapshot"
         else:
             raise ValueError("Source must be an existing directory, ZIP, or ADT snapshot JSON")
@@ -728,7 +839,7 @@ def main() -> int:
         contract = analyze(
             objects, package_name, source_mode, source.name,
             args.service_uri, args.protocol, gaps,
-            args.service_definition, args.entity_set,
+            args.service_definition, args.entity_set, inventory_verified,
         )
         output = args.output.resolve()
         output.parent.mkdir(parents=True, exist_ok=True)

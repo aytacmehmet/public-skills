@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog id="createDialog" title="{i18n>createDialogTitle}" contentWidth="26rem">
+    <content>
+      <VBox id="createForm" class="sapUiContentPadding">
+        <Label id="newItemIdLabel" text="{i18n>idColumn}" labelFor="newItemId" required="true" />
+        <Input
+          id="newItemId"
+          value="{create>/id}"
+          required="true"
+          valueState="{create>/idState}"
+          valueStateText="{i18n>requiredFieldMessage}"
+          liveChange=".onCreateInputChange" />
+        <Label id="newItemNameLabel" class="sapUiSmallMarginTop" text="{i18n>nameColumn}" labelFor="newItemName" required="true" />
+        <Input
+          id="newItemName"
+          value="{create>/name}"
+          required="true"
+          valueState="{create>/nameState}"
+          valueStateText="{i18n>requiredFieldMessage}"
+          liveChange=".onCreateInputChange" />
+      </VBox>
+    </content>
+    <beginButton>
+      <Button id="saveButton" text="{i18n>saveButtonText}" type="Emphasized" press=".onCreateSave" />
+    </beginButton>
+    <endButton>
+      <Button id="cancelButton" text="{i18n>cancelButtonText}" press=".onCreateCancel" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

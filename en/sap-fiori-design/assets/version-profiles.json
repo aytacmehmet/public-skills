@@ -1,5 +1,6 @@
 {
   "defaultProfile": "1.151.0",
+  "templateLockfileProfile": "1.151.0",
   "profiles": {
     "1.151.0": {
       "ui5Version": "1.151.0",
@@ -12,7 +13,8 @@
       "playwrightVersion": "1.62.1",
       "qunitTypesVersion": "2.19.14",
       "status": "reviewed-new-project-profile",
-      "checkedOn": "2026-08-27"
+      "checkedOn": "2026-08-27",
+      "lockfileDir": null
     }
   }
 }

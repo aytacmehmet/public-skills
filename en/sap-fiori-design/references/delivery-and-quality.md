@@ -32,7 +32,11 @@ design-contract.json
     └─ tests + verification report
 ```
 
-Make the `verified`, `assumed`, `blocked` distinction in the contract. If the target version, the service or the authorization has not been verified, do not lose this information.
+In the contract, evidence status is one of exactly four values (enforced by the schema): `verified` observed in this work · `assumed` accepted without evidence · `unknown` not known yet · `blocked` work cannot proceed without it. If the target version, the service or the authorization has not been verified, do not lose this information.
+
+The states to design are one list as well: `initial`, `loading`, `populated`, `empty`, `no-results`, `error`, `no-auth`, plus edit/draft states where they apply. `states` and `verification.states` carry the same IDs; PNG names and the prototype's `?state=` switch use these IDs.
+
+The workspace is incremental: `design-contract.json` is created once and later scaffold runs keep it. When moving from the prototype to production code, run `--output all` in the same folder; do not copy the contract by hand and do not use `--reset-contract`.
 
 ## 2. PNG contract
 
@@ -92,7 +96,8 @@ Technical:
 - Async bootstrap and manifest-first
 - Stable IDs and i18n
 - No writing to a production service
-- Deterministic demo through mock state selection or fixtures
+- Deterministic state display through `?state=loading|empty|no-results|error|no-auth` (the template carries it); every designed state must be reproducible and capturable this way
+- The dialog is loaded as a fragment; a required-field error appears in the field's `valueState` and focus moves to the first invalid field
 - Keyboard and visible focus
 
 If the prototype contains a “fake shell”, mark it as being for context presentation only. Do not repeat the FLP shell in the production app code.
@@ -185,7 +190,7 @@ python -B "<skill root>/scripts/validate_fiori_delivery.py" <delivery-root> --co
 
 This script checks strict JSON, contract/manifest semantics and basic structural risks; warnings close the gate by default. `--allow-warnings` is only a temporary escape hatch during development; it does not replace a real build/test/render.
 
-The version check compares two separate values: the manifest `minUI5Version` must be the same as `architecture.minUI5Version` in the contract (`SEMANTIC_MIN_UI5`) and must not be newer than the target `context.targetSystem.ui5Runtime` value (`SEMANTIC_UI5_VERSION`). If the runtime is `unknown`, the `CONTRACT_TARGET_UNKNOWN` warning keeps the delivery gate closed. The color check flags only CSS values and quoted color literals; a route hash or an ID selector is not counted as a color.
+The version check compares two separate values: the manifest `minUI5Version` must be the same as `architecture.minUI5Version` in the contract (`SEMANTIC_MIN_UI5`) and must not be newer than the target `context.targetSystem.ui5Runtime` value (`SEMANTIC_UI5_VERSION`). If the runtime is `unknown`, `CONTRACT_TARGET_UNKNOWN` is a warning for a code delivery and keeps the gate closed; for a PNG/prototype-only delivery it is `info`, because a prototype may not know its target yet. The color check flags only CSS values and quoted color literals; a route hash or an ID selector is not counted as a color.
 
 If an ABAP package is in scope, the validator additionally checks the `abap-backend-contract.json` schema, the file SHA-256 integrity, the active/complete status, the package inventory hash, the service protocol/URI/entity set consistency and the backend → design traceability. A `partial` backend contract produces a warning and closes the strict delivery gate.
 
@@ -253,3 +258,28 @@ To say “done”:
 - See the app/PNG
 - Sample the first, the last and the strangest scenario
 - Compare again with the original request
+
+## 10. Validator findings
+
+Severity: `error` and `warning` close the gate (`--allow-warnings` temporarily opens warnings only), `info` does not. The common ones:
+
+| Finding | Meaning | What to do |
+|---|---|---|
+| `CONTRACT_PLACEHOLDER` | The contract still holds `Replace …`, `pending-…`, `verify-…` or `YYYY-MM-DD` | Write the real value; `unknown` if not known, `blocked` if it stops the work |
+| `CONTRACT_STATE_RECOMMENDED` | `loading` or `no-results` is not designed | Design the state and align `verification.states` |
+| `SEMANTIC_STATES` | `states` and `verification.states` differ | Bring both lists to the same IDs |
+| `SEMANTIC_I18N_KEY` | A `labelKey`/`titleKey` of the contract is missing from the i18n bundle | Add the key or correct the contract (in a Fiori elements app texts come from annotations and are not checked) |
+| `SEMANTIC_ACTION_ID` | A contract action has no control with the same stable ID | Add the action to the UI or remove it from the contract if out of scope |
+| `CONTRACT_A11Y_EVIDENCE` | `verification.accessibilityEvidence` is empty | Record the check you really performed with `check`/`method`/`result`; perform it if you did not |
+| `CONTRACT_DATA_BUDGET` / `CONTRACT_COMMANDS` | `initialSelect` or `verification.commands` is empty for a code delivery | Name the first-render fields and the commands that were run |
+| `CONTRACT_RELEASED_UNVERIFIED` | ABAP evidence exists but `releasedApisVerified` was not verified | Check it in the target system; write `true` or `not-applicable` |
+| `SEMANTIC_FLP_INBOUND` | `launchContext: flp` but the manifest has no inbound matching `launchIntent` | Generate it with `--semantic-object/--action` or add it to the manifest; correct `launchContext` for a standalone app |
+| `SEMANTIC_SEARCH_UNVERIFIED` | The app sends `$search` and `serverCapabilities.search` is not `true` | Find the `@Search.searchable` evidence or use `$filter` |
+| `PNG_NAME` | The capture name does not follow the pattern or names a state the contract does not design | Rename the file |
+| `BACKEND_INVENTORY_UNVERIFIED` (`info`) | The package source declares no system inventory | State it in the report; it does not close the gate |
+
+Do not silence a finding with an invented value to pass the gate. Every `verified` and every accessibility result you write into the contract must be an observation.
+
+## 11. Reviewing an existing project
+
+`validate_fiori_delivery.py <project-root> --review` needs no contract, produces no files and fails only on an `error` finding. The script sees static patterns (deprecated/global APIs, synchronous loading, inline styles, hard-coded text/colors, stable IDs, manifest structure). For floorplan fit, action placement, state coverage, accessibility and OData usage, read the project and write each finding as `file:line · severity · rule and its source · observation · proposal`. Do not count runtime behavior you have not seen as a finding.

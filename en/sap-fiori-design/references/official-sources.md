@@ -81,6 +81,10 @@ Do not use these values as fixed facts in the future.
 - [Public Released APIs](https://help.sap.com/docs/abap-cloud/abap-cloud/public-released-apis)
 - [Clean Core Extensibility](https://help.sap.com/docs/abap-cloud/developer-guide-from-classic-abap-to-abap-cloud/clean-core-extensibility-and-abap-based-extensions)
 
+## Link versions
+
+The guideline links in this package point at the page versions whose content was checked during research (v1-96 … v1-148); they were not moved blindly to one base version, because not every page exists at the same address in every version. Before using a link as evidence, open the counterpart of the same page for the target version and record that URL in the contract. The repository's link check reports reachability only; it does not prove that content is current.
+
 ## Source usage guardrail
 
 - Prefer the official SAP/official UI5 primary source.

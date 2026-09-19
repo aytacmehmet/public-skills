@@ -81,6 +81,10 @@ Bu değerleri gelecekte sabit gerçek olarak kullanma.
 - [Public Released APIs](https://help.sap.com/docs/abap-cloud/abap-cloud/public-released-apis)
 - [Clean Core Extensibility](https://help.sap.com/docs/abap-cloud/developer-guide-from-classic-abap-to-abap-cloud/clean-core-extensibility-and-abap-based-extensions)
 
+## Bağlantı sürümleri
+
+Bu paketteki rehber bağlantıları, araştırma sırasında içeriği doğrulanan sayfa sürümlerini gösterir (v1-96 … v1-148); tek bir taban sürüme körlemesine çekilmemiştir, çünkü her sayfa her sürümde aynı adreste bulunmaz. Bağlantıyı kanıt olarak kullanmadan önce aynı sayfanın hedef sürümdeki karşılığını aç ve sözleşmeye o URL'yi yaz. Depodaki bağlantı kontrolü yalnız erişilebilirliği raporlar; içeriğin güncelliğini kanıtlamaz.
+
 ## Kaynak kullanma guardrail'i
 
 - Resmî SAP/official UI5 birincil kaynağını tercih et.

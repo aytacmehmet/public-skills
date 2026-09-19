@@ -32,10 +32,12 @@ test("runs discovered OPA5 journeys with zero failures", async ({ page }) => {
       return;
     }
     if (url.pathname.endsWith("$batch")) {
+      // Answer every GET of the batch in order: a key predicate asks for one entity, anything else for the list.
       const requestBody = route.request().postData() ?? "";
-      const requestCount = Math.max(1, [...requestBody.matchAll(/(?:^|\r?\n)GET\s+[^\s]+\s+HTTP\/1\.1/gm)].length);
+      const requests = [...requestBody.matchAll(/(?:^|\r?\n)GET\s+([^\s]+)\s+HTTP\/1\.1/gm)].map((match) => match[1]);
       const boundary = "batchresponse_ui5_test";
-      const responsePart = [
+      const item = { ID: "1001" };
+      const responseParts = (requests.length ? requests : [""]).map((url) => [
         `--${boundary}`,
         "Content-Type: application/http",
         "Content-Transfer-Encoding: binary",
@@ -44,12 +46,14 @@ test("runs discovered OPA5 journeys with zero failures", async ({ page }) => {
         "Content-Type: application/json;odata.metadata=minimal",
         "OData-Version: 4.0",
         "",
-        JSON.stringify({ "@odata.context": "$metadata#__ENTITY_SET__", "@odata.count": 0, value: [] })
-      ].join("\r\n");
+        JSON.stringify(/^__ENTITY_SET__\(/.test(url)
+          ? { "@odata.context": "$metadata#__ENTITY_SET__/$entity", ...item }
+          : { "@odata.context": "$metadata#__ENTITY_SET__", "@odata.count": "1", value: [item] })
+      ].join("\r\n"));
       await route.fulfill({
         status: 200,
         headers: { "Content-Type": `multipart/mixed; boundary=${boundary}`, "OData-Version": "4.0" },
-        body: `${Array.from({ length: requestCount }, () => responsePart).join("\r\n")}\r\n--${boundary}--\r\n`
+        body: `${responseParts.join("\r\n")}\r\n--${boundary}--\r\n`
       });
       return;
     }

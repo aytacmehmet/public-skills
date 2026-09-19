@@ -57,6 +57,16 @@ Commit öncesinde `--base HEAD`, değişiklikleri önceki commit'li yayınla kar
 
 Kontroller metadata, arayüz çağrısı, yerel bağlantılar, dil eşliği, sürüm uyumu, arşiv hash'leri, yayımlanmış arşivlerin tutulması ve önceki paketin tam olarak korunmasını kapsar. Çalışma zamanı davranışını, arayüz uyumluluğunu veya token tasarrufunu kanıtlamaz; davranış değiştiğinde ilgili senaryoları ayrıca sınayın.
 
+## Başka bir host için kopya üretme
+
+Depo, skill'lerin tek kaynağıdır. Bir plugin veya başka bir host için kopya gerekiyorsa aktif paketi elle kopyalayıp düzenlemeyin:
+
+```text
+python .github/scripts/skills.py export tr/sap-fiori-tasarim --dest <depo-dışı-klasör> --name <host-adı> --overlay <host-kuralları.md>
+```
+
+Komut `archived/` dışındaki dosyaları kopyalar, istenirse skill adını ve hazır çağrıyı değiştirir, overlay dosyasını `SKILL.md` sonuna ekler ve kaynak sürümü ile commit'ini `EXPORT-MANIFEST.json` içine yazar. Host'a özgü kurallar overlay'de kalır; düzeltmeler önce bu depoda yapılır, kopya yeniden üretilir. Hedef klasör deponun dışında ve boş olmalıdır.
+
 ## Eski sürümü inceleme
 
 Eski ZIP'leri ilgili skill'in `archived/` klasöründe tutun. İncelemek için yalnız skill keşif yollarının dışındaki ayrı bir klasöre açın. Geri dönüş veya ayrı kurulum hazırlamadan önce manifestini doğrulayın. Arşivdeki `SKILL.md` dosyalarını aktif kurulumun altında açmayın.

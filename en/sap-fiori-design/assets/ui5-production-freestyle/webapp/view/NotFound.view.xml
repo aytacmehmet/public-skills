@@ -1,0 +1,16 @@
+<mvc:View controllerName="__APP_ID__.controller.NotFound" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m">
+  <Page id="notFoundPage" title="{i18n>notFoundTitle}" showNavButton="true" navButtonPress=".onNavBack">
+    <content>
+      <IllustratedMessage
+        id="notFoundMessage"
+        illustrationType="sapIllus-PageNotFound"
+        title="{i18n>notFoundTitle}"
+        description="{i18n>notFoundDescription}"
+        enableVerticalResponsiveness="true">
+        <additionalContent>
+          <Button id="backToListButton" text="{i18n>backToListText}" press=".onNavBack" />
+        </additionalContent>
+      </IllustratedMessage>
+    </content>
+  </Page>
+</mvc:View>

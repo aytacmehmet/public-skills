@@ -25,6 +25,13 @@ Kaynak kontrol tarihi: 2026-08-27 (SAP kaynakları), 2026-09-19 (paket yapısı)
 - Inspector ABAP derleyicisi, ADT aktivasyonu, service preview veya çalışma zamanı yetki kanıtı değildir; CDS/BDEF sözdiziminin tamamını kapsamaz. Yeni bir sözdizimi boşluğu bulunduğunda önce test ekle, sonra ayrıştırıcıyı genişlet; emin olunamayan durumda `gaps` üret.
 - Tek bir gözden geçirilmiş profil vardır (`assets/version-profiles.json`). Şablon lockfile'ları o profile aittir; yeni profil kendi lockfile'ını gerektirir. Eski LTS runtime'lar için üretim scaffold'u, profil eklenene kadar reddedilir.
 - Statik doğrulayıcı build, test, tarayıcı render'ı, Support Assistant ve gözle incelemenin yerini tutmaz.
-- Davranış kontrollerinin (FD01–FD26) her ortamda geçtiği iddia edilmez; bunlar bakım senaryolarıdır. Skill bir modelin her oturumda kurala uyacağını garanti edemez.
+- Davranış kontrollerinin (FD01–FD32) her ortamda geçtiği iddia edilmez; bunlar bakım senaryolarıdır. Skill bir modelin her oturumda kurala uyacağını garanti edemez.
 - `official-sources.md` içindeki sürüm notları araştırma tarihine aittir; sürüm numaralı bağlantılar eskiyebilir.
 - Skill SAP sistemine yazmaz; aktivasyon, transport ve deploy kapsam dışıdır.
+
+## Dağıtım ve tek kaynak
+
+- Bu depo (`public-skills`) skill'in tek kaynağıdır. Başka bir host'a (örneğin bir plugin içine) giden kopya elle düzenlenmez; `python .github/scripts/skills.py export tr/sap-fiori-tasarim --dest <klasör> [--name <skill-adı>] [--overlay <ek.md>]` ile üretilir. `--name` frontmatter adını ve hazır çağrıyı değiştirir; `--overlay` host'a özgü bölümü `SKILL.md` sonuna ekler. Export edilen kopya, kaynak sürümünü ve commit'ini `EXPORT-MANIFEST.json` içinde taşır.
+- Host'a özgü kurallar (yetki kökü, araç geçidi, yazma izni) overlay dosyasında yaşar; çekirdek yönergeye taşınmaz.
+- Şablonlar depo CI'ında ayrı bir iş akışıyla gerçekten kurulur, lint/typecheck/build edilir ve tarayıcıda sınanır; 1.2.0 şablonları bu yolla ve elle Chromium'da doğrulandı (prototipin altı durumu, fragment dialog, freestyle liste → ayrıntı ve not-found yolculukları, Fiori elements smoke testi).
+- Ortak `scripts/`, `assets/` ve `tests/` iki dil paketinde bilinçli olarak yinelenir: depo kuralı her skill klasörünün tek başına kurulabilmesini ister. Eşitliği depo testi korur.

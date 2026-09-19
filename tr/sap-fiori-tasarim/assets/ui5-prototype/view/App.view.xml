@@ -22,6 +22,7 @@
             id="createButton"
             text="{i18n>createButtonText}"
             type="Emphasized"
+            enabled="{ui>/actionsEnabled}"
             press=".onCreate" />
         </f:actions>
       </f:DynamicPageTitle>
@@ -33,56 +34,73 @@
           <SearchField
             id="searchField"
             width="100%"
+            enabled="{ui>/actionsEnabled}"
             placeholder="{i18n>searchPlaceholder}"
             liveChange=".onSearch" />
         </VBox>
       </f:DynamicPageHeader>
     </f:header>
     <f:content>
-      <Table
-        id="itemsTable"
-        ariaLabelledBy="tableTitle"
-        items="{sample>/items}"
-        growing="true"
-        growingThreshold="20"
-        noDataText="{i18n>noDataText}">
-        <headerToolbar>
-          <OverflowToolbar id="tableToolbar">
-            <Title id="tableTitle" text="{i18n>tableTitle}" level="H2" />
-            <ToolbarSpacer />
-            <Button
-              id="refreshButton"
-              icon="sap-icon://refresh"
-              tooltip="{i18n>refreshTooltip}"
-              type="Transparent"
-              press=".onRefresh" />
-          </OverflowToolbar>
-        </headerToolbar>
-        <columns>
-          <Column id="idColumn" width="9rem">
-            <Text text="{i18n>idColumn}" />
-          </Column>
-          <Column id="nameColumn" minScreenWidth="Tablet" demandPopin="true">
-            <Text text="{i18n>nameColumn}" />
-          </Column>
-          <Column id="ownerColumn" minScreenWidth="Desktop" demandPopin="true">
-            <Text text="{i18n>ownerColumn}" />
-          </Column>
-          <Column id="statusColumn" hAlign="End" width="10rem">
-            <Text text="{i18n>statusColumn}" />
-          </Column>
-        </columns>
-        <items>
-          <ColumnListItem id="itemTemplate" type="Navigation" press=".onItemPress">
-            <cells>
-              <ObjectIdentifier title="{sample>id}" />
-              <Text text="{sample>name}" />
-              <Text text="{sample>owner}" />
-              <ObjectStatus text="{sample>statusText}" state="{sample>statusState}" />
-            </cells>
-          </ColumnListItem>
-        </items>
-      </Table>
+      <VBox id="contentArea">
+        <IllustratedMessage
+          id="stateMessage"
+          visible="{ui>/messageVisible}"
+          illustrationType="{ui>/illustrationType}"
+          title="{ui>/messageTitle}"
+          description="{ui>/messageDescription}"
+          enableVerticalResponsiveness="true">
+          <additionalContent>
+            <Button id="retryButton" text="{i18n>retryButtonText}" visible="{ui>/retryVisible}" press=".onRefresh" />
+          </additionalContent>
+        </IllustratedMessage>
+        <Table
+          id="itemsTable"
+          ariaLabelledBy="tableTitle"
+          visible="{ui>/tableVisible}"
+          busy="{ui>/busy}"
+          busyIndicatorDelay="0"
+          items="{sample>/items}"
+          growing="true"
+          growingThreshold="20"
+          noDataText="{ui>/noDataText}">
+          <headerToolbar>
+            <OverflowToolbar id="tableToolbar">
+              <Title id="tableTitle" text="{i18n>tableTitle}" level="H2" />
+              <ToolbarSpacer />
+              <Button
+                id="refreshButton"
+                icon="sap-icon://refresh"
+                tooltip="{i18n>refreshTooltip}"
+                type="Transparent"
+                press=".onRefresh" />
+            </OverflowToolbar>
+          </headerToolbar>
+          <columns>
+            <Column id="idColumn" width="9rem">
+              <Text text="{i18n>idColumn}" />
+            </Column>
+            <Column id="nameColumn" minScreenWidth="Tablet" demandPopin="true">
+              <Text text="{i18n>nameColumn}" />
+            </Column>
+            <Column id="ownerColumn" minScreenWidth="Desktop" demandPopin="true">
+              <Text text="{i18n>ownerColumn}" />
+            </Column>
+            <Column id="statusColumn" hAlign="End" width="10rem">
+              <Text text="{i18n>statusColumn}" />
+            </Column>
+          </columns>
+          <items>
+            <ColumnListItem id="itemTemplate" type="Navigation" press=".onItemPress">
+              <cells>
+                <ObjectIdentifier title="{sample>id}" />
+                <Text text="{sample>name}" />
+                <Text text="{sample>owner}" />
+                <ObjectStatus text="{sample>statusText}" state="{sample>statusState}" />
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+      </VBox>
     </f:content>
   </f:DynamicPage>
 </mvc:View>

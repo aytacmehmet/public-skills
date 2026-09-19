@@ -55,7 +55,7 @@
       },
       "sample": {
         "type": "sap.ui.model.json.JSONModel",
-        "uri": "model/mockData.json",
+        "uri": "model/mockData___LANGUAGE__.json",
         "preload": true
       }
     }

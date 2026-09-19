@@ -42,8 +42,8 @@ Main source: [When to Use Which Floorplan](https://www.sap.com/design-system/fio
 Sources:
 
 - [List Report](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/list-report-floorplan-sap-fiori-element)
-- [Analytical List Page](https://experience.sap.com/fiori-design-web/analytical-list-page/)
-- [Object Page](https://experience.sap.com/fiori-design-web/object-page/)
+- [Analytical List Page](https://experience.sap.com/fiori-design-web/analytical-list-page/) — legacy `experience.sap.com` page; verify the current `sap.com/design-system` equivalent for the target version
+- [Object Page](https://experience.sap.com/fiori-design-web/object-page/) — legacy `experience.sap.com` page; verify the current `sap.com/design-system` equivalent for the target version
 - [Worklist](https://www.sap.com/design-system/fiori-design-web/v1-120/page-types/floorplans/work-list/usage)
 - [Initial Page](https://www.sap.com/design-system/fiori-design-web/v1-96/page-types/floorplans/initial-page-floorplan/usage)
 - [Wizard](https://www.sap.com/design-system/fiori-design-web/v1-108/ui-elements/wizard/usage)
@@ -122,8 +122,8 @@ Source: [Object Page Content Area](https://www.sap.com/design-system/fiori-desig
 
 Sources:
 
-- [Form Layout](https://experience.sap.com/fiori-design-web/explore_group/form-layout-container/)
-- [Form Field Validation](https://experience.sap.com/fiori-design-web/form-field-validation/)
+- [Form Layout](https://experience.sap.com/fiori-design-web/explore_group/form-layout-container/) — legacy `experience.sap.com` page; verify the current `sap.com/design-system` equivalent for the target version
+- [Form Field Validation](https://experience.sap.com/fiori-design-web/form-field-validation/) — legacy `experience.sap.com` page; verify the current `sap.com/design-system` equivalent for the target version
 
 ### Table/list selection
 
@@ -171,7 +171,7 @@ Source: [Filter Bar](https://www.sap.com/design-system/fiori-design-web/ui-eleme
 - Generally use 1–2 actions; the primary may be emphasized, Cancel must not be emphasized.
 - In a long form, provide a Message Popover for validation errors that are not visible.
 
-Source: [Dialog](https://experience.sap.com/fiori-design-web/dialog/)
+Source: [Dialog](https://experience.sap.com/fiori-design-web/dialog/) — legacy `experience.sap.com` page; verify the current `sap.com/design-system` equivalent for the target version
 
 ### Navigation
 

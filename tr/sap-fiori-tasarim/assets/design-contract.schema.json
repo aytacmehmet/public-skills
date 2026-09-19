@@ -19,7 +19,23 @@
       },
       "additionalProperties": false
     },
-    "context": {"type": "object"},
+    "context": {
+      "type": "object",
+      "properties": {
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["fact", "status", "source"],
+            "properties": {
+              "fact": {"type": "string", "minLength": 1},
+              "status": {"enum": ["verified", "assumed", "unknown", "blocked"]},
+              "source": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
     "architecture": {
       "type": "object",
       "required": ["framework", "floorplan", "layout", "frontendLanguage", "serviceProtocol", "decisionRationale"],
@@ -38,7 +54,15 @@
     },
     "informationArchitecture": {"type": "object"},
     "fieldsAndActions": {"type": "object"},
-    "states": {"type": "array", "minItems": 5},
+    "states": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {"id": {"type": "string", "pattern": "^[a-z]+(-[a-z]+)*$"}}
+      }
+    },
     "responsive": {"type": "object"},
     "visualSystem": {"type": "object"},
     "accessibility": {"type": "object"},

@@ -30,7 +30,8 @@ export default class Main extends Controller {
   public onItemPress(event: { getSource(): { getBindingContext(): Context | undefined } }): void {
     const path = event.getSource().getBindingContext()?.getPath();
     if (path) {
-      MessageBox.information(path, { title: this.getResourceText("itemDetailTitle") });
+      // Deep-linkable detail: the key predicate travels in the hash, encoded.
+      (this.getOwnerComponent() as Component).getRouter().navTo("detail", { key: encodeURIComponent(path.slice(path.indexOf("("))) });
     }
   }
 

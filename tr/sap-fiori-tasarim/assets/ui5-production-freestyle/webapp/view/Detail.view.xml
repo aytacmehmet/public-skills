@@ -1,0 +1,9 @@
+<mvc:View controllerName="__APP_ID__.controller.Detail" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m">
+  <Page id="detailPage" title="{i18n>itemDetailTitle}" showNavButton="true" navButtonPress=".onNavBack">
+    <content>
+      <VBox id="detailContent" class="sapUiContentPadding">
+        <Title id="detailTitle" text="{path: '', targetType: 'any', mode: 'OneTime', formatter: '.formatItemTitle'}" level="H2" />
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

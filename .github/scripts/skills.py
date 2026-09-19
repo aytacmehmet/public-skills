@@ -1,10 +1,11 @@
-"""Validate bilingual skill packages and archive committed releases."""
+"""Validate bilingual skill packages, archive committed releases, and export a package for another host."""
 
 import argparse
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import subprocess
 import sys
 from urllib.parse import unquote
@@ -134,6 +135,40 @@ def archive(root, relative, ref="HEAD"):
     return destination
 
 
+def export(root, relative, destination, name=None, overlay=None):
+    """Copy the active package for another host; downstream copies are produced, never edited by hand."""
+    folder = checked_path(root, relative)
+    require(folder.is_dir(), f"Missing skill folder: {relative}")
+    destination = Path(destination).resolve()
+    require(not destination.is_relative_to(root.resolve()), "Export outside this repository: an exported copy is not a package here.")
+    require(not destination.exists() or not any(destination.iterdir()), f"Export destination is not empty: {destination}")
+    source_name = folder.name
+    name = name or source_name
+    require(re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) and len(name) <= 64, f"Invalid skill name: {name}")
+    payload = working_payload(folder)
+    meta = frontmatter(payload["SKILL.md"])
+    skill = payload["SKILL.md"].decode("utf-8")
+    if name != source_name:
+        skill = re.sub(rf"(?m)^name: {re.escape(source_name)}$", f"name: {name}", skill, count=1)
+        payload["agents/openai.yaml"] = payload["agents/openai.yaml"].decode("utf-8").replace(f"${source_name}", f"${name}").encode("utf-8")
+    if overlay:
+        skill = skill.rstrip("\n") + "\n\n" + Path(overlay).read_text(encoding="utf-8").strip("\n") + "\n"
+    payload["SKILL.md"] = skill.encode("utf-8")
+    require(frontmatter(payload["SKILL.md"])["name"] == name, "Exported SKILL.md lost its name.")
+    dirty = bool(git(root, "status", "--porcelain", "--", relative).strip())
+    payload["EXPORT-MANIFEST.json"] = (json.dumps({
+        "schema_version": 1, "source": relative, "source_name": source_name, "name": name,
+        "version": meta["metadata"]["version"], "source_commit": resolve_ref(root, "HEAD"),
+        "uncommitted_changes": dirty, "overlay": Path(overlay).name if overlay else None,
+    }, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    for local, data in sorted(payload.items()):
+        target = destination / local
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+    shutil.rmtree(destination / "__pycache__", ignore_errors=True)
+    return destination
+
+
 def read_archive(path):
     with zipfile.ZipFile(path) as source:
         names = source.namelist()
@@ -259,9 +294,16 @@ def main():
     archiver = commands.add_parser("archive", help="Snapshot a committed version without editing the active package.")
     archiver.add_argument("skill", help="For example, en/prompter or tr/yordamla.")
     archiver.add_argument("--ref", default="HEAD", help="Committed source; defaults to HEAD, never uncommitted files.")
+    exporter = commands.add_parser("export", help="Produce a copy of an active package for another host.")
+    exporter.add_argument("skill", help="For example, tr/sap-fiori-tasarim.")
+    exporter.add_argument("--dest", required=True, help="Empty or new folder outside this repository.")
+    exporter.add_argument("--name", help="Skill name on the target host; defaults to the folder name.")
+    exporter.add_argument("--overlay", help="Markdown file with host-specific rules, appended to SKILL.md.")
     args = parser.parse_args()
     try:
-        if args.command == "archive":
+        if args.command == "export":
+            print(f"Exported: {export(ROOT, args.skill, args.dest, args.name, args.overlay)}")
+        elif args.command == "archive":
             print(f"Archived: {archive(ROOT, args.skill, args.ref).relative_to(ROOT).as_posix()}")
         else:
             print(f"PASS: {validate(ROOT, args.base)} active skill packages; structure, links, language pairing, and archives validated.")

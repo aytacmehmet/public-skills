@@ -24,7 +24,8 @@
       "release": "unknown",
       "ui5Runtime": "unknown",
       "fioriGuidelineVersion": "unknown",
-      "launchContext": "flp"
+      "launchContext": "flp",
+      "launchIntent": "unknown"
     },
     "evidence": [
       {
@@ -55,12 +56,12 @@
     "pages": [
       {
         "id": "main",
-        "titleKey": "mainPageTitle",
+        "titleKey": "pageTitle",
         "purpose": "Replace with page purpose",
         "sections": [
           {
             "id": "primaryContent",
-            "titleKey": "primaryContentTitle",
+            "titleKey": "tableTitle",
             "priority": 1,
             "contentType": "table"
           }
@@ -86,7 +87,7 @@
     "fields": [
       {
         "id": "objectId",
-        "labelKey": "objectIdLabel",
+        "labelKey": "idColumn",
         "semanticType": "identifier",
         "required": false,
         "readOnly": true,
@@ -97,8 +98,8 @@
     ],
     "actions": [
       {
-        "id": "primaryAction",
-        "labelKey": "primaryActionLabel",
+        "id": "createButton",
+        "labelKey": "createButtonText",
         "scope": "page",
         "placement": "header-right",
         "emphasis": "emphasized",
@@ -113,6 +114,12 @@
       "id": "initial",
       "trigger": "first-load",
       "visual": "skeleton-or-local-busy",
+      "nextAction": "wait"
+    },
+    {
+      "id": "loading",
+      "trigger": "request-in-flight",
+      "visual": "local-busy-indicator",
       "nextAction": "wait"
     },
     {
@@ -219,22 +226,21 @@
   },
   "dataContract": {
     "mainService": {
-      "name": "replace-with-service-name",
-      "uri": "/replace-with-odata-v4-service/",
+      "name": "unknown",
+      "uri": "unknown",
       "protocol": "odata-v4",
-      "entitySet": "ReplaceWithEntitySet",
+      "entitySet": "unknown",
       "draftEnabled": "unknown"
     },
-    "initialSelect": [
-      "ReplaceWithRequiredProperty"
-    ],
+    "initialSelect": [],
     "expands": [],
     "serverCapabilities": {
       "count": true,
       "skip": true,
       "top": true,
       "filter": true,
-      "sort": true
+      "sort": true,
+      "search": "unknown"
     },
     "paging": {
       "serverSide": true,
@@ -254,6 +260,7 @@
     ],
     "states": [
       "initial",
+      "loading",
       "populated",
       "empty",
       "no-results",
@@ -269,7 +276,8 @@
       "long localization",
       "RTL",
       "browser console and network"
-    ]
+    ],
+    "accessibilityEvidence": []
   },
   "traceability": [
     {

@@ -86,6 +86,12 @@ Paket envanteri 200 öğeyi aşıyorsa sayfalama ve kapsamlı okuma planını s�
 - `behavior.actions` yalnız iş action'larıdır; `draftActions` (Edit, Activate, Discard, Resume, Prepare) framework'e aittir, buton olarak tasarlanmaz.
 - `dynamicFeatureControl`: enablement'ı çalışma zamanında belirlenen işlem ve action'lar. Disabled/hidden durumunu ve testini bunlar için planla.
 - `etag` ve `totalEtag` ayrı alanlardır; concurrency senaryosunu ikisine göre yaz.
+- `model.entities[].kind`: `view-entity`, `custom-entity`, `abstract-entity` veya `classic-view`. Abstract entity action parametresidir, ekran nesnesi değildir; custom entity'nin sorgusu ABAP sınıfındadır, filtre/sıralama/sayfalama desteğini `$metadata` ve testle doğrula.
+- `uiSemantics.fields`: DDLS ve DDLX'ten okunan alan → annotation eşlemesi. Özetleri `lineItemFields`, `selectionFields`, `identificationFields`, `fieldGroupFields`, `hiddenFields`, `valueHelpFields`, `textFields`, `amountFields`, `quantityFields` listeleridir (`Entity.Alan`). List Report kolonlarını, filtreleri ve value help'leri bunlardan türet; annotation değerlerinin kendisi (position, importance, qualifier) için kaynağı oku.
+- `uiSemantics.searchableEntities`: `@Search.searchable: true` taşıyan entity'ler. Listede olmayan entity set'e `$search` gönderme.
+- `service.bindings[].serviceDefinition`: binding'in gösterdiği tanım. Birden fazla tanım varken okunabilen binding'lerin hepsi aynı tanımı gösteriyorsa inspector onu seçer; bu bir tahmin değil kanıttır. Binding okunamıyorsa (`unknown`) seçim yine sana kalır.
+- `source.inventoryVerified` ve `notes`: yalnız nesne sayısını beyan eden ADT snapshot'ı envanterle karşılaştırılabilir. Yerel export'ta değer `false` kalır; eksiksizlik sağlayanın beyanıdır ve doğrulayıcı bunu `info` olarak bildirir.
+- ZIP girişinde üye başına 2 MB, toplamda 50 MB ve 200 kat sıkıştırma oranı sınırı vardır; aşan paket okunmadan reddedilir.
 
 ## UI kararına dönüştürme
 

@@ -57,6 +57,16 @@ Before committing, `--base HEAD` checks your edits against the previous committe
 
 Checks cover metadata, UI invocation, local links, language pairing, version alignment, archive hashes, retention of published archives, and preservation of the exact previous package. They do not establish runtime behavior, UI compatibility, or token savings; test relevant scenarios separately when behavior changes.
 
+## Produce a copy for another host
+
+The repository is the single source of the skills. When a plugin or another host needs a copy, do not copy and edit the active package by hand:
+
+```text
+python .github/scripts/skills.py export en/sap-fiori-design --dest <folder-outside-the-repo> --name <host-name> --overlay <host-rules.md>
+```
+
+The command copies everything except `archived/`, optionally renames the skill and its default invocation, appends the overlay file to the end of `SKILL.md`, and records the source version and commit in `EXPORT-MANIFEST.json`. Host-specific rules stay in the overlay; fixes are made here first and the copy is produced again. The destination must be outside the repository and empty.
+
 ## Inspect an old release
 
 Keep historical ZIPs inside their skill's `archived/` folder. Extract one only into an isolated directory outside skill discovery paths. Verify its manifest before preparing a rollback or a separate installation. Never unpack archived `SKILL.md` files underneath an active installation.

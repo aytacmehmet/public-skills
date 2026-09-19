@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+    <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI" />
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common" />
+  </edmx:Reference>
+  <edmx:DataServices>
+    <!-- Local annotations complete what the backend cannot express. Prefer CDS/metadata extension annotations;
+         add an Annotations Target here only for a verified, UI-only need and trace it in design-contract.json. -->
+    <Schema Namespace="local" xmlns="http://docs.oasis-open.org/odata/ns/edm" />
+  </edmx:DataServices>
+</edmx:Edmx>
