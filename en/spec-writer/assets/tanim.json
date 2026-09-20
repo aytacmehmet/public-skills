@@ -1,0 +1,3487 @@
+{
+ "surum": "1.0",
+ "sema": "1.0",
+ "yer_tutucu": "«…»",
+ "gruplar": [
+  {
+   "no": "1",
+   "ad": "Genel"
+  },
+  {
+   "no": "2",
+   "ad": "Fonksiyonel"
+  },
+  {
+   "no": "3",
+   "ad": "Teknik"
+  },
+  {
+   "no": "4",
+   "ad": "SAP Nesneleri"
+  },
+  {
+   "no": "5",
+   "ad": "Hata ve Yetki"
+  },
+  {
+   "no": "6",
+   "ad": "Test"
+  },
+  {
+   "no": "7",
+   "ad": "İşletim"
+  }
+ ],
+ "tur_tanimlari": [
+  {
+   "kod": "R",
+   "ad": "Rapor",
+   "aciklama": "Liste, analitik sayfa veya ALV çıktısı"
+  },
+  {
+   "kod": "I",
+   "ad": "Arayüz / API",
+   "aciklama": "Gelen veya giden entegrasyon, OData / SOAP / olay"
+  },
+  {
+   "kod": "C",
+   "ad": "Dönüşüm",
+   "aciklama": "Veri aktarımı, toplu yükleme"
+  },
+  {
+   "kod": "E",
+   "ad": "Genişletme",
+   "aciklama": "BAdI, özel alan, özel mantık, RAP BO genişletmesi"
+  },
+  {
+   "kod": "F",
+   "ad": "Form",
+   "aciklama": "Çıktı formu (Adobe Forms / çıktı yönetimi)"
+  },
+  {
+   "kod": "W",
+   "ad": "İş akışı",
+   "aciklama": "Esnek iş akışı, onay adımı"
+  },
+  {
+   "kod": "U",
+   "ad": "Fiori / UI5 uygulaması",
+   "aciklama": "Fiori elements veya freestyle UI5 uygulaması"
+  }
+ ],
+ "profiller": {
+  "hafif": "Yalnız taban bölümler; 6.2 türetilir. Basit geliştirmeler.",
+  "standart": "Taban bölümler + türe uyan bonus bölümler. Varsayılan.",
+  "tam": "Tüm taban ve bonus bölümler. Karmaşık geliştirmeler."
+ },
+ "profil_esleme": {
+  "Basit": "hafif",
+  "Orta": "standart",
+  "Karmaşık": "tam"
+ },
+ "yazim_sirasi": [
+  "1.1",
+  "1.2",
+  "2.1",
+  "2.2",
+  "2.3",
+  "2.5",
+  "2.4",
+  "3.1",
+  "3.4",
+  "3.3",
+  "3.2",
+  "3.5",
+  "3.6",
+  "3.7",
+  "3.8",
+  "3.9",
+  "3.10",
+  "3.11",
+  "5.1",
+  "5.2",
+  "5.3",
+  "5.4",
+  "6.1",
+  "6.3",
+  "7.1",
+  "7.2",
+  "4.2",
+  "4.3",
+  "4.4",
+  "4.1",
+  "7.3"
+ ],
+ "grup_sirasi": [
+  "1",
+  "2",
+  "3",
+  "5",
+  "6",
+  "7",
+  "4"
+ ],
+ "isaretler": {
+  "karar": "KARAR BEKLİYOR",
+  "bilgi": "BİLGİ BEKLİYOR",
+  "dogrula": "[DOĞRULANACAK]",
+  "yok": "—"
+ },
+ "kurallar": [
+  {
+   "id": "GEN_001",
+   "baslik": "Şablon placeholder metni kalmamalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "*"
+   ]
+  },
+  {
+   "id": "GEN_002",
+   "baslik": "Bölüm yeterince doldurulmuş olmalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "*"
+   ]
+  },
+  {
+   "id": "SCOPE_000",
+   "baslik": "En az bir kapsam boyutu belirtilmeli",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "2.5"
+   ]
+  },
+  {
+   "id": "SCOPE_001",
+   "baslik": "Kapsam sınırı çizilmiş olmalı",
+   "agirlik": 4,
+   "siddet": "warning",
+   "bolumler": [
+    "2.5"
+   ]
+  },
+  {
+   "id": "SCOPE_002",
+   "baslik": "Üç boyutun tamamı belirtilmiş",
+   "agirlik": 2,
+   "siddet": "info",
+   "bolumler": [
+    "2.5"
+   ]
+  },
+  {
+   "id": "ERR_001",
+   "baslik": "Mesajın türü anlaşılmalı",
+   "agirlik": 4,
+   "siddet": "warning",
+   "bolumler": [
+    "5.1"
+   ]
+  },
+  {
+   "id": "ERR_002",
+   "baslik": "Birden fazla hata durumu ele alınmalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "5.1"
+   ]
+  },
+  {
+   "id": "ERR_003",
+   "baslik": "Mesaj listesi tablo halinde olmalı",
+   "agirlik": 2,
+   "siddet": "info",
+   "bolumler": [
+    "5.1",
+    "5.4"
+   ]
+  },
+  {
+   "id": "ALGO_001",
+   "baslik": "Algoritma somut SAP nesnesi içermeli",
+   "agirlik": 8,
+   "siddet": "error",
+   "bolumler": [
+    "3.5"
+   ]
+  },
+  {
+   "id": "ALGO_002",
+   "baslik": "İşlem mantığı adımlara ayrılmalı",
+   "agirlik": 4,
+   "siddet": "warning",
+   "bolumler": [
+    "3.5"
+   ]
+  },
+  {
+   "id": "ALGO_003",
+   "baslik": "Yuvarlak ifade barındırmamalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "3.5"
+   ]
+  },
+  {
+   "id": "MAP_001",
+   "baslik": "Alan eşleşmesi somut olmalı",
+   "agirlik": 6,
+   "siddet": "warning",
+   "bolumler": [
+    "3.4"
+   ]
+  },
+  {
+   "id": "TEST_001",
+   "baslik": "Test verisi somut olmalı",
+   "agirlik": 4,
+   "siddet": "warning",
+   "bolumler": [
+    "6.1"
+   ]
+  },
+  {
+   "id": "TEST_002",
+   "baslik": "Hata / negatif senaryo bulunmalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "6.1"
+   ]
+  },
+  {
+   "id": "PROC_001",
+   "baslik": "Hedef süreç yuvarlak ifadeye kaçmamalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "2.2"
+   ]
+  },
+  {
+   "id": "PROC_002",
+   "baslik": "Mevcut süreç somut sorun tanımlamalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "2.1"
+   ]
+  },
+  {
+   "id": "AUTH_001",
+   "baslik": "Yetki kontrolü somut olmalı",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "5.2",
+    "5.3"
+   ]
+  },
+  {
+   "id": "OBJ_001",
+   "baslik": "Nesne adları verilmeli",
+   "agirlik": 2,
+   "siddet": "info",
+   "bolumler": [
+    "4.1"
+   ]
+  },
+  {
+   "id": "SAP_001",
+   "baslik": "Kullanılan nesneler katalogda tanımlı olmalı",
+   "agirlik": 4,
+   "siddet": "warning",
+   "bolumler": [
+    "4.1"
+   ]
+  },
+  {
+   "id": "SAP_002",
+   "baslik": "Katalogdaki nesneler dokümanda kullanılmalı",
+   "agirlik": 2,
+   "siddet": "info",
+   "bolumler": [
+    "4.1"
+   ]
+  },
+  {
+   "id": "SAP_003",
+   "baslik": "Nesne adları SAP tipine çözülebilmeli",
+   "agirlik": 3,
+   "siddet": "warning",
+   "bolumler": [
+    "4.1",
+    "4.2",
+    "4.3"
+   ]
+  },
+  {
+   "id": "SAP_004",
+   "baslik": "Adlandırma ve uzunluk kurallarına uyulmalı",
+   "agirlik": 2,
+   "siddet": "warning",
+   "bolumler": [
+    "4.1",
+    "4.2",
+    "4.3"
+   ]
+  },
+  {
+   "id": "OPEN_001",
+   "baslik": "Açık noktalar netleştirilmeli",
+   "agirlik": 2,
+   "siddet": "info",
+   "bolumler": [
+    "7.3"
+   ]
+  }
+ ],
+ "eski_kurallar": [
+  {
+   "id": "META_001",
+   "baslik": "Geliştirme türü seçilmiş olmalı",
+   "bolum": "1.1"
+  },
+  {
+   "id": "META_002",
+   "baslik": "Fiori için OData versiyonu",
+   "bolum": "1.2"
+  },
+  {
+   "id": "FILL_001",
+   "baslik": "Bölüm minimum doluluk",
+   "bolum": "Tümü"
+  },
+  {
+   "id": "FILL_002",
+   "baslik": "Zorunlu bölüm boş bırakılmış",
+   "bolum": "Tümü"
+  },
+  {
+   "id": "COND_001",
+   "baslik": "Fiori için 3.3",
+   "bolum": "3.3"
+  },
+  {
+   "id": "COND_002",
+   "baslik": "API/Arayüz için 3.4",
+   "bolum": "3.4"
+  },
+  {
+   "id": "COND_003",
+   "baslik": "Rapor için 3.2",
+   "bolum": "3.2"
+  },
+  {
+   "id": "COND_004",
+   "baslik": "Rapor için ALV çıktı",
+   "bolum": "3.6"
+  },
+  {
+   "id": "COND_005",
+   "baslik": "Form için 4.4",
+   "bolum": "4.4"
+  },
+  {
+   "id": "CONT_001",
+   "baslik": "Algoritma en az 3 madde",
+   "bolum": "3.5"
+  },
+  {
+   "id": "CONT_002",
+   "baslik": "En az 2 test senaryosu",
+   "bolum": "6.1"
+  },
+  {
+   "id": "CONT_003",
+   "baslik": "Açık noktalar netleştirilmeli",
+   "bolum": "7.3"
+  },
+  {
+   "id": "CONT_004",
+   "baslik": "Kapsam dışı belirtilmeli",
+   "bolum": "2.5"
+  },
+  {
+   "id": "QUAL_001",
+   "baslik": "Algoritma somut SAP nesnesi",
+   "bolum": "3.5"
+  },
+  {
+   "id": "QUAL_002",
+   "baslik": "Veri haritalama tablosu",
+   "bolum": "3.4"
+  },
+  {
+   "id": "QUAL_003",
+   "baslik": "As-Is/To-Be yuvarlak ifade",
+   "bolum": "2.1, 2.2"
+  },
+  {
+   "id": "QUAL_004",
+   "baslik": "Test somut veri",
+   "bolum": "6.1"
+  },
+  {
+   "id": "QUAL_005",
+   "baslik": "En az bir hata/edge case",
+   "bolum": "6.1"
+  },
+  {
+   "id": "QUAL_006",
+   "baslik": "Hata mesaj tipi (E/W/I)",
+   "bolum": "5.1"
+  },
+  {
+   "id": "QUAL_007",
+   "baslik": "Bağımlılık/Varsayım/Kapsam Dışı üçü de",
+   "bolum": "2.5"
+  }
+ ],
+ "hazirlik_kalemleri": [
+  "Yayına alınmamış nesne",
+  "Açık ATC/CVA bulgusu",
+  "Tasarım/sözleşme açığı",
+  "Geçici çözüm / hardcode",
+  "Karar bekleyen konu",
+  "İstisna kaydı yapılmamış bulgu"
+ ],
+ "hazirlik_anlamlari": {
+  "Yayına alınmamış nesne": "Released olmayan ya da release durumu doğrulanmamış bir SAP nesnesine bağımlılık",
+  "Açık ATC/CVA bulgusu": "ATC ya da CVA'da kapatılmamış öncelik 1–2 bulgu",
+  "Tasarım/sözleşme açığı": "Eksik tasarım ya da sözleşme bilgisi: karşı sistemin şeması, hata kodları, alan listesi, örnek mesaj",
+  "Geçici çözüm / hardcode": "Bilerek bırakılmış sabit değer ya da geçici çözüm",
+  "Karar bekleyen konu": "Henüz verilmemiş bir karar; KARAR BEKLİYOR işaretinin gösterdiği her satır",
+  "İstisna kaydı yapılmamış bulgu": "Bilinen bir sapma (clean core seviyesi, ATC muafiyeti) için onaylı istisna kaydı yok"
+ },
+ "parametreler": {
+  "w_rule_both": 0.4,
+  "w_llm_both": 0.6,
+  "w_llm_only": 0.7,
+  "w_heur_llm": 0.3,
+  "w_rule_only": 0.6,
+  "w_heur_rule": 0.4,
+  "info_factor": 0.5,
+  "error_cap": 40,
+  "llm_max": 4,
+  "h_bos": 0,
+  "h_ph": 10,
+  "h_kismi": 50,
+  "h_tam": 100,
+  "crit_pen": 5,
+  "crit_thr": 40,
+  "weak_gap1": 30,
+  "weak_pen1": 5,
+  "weak_gap2": 45,
+  "weak_pen2": 7.5,
+  "weak_cap": 15,
+  "ready_per": 2,
+  "ready_item_cap": 5,
+  "ready_cap": 20,
+  "band_hi": 85,
+  "band_mid": 70
+ },
+ "parametre_notu": "Eşik ve katsayılar puanlama motorunun kodu görülmeden belirlenmiş varsayımlardır; gösterge içindir, hedef değildir.",
+ "yuvarlak_ifadeler": [
+  "gerekli kontrol",
+  "ilgili tablo",
+  "ilgili alan",
+  "ilgili yer",
+  "uygun şekilde",
+  "gerektiğinde",
+  "gerekirse",
+  "mümkünse",
+  "kullanıcı dostu",
+  "performanslı",
+  "hızlı bir şekilde",
+  "hızlı şekilde",
+  "sisteme kaydedilir",
+  "standart süreç",
+  "daha sonra belirlenecek",
+  "netleştirilecek",
+  "çeşitli",
+  " vb",
+  " vs.",
+  "v.b.",
+  "esnek bir",
+  "kolayca",
+  "sorunsuz"
+ ],
+ "yuvarlak_karsiliklar": [
+  {
+   "yazma": "gerekli kontroller yapılır",
+   "yaz": "Hangi alan, hangi koşul, hangi MSG: 'Supplier boşsa MSG-04 (E)'"
+  },
+  {
+   "yazma": "ilgili tablolardan okunur",
+   "yaz": "Nesne adı: 'I_PurchaseOrderAPI01'den PurchaseOrder, Supplier okunur'"
+  },
+  {
+   "yazma": "uygun şekilde / gerektiğinde",
+   "yaz": "Koşulu yazın: 'Status = E iken'"
+  },
+  {
+   "yazma": "hızlı / performanslı",
+   "yaz": "Ölçü: '500 sipariş ≤ 10 dk'"
+  },
+  {
+   "yazma": "kullanıcı dostu",
+   "yaz": "Davranış: 'zorunlu alan boşsa alan kırmızı, MSG-05'"
+  },
+  {
+   "yazma": "vb. / gibi / çeşitli",
+   "yaz": "Tam listeyi yazın"
+  },
+  {
+   "yazma": "sisteme kaydedilir",
+   "yaz": "Nereye ve nasıl: 'ZPO_SEND_LOG'a RAP save sequence içinde'"
+  },
+  {
+   "yazma": "standart süreç işletilir",
+   "yaz": "Uygulama adı ve adım: 'Manage Purchase Orders (F0842A) → Onaya gönder'"
+  },
+  {
+   "yazma": "daha sonra belirlenecek",
+   "yaz": "7.3'e OPEN-nn olarak sahibi ve tarihiyle yazın"
+  }
+ ],
+ "yer_tutucu_kaliplari": [
+  "«[^»]*»",
+  "^\\s*(\\.\\.\\.|…)\\s*$",
+  "\\bTBD\\b",
+  "\\bTODO\\b",
+  "\\bxxx+\\b",
+  "lorem ipsum",
+  "doldurulacak"
+ ],
+ "sap_tipleri": [
+  "TABL",
+  "DDLS",
+  "DDLX",
+  "DCLS",
+  "BDEF",
+  "SRVD",
+  "SRVB",
+  "CLAS",
+  "INTF",
+  "DTEL",
+  "DOMA",
+  "MSAG",
+  "SUSO",
+  "ENHO",
+  "DEVC",
+  "BAdI",
+  "API",
+  "Business event",
+  "Fiori app",
+  "UI5 app",
+  "IAM app",
+  "Business catalog",
+  "Application job",
+  "Communication scenario",
+  "Outbound service",
+  "Inbound service",
+  "Software component",
+  "Custom field",
+  "Form template",
+  "Application log object",
+  "Number range",
+  "Business role template",
+  "Launchpad space / page"
+ ],
+ "nesne_sutunlari": {
+  "1.2": [
+   1
+  ],
+  "3.4": [
+   1,
+   3
+  ],
+  "3.5": [
+   4
+  ],
+  "4.1": [
+   1
+  ],
+  "4.3": [
+   1,
+   3
+  ],
+  "5.2": [
+   1
+  ],
+  "5.3": [
+   1,
+   2
+  ]
+ },
+ "nesne_kaliplari": {
+  "ozel": [
+   "\\b[ZY][A-Z0-9]*_[A-Za-z0-9_]+\\b",
+   "\\bYY1_[A-Za-z0-9_]+\\b"
+  ],
+  "standart": [
+   "\\b[ICPARX]_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*\\b",
+   "\\bAPI_[A-Z0-9_]+\\b",
+   "\\b(?:CL|IF|CX)_[A-Z0-9_]+\\b"
+  ],
+  "standart_genis": [
+   "\\b[A-Z]{2,}[A-Z0-9]*(?:_[A-Z0-9]+){2,}\\b"
+  ],
+  "uygulama": [
+   "\\bF\\d{4}[A-Z]?\\b"
+  ],
+  "haric": [
+   "ABAP_CLOUD_DEVELOPMENT_DEFAULT",
+   "ABAP_CLOUD_READINESS"
+  ]
+ },
+ "ears": [
+  {
+   "kalip": "Her zaman geçerli",
+   "soz_dizimi": "<Sistem> <tepki> yapar.",
+   "ornek": "Sistem her gönderimi ZPO_SEND_LOG tablosuna yazar."
+  },
+  {
+   "kalip": "Durum (While)",
+   "soz_dizimi": "<Durum> sürerken <sistem> <tepki> yapar.",
+   "ornek": "Status = 'Q' iken sistem 'Yeniden gönder' aksiyonunu pasif tutar."
+  },
+  {
+   "kalip": "Olay (When)",
+   "soz_dizimi": "<Olay> olduğunda <sistem> <tepki> yapar.",
+   "ornek": "Sipariş onayı tamamlandığında sistem siparişi 5 dk içinde portala gönderir."
+  },
+  {
+   "kalip": "Opsiyon (Where)",
+   "soz_dizimi": "<Özellik> varsa <sistem> <tepki> yapar.",
+   "ornek": "Tedarikçide portal kullanıcısı varsa sistem e-posta yerine portala gönderir."
+  },
+  {
+   "kalip": "İstenmeyen durum (If-then)",
+   "soz_dizimi": "<İstenmeyen durum> olursa <sistem> <tepki> yapar.",
+   "ornek": "Portal 5xx dönerse sistem 1, 5 ve 15 dk sonra yeniden dener."
+  },
+  {
+   "kalip": "Bileşik",
+   "soz_dizimi": "<Durum> sürerken, <olay> olduğunda <sistem> <tepki> yapar.",
+   "ornek": "Status = 'E' iken kullanıcı 'Yeniden gönder'e bastığında sistem kaydı 'Q' yapar."
+  }
+ ],
+ "bolumler": [
+  {
+   "no": "1.1",
+   "baslik": "Geliştirme türü (RICEF)",
+   "kisa": "RICEF",
+   "grup": "1",
+   "agirlik": 5,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Geliştirmenin kimliğini, türünü ve genişletme yaklaşımını tek yerde sabitler; hangi bölümlerin zorunlu olduğunu belirler.",
+   "kural": "Üst düzeydeki `turler` dizisine en az bir RICEF türü yazın; tür tablosu ondan türetilir. Genişletme yaklaşımı ve hedef clean core seviyesi girdideki karara göre yazılır; A dışındaki seviye için gerekçe yazın.",
+   "iyi": "Tür: Arayüz/API + Fiori/UI5. Yaklaşım: Developer extensibility (ABAP Cloud, RAP). Hedef seviye A: yalnız released API (I_PurchaseOrderAPI01) kullanılır.",
+   "kotu": "Tür: Geliştirme. Yaklaşım: standart.",
+   "pratik": "Clean core: önce key user, sonra on-stack ABAP Cloud, sonra side-by-side BTP değerlendirilir. Seviye A yalnız released API kullanır; B classic API, C dahili nesne, D önerilmeyen tekniklerdir (SAP clean core seviyeleri, 2025).",
+   "besler": [
+    "1.2",
+    "2.2",
+    "3.2",
+    "3.3",
+    "3.4",
+    "3.6",
+    "4.4"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [
+    "META_001"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "gel_id",
+     "etiket": "Geliştirme ID",
+     "ipucu": "Örn. GEL-MM-014"
+    },
+    {
+     "anahtar": "baslik",
+     "etiket": "Geliştirme başlığı",
+     "ipucu": "Tek satır; iş sonucunu anlatır"
+    },
+    {
+     "anahtar": "modul",
+     "etiket": "Süreç alanı / modül",
+     "ipucu": "Örn. Satınalma (MM-PUR)"
+    },
+    {
+     "anahtar": "sistem",
+     "etiket": "Sistem",
+     "ipucu": "",
+     "secenekler": [
+      "S/4HANA Cloud Public Edition",
+      "S/4HANA Cloud Private Edition"
+     ]
+    },
+    {
+     "anahtar": "yaklasim",
+     "etiket": "Genişletme yaklaşımı",
+     "ipucu": "",
+     "secenekler": [
+      "Key user",
+      "Developer (ABAP Cloud)",
+      "Side-by-side (BTP)"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "clean_core",
+     "etiket": "Hedef clean core seviyesi",
+     "ipucu": "",
+     "secenekler": [
+      "A",
+      "B",
+      "C",
+      "D"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "cc_gerekce",
+     "etiket": "A dışı seviye gerekçesi",
+     "ipucu": "Seviye A ise —"
+    },
+    {
+     "anahtar": "oncelik",
+     "etiket": "Öncelik",
+     "ipucu": "",
+     "secenekler": [
+      "Yüksek",
+      "Orta",
+      "Düşük"
+     ]
+    },
+    {
+     "anahtar": "karmasiklik",
+     "etiket": "Karmaşıklık",
+     "ipucu": "Profili belirler: Basit → hafif, Orta → standart, Karmaşık → tam",
+     "secenekler": [
+      "Basit",
+      "Orta",
+      "Karmaşık"
+     ]
+    },
+    {
+     "anahtar": "danisman",
+     "etiket": "SAP danışmanı",
+     "ipucu": ""
+    },
+    {
+     "anahtar": "abap",
+     "etiket": "ABAP geliştirici",
+     "ipucu": ""
+    },
+    {
+     "anahtar": "ui5",
+     "etiket": "UI5 geliştirici",
+     "ipucu": "Yoksa —"
+    }
+   ],
+   "en_az_satir": 0,
+   "sutunlar": [],
+   "not": "RICEF türleri belgenin üst düzeyindeki 'turler' dizisinden türetilir; bu bölümde yalnız alanlar yazılır."
+  },
+  {
+   "no": "1.2",
+   "baslik": "OData versiyonu ve backend modeli",
+   "kisa": "OData ve backend",
+   "grup": "1",
+   "agirlik": 2,
+   "sinif": "Normal",
+   "turler": [
+    "U",
+    "I"
+   ],
+   "amac": "UI5 ve ABAP geliştiricinin aynı servis sözleşmesi üzerinde anlaşmasını sağlar.",
+   "kural": "OData versiyonunu, backend modelini, taslak (draft) kullanımını ve tüketilen standart API'leri sürüm ve release contract bilgisiyle yazın.",
+   "iyi": "OData V4, RAP managed + draft, servis binding ZUI_PO_SEND_LOG_O4 (OData V4 – UI). Tüketilen: I_PurchaseOrderAPI01 (C1).",
+   "kotu": "OData servisi yazılacak.",
+   "pratik": "Fiori elements, desteklenen floorplan'lere uyan uygulamalarda önerilir; draft ve flexible column layout gibi özellikler ön yüz kodunu azaltır. Release contract: C0 genişlet, C1 sistem içi kullan, C2 uzak API olarak kullan.",
+   "besler": [
+    "3.3",
+    "3.4",
+    "4.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [
+    "META_002"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "odata_versiyon",
+     "etiket": "OData versiyonu",
+     "ipucu": "",
+     "secenekler": [
+      "V2",
+      "V4"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "backend_modeli",
+     "etiket": "Backend modeli",
+     "ipucu": "",
+     "secenekler": [
+      "RAP managed",
+      "RAP unmanaged",
+      "RAP managed + unmanaged save",
+      "CAP (BTP)",
+      "Yalnız standart API tüketimi"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "draft",
+     "etiket": "Draft kullanımı",
+     "ipucu": "Evet / Hayır ve gerekçe",
+     "karar": true
+    },
+    {
+     "anahtar": "ui_yaklasimi",
+     "etiket": "UI yaklaşımı",
+     "ipucu": "",
+     "secenekler": [
+      "Fiori elements",
+      "Freestyle UI5",
+      "Flexible programming model",
+      "—"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "binding_tipi",
+     "etiket": "Servis binding tipi",
+     "ipucu": "",
+     "secenekler": [
+      "OData V4 – UI",
+      "OData V4 – Web API",
+      "OData V2 – UI",
+      "OData V2 – Web API"
+     ],
+     "karar": true
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Servis ID",
+     "ipucu": "",
+     "kimlik": [
+      "SRV"
+     ]
+    },
+    {
+     "ad": "Servis / API adı",
+     "ipucu": "Teknik ad"
+    },
+    {
+     "ad": "Özel mi, standart mı",
+     "ipucu": "",
+     "secenekler": [
+      "Z",
+      "SAP",
+      "Dış"
+     ]
+    },
+    {
+     "ad": "Protokol ve versiyon",
+     "ipucu": ""
+    },
+    {
+     "ad": "Release contract",
+     "ipucu": "",
+     "secenekler": [
+      "C0",
+      "C1",
+      "C2",
+      "—"
+     ]
+    },
+    {
+     "ad": "Amaç",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "SRV-01",
+    "ZUI_PO_SEND_LOG_O4",
+    "Z",
+    "OData V4 – UI",
+    "—",
+    "İzleme uygulamasının servisi"
+   ]
+  },
+  {
+   "no": "2.1",
+   "baslik": "Mevcut süreç (As-Is)",
+   "kisa": "As-Is",
+   "grup": "2",
+   "agirlik": 6,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Bugün işin nasıl yürüdüğünü ve sorunun tam olarak hangi adımda doğduğunu gösterir.",
+   "kural": "Süreci adım adım yazın; her adımda kim, hangi uygulamada, ne yapıyor. Sorunlu adımı işaretleyin, ölçülebilir etkisini ve gerçek bir örneği (belge no, tarih) verin.",
+   "iyi": "Adım 3: Satınalmacı onaylı siparişi 'Manage Purchase Orders' (F0842A) uygulamasından PDF alıp e-posta ile gönderir. Günde ~120 sipariş; 12.05.2026'da 4500001234 numaralı sipariş 2 gün geç iletildi.",
+   "kotu": "Mevcut süreç manuel ilerlemekte ve sorunlar yaşanmaktadır.",
+   "pratik": "İş ihtiyacı çözümden önce yazılır; hacim (adet/gün) belirtilmezse teknik tasarım yanlış boyutlanır.",
+   "besler": [
+    "2.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "PROC_002"
+   ],
+   "eski_kurallar": [
+    "QUAL_003"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "ozet",
+     "etiket": "Sürecin özeti",
+     "ipucu": "2–3 cümle"
+    },
+    {
+     "anahtar": "sorun",
+     "etiket": "Somut sorun",
+     "ipucu": "Hangi adımda, ne oluyor"
+    },
+    {
+     "anahtar": "etki",
+     "etiket": "Ölçülebilir etki",
+     "ipucu": "Süre, hata oranı, maliyet; sayıyla"
+    },
+    {
+     "anahtar": "ornek",
+     "etiket": "Spesifik örnek",
+     "ipucu": "Belge no, tarih, sonuç"
+    },
+    {
+     "anahtar": "hacim",
+     "etiket": "Sıklık / hacim",
+     "ipucu": "Örn. 120 sipariş/gün"
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Adım",
+     "ipucu": "",
+     "kimlik": [
+      "ASIS"
+     ]
+    },
+    {
+     "ad": "Kim (rol)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Ne yapıyor",
+     "ipucu": "Eylem cümlesi"
+    },
+    {
+     "ad": "Uygulama / araç",
+     "ipucu": "Fiori App ID, işlem kodu, Excel…"
+    },
+    {
+     "ad": "Sorun var mı",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Sorunun ölçülebilir etkisi",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "ASIS-03",
+    "Satınalmacı",
+    "Onaylı siparişin PDF'ini e-posta ile tedarikçiye gönderir",
+    "F0842A + Outlook",
+    "Evet",
+    "Sipariş başına ~4 dk; ayda ~15 unutulan gönderim"
+   ]
+  },
+  {
+   "no": "2.2",
+   "baslik": "Hedeflenen süreç (To-Be)",
+   "kisa": "To-Be",
+   "grup": "2",
+   "agirlik": 8,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Çözümü, kullanılan SAP teknolojisini ve her gereksinimin hangi As-Is sorununu çözdüğünü tanımlar.",
+   "kural": "Her gereksinimi tek cümle, tek davranış olacak şekilde EARS kalıbıyla yazın. Her REQ bir As-Is adımına bağlanır ve bir Given-When-Then kabul kriteri taşır.",
+   "iyi": "REQ-01: Satınalma siparişi onayı tamamlandığında (ReleaseIsNotCompleted = boş), sistem siparişi 5 dakika içinde tedarikçi portalına REST ile gönderir. Çözdüğü: ASIS-03.",
+   "kotu": "Sistem siparişleri otomatik ve hızlı şekilde ilgili yerlere iletecektir.",
+   "pratik": "ISO/IEC/IEEE 29148: gereksinim gerekli, tekil, belirsiz olmayan ve doğrulanabilir olmalı. EARS kalıpları: '<sistem> … yapar' · 'While <durum>' · 'When <olay>' · 'Where <özellik>' · 'If <istenmeyen durum> then'.",
+   "besler": [
+    "2.3",
+    "2.4",
+    "3.5",
+    "6.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "PROC_001"
+   ],
+   "eski_kurallar": [
+    "QUAL_003"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "cozum_ozeti",
+     "etiket": "Çözüm özeti",
+     "ipucu": "2–3 cümle",
+     "karar": true
+    },
+    {
+     "anahtar": "teknoloji",
+     "etiket": "Kullanılan SAP teknolojisi",
+     "ipucu": "Örn. RAP, Application Job, Communication Arrangement",
+     "karar": true
+    },
+    {
+     "anahtar": "cozdugu_sorun",
+     "etiket": "Çözdüğü As-Is sorunu",
+     "ipucu": "ASIS-nn kimlikleri"
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "REQ ID",
+     "ipucu": "",
+     "kimlik": [
+      "REQ"
+     ]
+    },
+    {
+     "ad": "Gereksinim (EARS kalıbı)",
+     "ipucu": "Tek cümle, tek davranış"
+    },
+    {
+     "ad": "EARS tipi",
+     "ipucu": "",
+     "secenekler": [
+      "Her zaman",
+      "Durum",
+      "Olay",
+      "Opsiyon",
+      "İstenmeyen",
+      "Bileşik"
+     ]
+    },
+    {
+     "ad": "Çözdüğü As-Is adımı",
+     "ipucu": "ASIS-nn"
+    },
+    {
+     "ad": "Kabul kriteri (Given-When-Then)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Öncelik",
+     "ipucu": "",
+     "secenekler": [
+      "Must",
+      "Should",
+      "Could"
+     ]
+    }
+   ],
+   "ornek_satir": [
+    "REQ-01",
+    "Satınalma siparişi onayı tamamlandığında sistem siparişi 5 dk içinde tedarikçi portalına gönderir.",
+    "Olay",
+    "ASIS-03",
+    "Given onaylı 4500001234; When job çalışır; Then portal 201 döner ve log kaydı 'Gönderildi' olur.",
+    "Must"
+   ]
+  },
+  {
+   "no": "2.3",
+   "baslik": "Kullanım senaryoları / varyantlar",
+   "kisa": "Senaryolar",
+   "grup": "2",
+   "agirlik": 4,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Ana akışı ve tüm varyant / istisna durumlarını adlandırır; test senaryolarının kaynağıdır.",
+   "kural": "Her senaryoya SC kimliği verin. Tetikleyiciyi, ön koşulu ve varyantı yazın; boş, sıfır ve sınır değer durumlarını atlamayın.",
+   "iyi": "SC-02: Sipariş gönderildikten sonra değiştirilirse (LastChangeDateTime > gönderim zamanı) sipariş yeniden gönderilir, log'da sürüm 2 oluşur.",
+   "kotu": "Farklı durumlar da dikkate alınacaktır.",
+   "pratik": "En sık atlanan konu kenar durumlardır: boş alan, null değer, aralık dışı girdi için davranış yazılmalıdır.",
+   "besler": [
+    "2.4",
+    "3.5",
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "SC ID",
+     "ipucu": "",
+     "kimlik": [
+      "SC"
+     ]
+    },
+    {
+     "ad": "Senaryo adı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tetikleyici",
+     "ipucu": ""
+    },
+    {
+     "ad": "Ön koşul",
+     "ipucu": ""
+    },
+    {
+     "ad": "Ana akış özeti",
+     "ipucu": ""
+    },
+    {
+     "ad": "Varyant / istisna",
+     "ipucu": ""
+    },
+    {
+     "ad": "İlgili REQ",
+     "ipucu": "REQ-nn"
+    }
+   ],
+   "ornek_satir": [
+    "SC-01",
+    "Onaylı siparişin ilk gönderimi",
+    "Application job, 5 dk'da bir",
+    "Sipariş onaylı, tedarikçi portal kullanıcısı",
+    "Seç → JSON oluştur → POST → log yaz",
+    "Portal 5xx dönerse SC-03",
+    "REQ-01"
+   ]
+  },
+  {
+   "no": "2.4",
+   "baslik": "Süreç diyagramları",
+   "kisa": "Diyagramlar",
+   "grup": "2",
+   "agirlik": 2,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "As-Is ve To-Be akışını görsel olarak özetler; adımların sırasını tartışmasız hale getirir.",
+   "kural": "Girdide bir diyagram varsa ya da anılıyorsa onu kaydedin; yoksa To-Be akışı, girdide anlatılan adımlardan `mermaid` kaynağı olarak çizilebilir (anlatılan adımı çizmek tasarım kararı değildir). Her kutu bir SC ya da STEP kimliği taşır. Adımların çoğu karar bekliyorsa bölümü gerekçesiyle geçersiz kılın; 'daha sonra eklenecek' yazmayın.",
+   "iyi": "D-01 To-Be akış (BPMN): Onay → Job → POST → Log; kutular STEP-01, STEP-02, STEP-03 kimlikleriyle etiketli.",
+   "kotu": "Diyagram daha sonra eklenecektir.",
+   "pratik": "Diyagram metni tekrar etmez, sırayı ve karar noktalarını gösterir. Obsidian'da Mermaid, Word/Excel'de yapıştırılmış görsel kullanılır.",
+   "besler": [
+    "3.5"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Diyagram ID",
+     "ipucu": "",
+     "kimlik": [
+      "D"
+     ]
+    },
+    {
+     "ad": "Tür",
+     "ipucu": "",
+     "secenekler": [
+      "Akış",
+      "BPMN",
+      "Sekans",
+      "Durum"
+     ]
+    },
+    {
+     "ad": "Kapsadığı SC / REQ",
+     "ipucu": ""
+    },
+    {
+     "ad": "Konum",
+     "ipucu": "Ek, bağlantı veya sayfa"
+    },
+    {
+     "ad": "Sürüm / tarih",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "D-01",
+    "Akış",
+    "SC-01, SC-03",
+    "Ek-1 sayfa 2",
+    "v1 · 14.05.2026"
+   ]
+  },
+  {
+   "no": "2.5",
+   "baslik": "Bağımlılıklar, varsayımlar, kapsam dışı",
+   "kisa": "Kapsam",
+   "grup": "2",
+   "agirlik": 6,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Kapsam sınırını çizer: neye bağlıyız, neyi doğru kabul ettik, neyi bilerek yapmıyoruz.",
+   "kural": "Üç boyutun üçünü de doldurun: en az bir Bağımlılık, bir Varsayım, bir Kapsam dışı. Her satırın sahibi ve doğrulanma durumu olsun.",
+   "iyi": "OOS-01 Kapsam dışı: Sözleşme (outline agreement) çağrı siparişleri gönderilmez. ASM-01 Varsayım: Portal aynı siparişi 'Idempotency-Key' başlığıyla tekilleştirir (portal ekibi, 10.05.2026'da doğrulandı).",
+   "kotu": "Diğer sistemlerin hazır olduğu varsayılmıştır.",
+   "pratik": "Kapsam 'İÇİNDE / DIŞINDA' olarak yazılır ve onay imzasıyla dondurulur; aksi halde kapsam sürekli genişler.",
+   "besler": [
+    "3.1",
+    "3.10",
+    "7.3"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "SCOPE_000",
+    "SCOPE_001",
+    "SCOPE_002"
+   ],
+   "eski_kurallar": [
+    "CONT_004",
+    "QUAL_007"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "kapsam_ici",
+     "etiket": "Kapsam içi",
+     "ipucu": "Tek cümle: bu geliştirme neyi yapar"
+    },
+    {
+     "anahtar": "kapsam_siniri",
+     "etiket": "Kapsam sınırı",
+     "ipucu": "Şirket kodu, belge türü, kanal"
+    }
+   ],
+   "en_az_satir": 3,
+   "sutunlar": [
+    {
+     "ad": "ID",
+     "ipucu": "",
+     "kimlik": [
+      "DEP",
+      "ASM",
+      "OOS"
+     ]
+    },
+    {
+     "ad": "Tür",
+     "ipucu": "",
+     "secenekler": [
+      "Bağımlılık",
+      "Varsayım",
+      "Kapsam dışı"
+     ]
+    },
+    {
+     "ad": "Açıklama",
+     "ipucu": ""
+    },
+    {
+     "ad": "Sahibi",
+     "ipucu": ""
+    },
+    {
+     "ad": "Durum",
+     "ipucu": "",
+     "secenekler": [
+      "Açık",
+      "Doğrulandı",
+      "Geçersiz"
+     ]
+    },
+    {
+     "ad": "Doğrulanma tarihi",
+     "ipucu": ""
+    },
+    {
+     "ad": "Etkilediği bölüm",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "DEP-01",
+    "Bağımlılık",
+    "Portal REST uç noktası /api/v1/orders test ortamında açık olmalı",
+    "Portal ekibi",
+    "Doğrulandı",
+    "10.05.2026",
+    "3.10"
+   ]
+  },
+  {
+   "no": "3.1",
+   "baslik": "Ön koşullar (ana veri / uyarlama)",
+   "kisa": "Ön koşullar",
+   "grup": "3",
+   "agirlik": 4,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Geliştirme ve test başlamadan sistemde hazır olması gerekenleri listeler.",
+   "kural": "Her ön koşulu türüyle, somut değeriyle ve hangi sistemde/tenant'ta gerektiğiyle yazın. 'Hazır mı', hazır olduğu girdide bildirilmedikçe 'Hayır'dır.",
+   "iyi": "PRE-02 Uyarlama: Satınalma siparişi esnek iş akışı etkin (Manage Workflows for Purchase Orders), şirket kodu 1710. Test tenant'ında hazır.",
+   "kotu": "Gerekli uyarlamalar yapılmış olmalıdır.",
+   "pratik": "Public Cloud'da iş yapılandırması customizing tenant'ında yapılır ve transport ile taşınır; communication arrangement her sistemde ayrıca kurulur.",
+   "besler": [
+    "6.1",
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "PRE ID",
+     "ipucu": "",
+     "kimlik": [
+      "PRE"
+     ]
+    },
+    {
+     "ad": "Tür",
+     "ipucu": "",
+     "secenekler": [
+      "Ana veri",
+      "Uyarlama",
+      "Kapsam öğesi",
+      "İletişim düzenlemesi",
+      "Yetki"
+     ]
+    },
+    {
+     "ad": "Nesne / değer",
+     "ipucu": "Somut değer"
+    },
+    {
+     "ad": "Sistem / tenant",
+     "ipucu": ""
+    },
+    {
+     "ad": "Sorumlu",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hazır mı",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    }
+   ],
+   "ornek_satir": [
+    "PRE-01",
+    "Ana veri",
+    "Tedarikçi 17300001, portal e-posta alanı dolu",
+    "Test",
+    "Danışman",
+    "Evet"
+   ]
+  },
+  {
+   "no": "3.2",
+   "baslik": "Seçim ekranı tasarımı",
+   "kisa": "Seçim ekranı",
+   "grup": "3",
+   "agirlik": 3,
+   "sinif": "Normal",
+   "turler": [
+    "R"
+   ],
+   "amac": "Raporun veya job'un hangi kriterlerle çalışacağını alan düzeyinde tanımlar.",
+   "kural": "Her seçim alanı için kaynak alanı, tipi, zorunluluğu, tek/çoklu/aralık seçimini, varsayılanı ve değer yardımını yazın.",
+   "iyi": "CompanyCode · I_PurchaseOrderAPI01.CompanyCode · CHAR(4) · zorunlu · çoklu · varsayılan 1710 · değer yardımı I_CompanyCodeStdVH.",
+   "kotu": "Şirket kodu, tarih vb. alanlar olacak.",
+   "pratik": "Cloud'da seçim ekranı, Fiori elements filtre çubuğu veya application job parametreleri olarak gerçekleşir.",
+   "besler": [
+    "3.5",
+    "3.6"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [
+    "COND_003"
+   ],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Alan ID",
+     "ipucu": "",
+     "kimlik": [
+      "SEL"
+     ]
+    },
+    {
+     "ad": "Etiket",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kaynak (CDS.alan)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tip / uzunluk",
+     "ipucu": ""
+    },
+    {
+     "ad": "Zorunlu",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Seçim türü",
+     "ipucu": "",
+     "secenekler": [
+      "Tek",
+      "Çoklu",
+      "Aralık"
+     ]
+    },
+    {
+     "ad": "Varsayılan",
+     "ipucu": ""
+    },
+    {
+     "ad": "Değer yardımı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Doğrulama → MSG",
+     "ipucu": "MSG-nn"
+    }
+   ],
+   "ornek_satir": [
+    "SEL-01",
+    "Şirket kodu",
+    "I_PurchaseOrderAPI01.CompanyCode",
+    "CHAR(4)",
+    "Evet",
+    "Çoklu",
+    "1710",
+    "I_CompanyCodeStdVH",
+    "MSG-05"
+   ]
+  },
+  {
+   "no": "3.3",
+   "baslik": "Fiori / UI5 tasarımı",
+   "kisa": "Fiori-UI5",
+   "grup": "3",
+   "agirlik": 8,
+   "sinif": "Kritik",
+   "turler": [
+    "U"
+   ],
+   "amac": "UI5 geliştiricinin ekranı sormadan kurabilmesi için floorplan'i, öğeleri ve davranışları tanımlar.",
+   "kural": "Floorplan'i ve gerekçesini yazın. Her ekran öğesi için etiketi, davranış koşulunu, annotation/kontrolü ve tetiklediği STEP'i verin.",
+   "iyi": "UI-04 Aksiyon 'Yeniden gönder': yalnız Status = 'E' satırlarda etkin; @UI.lineItem type #FOR_ACTION, dataAction 'resend'; STEP-07'yi çağırır.",
+   "kotu": "Kullanıcı dostu bir ekran tasarlanacaktır.",
+   "pratik": "Fiori elements floorplan'leri: list report, worklist, object page, analytical list page, overview page. Tasarım bunlara uymuyorsa freestyle veya flexible programming model seçilir; gerekçe yazılır.",
+   "besler": [
+    "3.5",
+    "3.7",
+    "5.3"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [
+    "COND_001"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "floorplan",
+     "etiket": "Floorplan",
+     "ipucu": "",
+     "secenekler": [
+      "List Report + Object Page",
+      "Worklist",
+      "Analytical List Page",
+      "Overview Page",
+      "Freestyle"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "floorplan_gerekce",
+     "etiket": "Floorplan gerekçesi",
+     "ipucu": ""
+    },
+    {
+     "anahtar": "semantic_object",
+     "etiket": "Semantic object – action",
+     "ipucu": "Örn. PurchaseOrderSendLog-monitor"
+    },
+    {
+     "anahtar": "launchpad",
+     "etiket": "Launchpad yerleşimi",
+     "ipucu": "Space / page / tile"
+    },
+    {
+     "anahtar": "cihaz_dil",
+     "etiket": "Cihaz ve dil",
+     "ipucu": "Örn. masaüstü, tablet; TR, EN"
+    },
+    {
+     "anahtar": "anahtar_kullanici",
+     "etiket": "Anahtar kullanıcı uyarlaması",
+     "ipucu": "İzinli mi"
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "UI ID",
+     "ipucu": "",
+     "kimlik": [
+      "UI"
+     ]
+    },
+    {
+     "ad": "Ekran / bölüm",
+     "ipucu": ""
+    },
+    {
+     "ad": "Öğe türü",
+     "ipucu": "",
+     "secenekler": [
+      "Filtre",
+      "Kolon",
+      "Alan",
+      "Aksiyon",
+      "Sekme"
+     ]
+    },
+    {
+     "ad": "Etiket",
+     "ipucu": ""
+    },
+    {
+     "ad": "Davranış koşulu",
+     "ipucu": "Görünür / zorunlu / salt okunur ne zaman"
+    },
+    {
+     "ad": "Annotation / kontrol",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tetiklediği STEP",
+     "ipucu": "STEP-nn"
+    },
+    {
+     "ad": "Not",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "UI-04",
+    "Liste",
+    "Aksiyon",
+    "Yeniden gönder",
+    "Yalnız Status = 'E' iken etkin",
+    "@UI.lineItem #FOR_ACTION 'resend'",
+    "STEP-07",
+    "Çoklu seçim desteklenir"
+   ]
+  },
+  {
+   "no": "3.4",
+   "baslik": "Arayüz ve veri haritalama",
+   "kisa": "Veri haritalama",
+   "grup": "3",
+   "agirlik": 10,
+   "sinif": "Kritik",
+   "turler": [
+    "I",
+    "U"
+   ],
+   "amac": "Her alanın nereden geldiğini, nereye gittiğini ve yolda nasıl dönüştüğünü tanımlar.",
+   "kural": "Her satır tek alan eşlemesidir: kaynak nesne.alan → hedef nesne.alan, veri tipi, zorunluluk, dönüşüm kuralı ve gerçek bir örnek değer.",
+   "iyi": "MAP-03: I_PurchaseOrderItemAPI01.OrderQuantity (QUAN 13,3) → JSON items[].quantity (number, zorunlu); birim ISO koduna çevrilir; örnek 120.000 → 120.",
+   "kotu": "Sipariş bilgileri ilgili alanlara aktarılır.",
+   "pratik": "Arayüz FS'inde protokol, alan eşlemesi ve hata yönetimi birlikte bulunmalıdır. Kaynak olarak released CDS view / API adı yazılır, tablo adı değil.",
+   "besler": [
+    "3.5",
+    "3.7",
+    "3.10",
+    "4.2",
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "MAP_001"
+   ],
+   "eski_kurallar": [
+    "COND_002",
+    "QUAL_002"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "yon",
+     "etiket": "Yön",
+     "ipucu": "",
+     "secenekler": [
+      "Giden",
+      "Gelen",
+      "Çift yönlü"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "protokol",
+     "etiket": "Protokol / format",
+     "ipucu": "REST-JSON, OData, SOAP, olay, dosya",
+     "karar": true
+    },
+    {
+     "anahtar": "tetikleyici",
+     "etiket": "Tetikleyici ve sıklık",
+     "ipucu": "Olay, job aralığı, kullanıcı aksiyonu",
+     "karar": true
+    },
+    {
+     "anahtar": "hacim",
+     "etiket": "Hacim",
+     "ipucu": "Adet/gün, en büyük mesaj"
+    },
+    {
+     "anahtar": "comm_scenario",
+     "etiket": "Communication scenario",
+     "ipucu": "Yoksa —"
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "MAP ID",
+     "ipucu": "",
+     "kimlik": [
+      "MAP"
+     ]
+    },
+    {
+     "ad": "Kaynak nesne",
+     "ipucu": "CDS / API / dosya"
+    },
+    {
+     "ad": "Kaynak alan",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hedef nesne",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hedef alan",
+     "ipucu": ""
+    },
+    {
+     "ad": "Veri tipi (uzunluk)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Zorunlu",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Dönüşüm kuralı",
+     "ipucu": "Yoksa 'Birebir'"
+    },
+    {
+     "ad": "Örnek değer",
+     "ipucu": "Kaynak → hedef"
+    }
+   ],
+   "not": "Dış arayüzü olmayan U türünde bu bölüm kaynak (CDS / API alanı) → servis entity property eşlemesidir: yon ve comm_scenario —, protokol 1.2'deki OData versiyonu, tetikleyici kullanıcı eylemidir.",
+   "ornek_satir": [
+    "MAP-01",
+    "I_PurchaseOrderAPI01",
+    "PurchaseOrder",
+    "JSON gövdesi",
+    "orderNumber",
+    "CHAR(10) → string",
+    "Evet",
+    "Birebir, baştaki sıfırlar korunur",
+    "4500001234 → \"4500001234\""
+   ]
+  },
+  {
+   "no": "3.5",
+   "baslik": "Adım adım işlem mantığı",
+   "kisa": "İşlem mantığı",
+   "grup": "3",
+   "agirlik": 12,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Geliştiricinin kodlayacağı mantığı sıralı, tek tek doğrulanabilir adımlar halinde verir.",
+   "kural": "En az 3 adım yazın. Her adım somut bir SAP nesnesi (CDS, API, sınıf, BAdI) içerir; hata durumunda hangi MSG'nin verileceği ve commit/rollback davranışı yazılır.",
+   "iyi": "STEP-02: I_PurchaseOrderAPI01'den ReleaseIsNotCompleted = boş ve LastChangeDateTime > son çalışma zamanı olan siparişleri oku. Kayıt yoksa MSG-01 (I) yaz ve bitir; veritabanı değişikliği yok.",
+   "kotu": "Gerekli kontroller yapıldıktan sonra ilgili tablolardan veriler okunur ve sisteme kaydedilir.",
+   "pratik": "RAP'te commit çerçeveye aittir: kayıt 'save sequence' içinde yapılır, COMMIT WORK yazılmaz. ABAP Cloud'da yalnız released API kullanılır; ATC bunu denetler.",
+   "besler": [
+    "3.8",
+    "3.9",
+    "4.1",
+    "5.1",
+    "6.1",
+    "7.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "ALGO_001",
+    "ALGO_002",
+    "ALGO_003"
+   ],
+   "eski_kurallar": [
+    "CONT_001",
+    "QUAL_001"
+   ],
+   "alanlar": [],
+   "en_az_satir": 3,
+   "sutunlar": [
+    {
+     "ad": "STEP ID",
+     "ipucu": "",
+     "kimlik": [
+      "STEP"
+     ]
+    },
+    {
+     "ad": "Sıra",
+     "ipucu": "1, 2, 3…"
+    },
+    {
+     "ad": "Tetikleyici / koşul",
+     "ipucu": ""
+    },
+    {
+     "ad": "İşlem",
+     "ipucu": "Ne yapılır, hangi veriyle"
+    },
+    {
+     "ad": "SAP nesnesi",
+     "ipucu": "CDS | API | sınıf | BAdI adı"
+    },
+    {
+     "ad": "Girdi → çıktı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hata durumu → MSG",
+     "ipucu": "MSG-nn"
+    },
+    {
+     "ad": "Commit / rollback",
+     "ipucu": "Ne kalıcı olur, ne geri alınır"
+    },
+    {
+     "ad": "İlgili REQ / SC",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "STEP-02",
+    "2",
+    "Job başladı",
+    "Onayı tamamlanmış ve son çalışmadan sonra değişmiş siparişleri oku; eşleme MAP-01, MAP-02",
+    "I_PurchaseOrderAPI01",
+    "Son çalışma zamanı → sipariş listesi",
+    "Kayıt yok → MSG-01",
+    "Değişiklik yok",
+    "REQ-01, SC-01"
+   ]
+  },
+  {
+   "no": "3.6",
+   "baslik": "Rapor / ALV çıktı tasarımı",
+   "kisa": "Rapor çıktısı",
+   "grup": "3",
+   "agirlik": 3,
+   "sinif": "Normal",
+   "turler": [
+    "R"
+   ],
+   "amac": "Çıktının kolonlarını, sıralamasını, toplamlarını ve navigasyonunu tanımlar.",
+   "kural": "Her kolon için başlık, kaynak alan, tip, toplam/ara toplam, varsayılan görünürlük ve navigasyon hedefini yazın.",
+   "iyi": "Kolon 5: 'Net tutar' · I_PurchaseOrderItemAPI01.NetAmount · CURR(15,2) · toplam alınır, para birimine göre · varsayılan görünür.",
+   "kotu": "Rapor çıktısında sipariş bilgileri gösterilir.",
+   "pratik": "Cloud'da rapor çıktısı çoğunlukla Fiori elements list report veya analytical list page'dir; klasik ALV yalnız Private Edition'da anlamlıdır.",
+   "besler": [
+    "3.7"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [
+    "COND_004"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "cikti_tipi",
+     "etiket": "Çıktı tipi",
+     "ipucu": "",
+     "secenekler": [
+      "Fiori elements List Report",
+      "Analytical List Page",
+      "ALV (Private)",
+      "Dosya"
+     ],
+     "karar": true
+    },
+    {
+     "anahtar": "disa_aktarma",
+     "etiket": "Dışa aktarma",
+     "ipucu": "Excel, PDF"
+    },
+    {
+     "anahtar": "varyant",
+     "etiket": "Varyant yönetimi",
+     "ipucu": "Kullanıcı / genel varyant"
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Kolon ID",
+     "ipucu": "",
+     "kimlik": [
+      "COL"
+     ]
+    },
+    {
+     "ad": "Sıra",
+     "ipucu": ""
+    },
+    {
+     "ad": "Başlık",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kaynak (CDS.alan)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tip",
+     "ipucu": ""
+    },
+    {
+     "ad": "Toplam / ara toplam",
+     "ipucu": ""
+    },
+    {
+     "ad": "Sıralama / gruplama",
+     "ipucu": ""
+    },
+    {
+     "ad": "Varsayılan görünür",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Navigasyon",
+     "ipucu": "Semantic object-action"
+    }
+   ],
+   "ornek_satir": [
+    "COL-05",
+    "5",
+    "Net tutar",
+    "I_PurchaseOrderItemAPI01.NetAmount",
+    "CURR(15,2)",
+    "Toplam, para birimine göre",
+    "—",
+    "Evet",
+    "—"
+   ]
+  },
+  {
+   "no": "3.7",
+   "baslik": "Ekran–alan–kaynak matrisi",
+   "kisa": "Ekran-alan-kaynak",
+   "grup": "3",
+   "agirlik": 6,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Her ekran alanını OData özelliğine, CDS alanına ve kaynak nesneye kadar izler; UI5 ile ABAP arasındaki sözleşmedir.",
+   "kural": "3.3'teki her UI öğesi için tek satır açın; zincir ekran → OData → CDS → kaynak olarak eksiksiz olsun.",
+   "iyi": "UI-02 'Durum' → SendLog.Status → ZC_PO_SEND_LOG.Status → ZPO_SEND_LOG.STATUS; salt okunur; değer yardımı ZI_PO_SEND_STATUS_VH.",
+   "kotu": "Ekrandaki alanlar backend'den gelir.",
+   "pratik": "Bu matris, UI5 ve ABAP geliştiricinin aynı alan adını kullanmasını garanti eder ve test verisi hazırlığını kısaltır.",
+   "besler": [
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [
+    "U"
+   ],
+   "sutunlar": [
+    {
+     "ad": "UI ID",
+     "ipucu": "3.3'ten"
+    },
+    {
+     "ad": "Ekran alanı",
+     "ipucu": ""
+    },
+    {
+     "ad": "OData entity.property",
+     "ipucu": ""
+    },
+    {
+     "ad": "CDS view.alan",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kaynak (tablo.alan / API)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Düzenlenebilir",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Değer yardımı",
+     "ipucu": ""
+    },
+    {
+     "ad": "MAP ref",
+     "ipucu": "MAP-nn"
+    }
+   ],
+   "ornek_satir": [
+    "UI-02",
+    "Durum",
+    "SendLog.Status",
+    "ZC_PO_SEND_LOG.Status",
+    "ZPO_SEND_LOG.STATUS",
+    "Hayır",
+    "ZI_PO_SEND_STATUS_VH",
+    "—"
+   ]
+  },
+  {
+   "no": "3.8",
+   "baslik": "Durum makinesi / durum sözlüğü",
+   "kisa": "Durum makinesi",
+   "grup": "3",
+   "agirlik": 5,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Nesnenin alabileceği durumları, anlamlarını ve izinli geçişleri tanımlar.",
+   "kural": "Her durum için kod, ad, anlam, giriş koşulu ve izinli geçişleri yazın; son durumları işaretleyin.",
+   "iyi": "ST-03 'E' Hata: portal 4xx/5xx döndü veya zaman aşımı. Geçişler: E → Q (yeniden gönder aksiyonu), E → X (iptal). Son durum değil.",
+   "kotu": "Kayıtların çeşitli statüleri olacaktır.",
+   "pratik": "Durum adı ve kodu ekranda, log'da ve testte aynı yazılır; tek sözlük kullanılır.",
+   "besler": [
+    "3.9",
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [
+    "U",
+    "W"
+   ],
+   "sutunlar": [
+    {
+     "ad": "ST ID",
+     "ipucu": "",
+     "kimlik": [
+      "ST"
+     ]
+    },
+    {
+     "ad": "Durum kodu",
+     "ipucu": ""
+    },
+    {
+     "ad": "Durum adı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Anlamı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Giriş koşulu (STEP)",
+     "ipucu": ""
+    },
+    {
+     "ad": "İzinli geçişler",
+     "ipucu": "Kod → kod (tetikleyici)"
+    },
+    {
+     "ad": "Son durum mu",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    }
+   ],
+   "ornek_satir": [
+    "ST-03",
+    "E",
+    "Hata",
+    "Gönderim başarısız",
+    "STEP-05 hata dalı",
+    "E → Q (resend), E → X (iptal)",
+    "Hayır"
+   ]
+  },
+  {
+   "no": "3.9",
+   "baslik": "İdempotency, tekrar ve kurtarma",
+   "kisa": "İdempotency",
+   "grup": "3",
+   "agirlik": 5,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Aynı isteğin iki kez gelmesi, yarıda kalan işlem ve yeniden deneme durumlarında sistemin ne yapacağını tanımlar.",
+   "kural": "Her konu için kararı ve ilgili STEP'i yazın: idempotency anahtarı, tekrar politikası, zaman aşımı, kısmi başarı, yeniden işleme.",
+   "iyi": "IDM-01: Anahtar = PurchaseOrder + LastChangeDateTime; aynı anahtar ikinci kez gelirse POST atılmaz, log'a MSG-06 (I) yazılır.",
+   "kotu": "Hata durumunda işlem tekrar denenecektir.",
+   "pratik": "Arayüzlerde 'fallback' davranışı yazılmazsa üretimde veri tekrarı veya kayıp oluşur; her tekrar senaryosunun bir testi olmalıdır.",
+   "besler": [
+    "6.1",
+    "7.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [
+    "I",
+    "C"
+   ],
+   "sutunlar": [
+    {
+     "ad": "IDM ID",
+     "ipucu": "",
+     "kimlik": [
+      "IDM"
+     ]
+    },
+    {
+     "ad": "Konu",
+     "ipucu": "",
+     "secenekler": [
+      "İdempotency anahtarı",
+      "Yinelenen istek",
+      "Tekrar politikası",
+      "Zaman aşımı",
+      "Kısmi başarı",
+      "Yeniden işleme",
+      "Kilitleme"
+     ]
+    },
+    {
+     "ad": "Karar",
+     "ipucu": "Somut değerlerle",
+     "karar": true
+    },
+    {
+     "ad": "İlgili STEP",
+     "ipucu": ""
+    },
+    {
+     "ad": "Doğrulayan TC",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "IDM-02",
+    "Tekrar politikası",
+    "HTTP 5xx ve zaman aşımında 3 deneme: 1, 5, 15 dk; sonra Status = 'E'",
+    "STEP-05",
+    "TC-04"
+   ]
+  },
+  {
+   "no": "3.10",
+   "baslik": "Entegrasyon sözleşmeleri",
+   "kisa": "Entegrasyon",
+   "grup": "3",
+   "agirlik": 5,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Karşı sistemle yapılan teknik anlaşmayı kayıt altına alır: uç nokta, kimlik doğrulama, SLA, hata sözleşmesi.",
+   "kural": "Her entegrasyon için uç noktayı, communication scenario/arrangement adını, kimlik doğrulamayı, SLA'yı ve HTTP kodu → davranış eşlemesini yazın.",
+   "iyi": "INT-01: POST /api/v1/orders · OAuth 2.0 client credentials · ZCS_PO_SUPPLIER_PORTAL · 201 başarı, 409 yinelenen (başarı sayılır), 4xx kalıcı hata, 5xx tekrar denenir · yanıt ≤ 3 sn.",
+   "kotu": "Portal ile REST üzerinden haberleşilecektir.",
+   "pratik": "Public Cloud'da dış bağlantı communication scenario → communication arrangement → communication system zinciriyle kurulur; arrangement her sistemde elle oluşturulur.",
+   "besler": [
+    "6.1",
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [
+    "I"
+   ],
+   "sutunlar": [
+    {
+     "ad": "INT ID",
+     "ipucu": "",
+     "kimlik": [
+      "INT"
+     ]
+    },
+    {
+     "ad": "Karşı sistem",
+     "ipucu": ""
+    },
+    {
+     "ad": "Yön",
+     "ipucu": "",
+     "secenekler": [
+      "Giden",
+      "Gelen"
+     ]
+    },
+    {
+     "ad": "Protokol / format",
+     "ipucu": "",
+     "karar": true
+    },
+    {
+     "ad": "Uç nokta / servis",
+     "ipucu": ""
+    },
+    {
+     "ad": "Communication scenario",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kimlik doğrulama",
+     "ipucu": "",
+     "karar": true
+    },
+    {
+     "ad": "SLA / hacim",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hata sözleşmesi",
+     "ipucu": "Kod → davranış",
+     "karar": true
+    },
+    {
+     "ad": "Versiyonlama",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "INT-01",
+    "Tedarikçi portalı",
+    "Giden",
+    "REST / JSON",
+    "POST /api/v1/orders",
+    "ZCS_PO_SUPPLIER_PORTAL",
+    "OAuth 2.0 client credentials",
+    "≤ 3 sn; 120/gün",
+    "201 ok · 409 ok · 4xx kalıcı · 5xx tekrar",
+    "URL'de v1"
+   ]
+  },
+  {
+   "no": "3.11",
+   "baslik": "Performans kriterleri",
+   "kisa": "Performans",
+   "grup": "3",
+   "agirlik": 3,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Kabul edilebilir süreyi ve veri hacmini ölçülebilir hedeflerle tanımlar.",
+   "kural": "Her hedef bir senaryo, bir hacim ve bir ölçüm yöntemi içerir; 'hızlı' gibi sıfat kullanılmaz.",
+   "iyi": "PERF-01: 500 siparişlik job çalışması ≤ 10 dk (Application Jobs uygulamasındaki çalışma süresi); liste ilk açılış ≤ 2 sn, 10.000 log satırı.",
+   "kotu": "Uygulama performanslı çalışmalıdır.",
+   "pratik": "Hacim bilgisi olmadan teknik tasarım yapılamaz; hedefler test senaryosuna bağlanır.",
+   "besler": [
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [
+    "R",
+    "I",
+    "C"
+   ],
+   "sutunlar": [
+    {
+     "ad": "PERF ID",
+     "ipucu": "",
+     "kimlik": [
+      "PERF"
+     ]
+    },
+    {
+     "ad": "Senaryo",
+     "ipucu": ""
+    },
+    {
+     "ad": "Veri hacmi",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hedef",
+     "ipucu": "Süre, bellek, adet",
+     "karar": true
+    },
+    {
+     "ad": "Ölçüm yöntemi",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tasarım önlemi",
+     "ipucu": "Sayfalama, paketleme, indeks…"
+    }
+   ],
+   "ornek_satir": [
+    "PERF-01",
+    "Job çalışması",
+    "500 sipariş / çalışma",
+    "≤ 10 dk",
+    "Application Jobs çalışma süresi",
+    "100'lük paketlerle işleme"
+   ]
+  },
+  {
+   "no": "4.1",
+   "baslik": "Geliştirilecek nesneler listesi",
+   "kisa": "Nesne kataloğu",
+   "grup": "4",
+   "agirlik": 4,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Dokümanda adı geçen tüm özel ve standart SAP nesnelerinin tek kataloğudur.",
+   "kural": "Dokümanda geçen her nesne burada bir kez tanımlanır ve buradaki her nesne dokümanda en az bir STEP, MAP veya UI satırında kullanılır. SAP tipi listeden seçilir (references/sap-sozluk.md); özel adlar projenin adlandırma kuralına uyar.",
+   "iyi": "OBJ-03 · ZBP_R_PO_SEND_LOG · CLAS (behavior implementation) · Yeni · paket ZMM_PO_SEND · ABAP for Cloud Development · STEP-04, STEP-07.",
+   "kotu": "Gerekli sınıflar ve tablolar oluşturulacaktır.",
+   "pratik": "ABAP Cloud'da nesneler 'ABAP for Cloud Development' dil versiyonuyla yazılır; kullanılan SAP nesnesinin release contract'ı (C1/C2) katalogda görünmelidir.",
+   "besler": [
+    "4.2",
+    "4.3",
+    "4.4",
+    "6.3",
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "OBJ_001",
+    "SAP_001",
+    "SAP_002",
+    "SAP_003",
+    "SAP_004"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "OBJ ID",
+     "ipucu": "",
+     "kimlik": [
+      "OBJ"
+     ]
+    },
+    {
+     "ad": "Nesne adı",
+     "ipucu": "Teknik ad"
+    },
+    {
+     "ad": "SAP tipi",
+     "ipucu": "TABL, DDLS, BDEF, SRVD, SRVB, CLAS, MSAG, SUSO … ya da adıyla: BAdI, API, IAM app, Application job … (tam liste: references/sap-sozluk.md)"
+    },
+    {
+     "ad": "Kaynak",
+     "ipucu": "",
+     "secenekler": [
+      "Z",
+      "SAP"
+     ]
+    },
+    {
+     "ad": "Yeni / değişen",
+     "ipucu": "",
+     "secenekler": [
+      "Yeni",
+      "Değişen",
+      "Kullanılan"
+     ]
+    },
+    {
+     "ad": "Paket / yazılım bileşeni",
+     "ipucu": ""
+    },
+    {
+     "ad": "Dil versiyonu / release contract",
+     "ipucu": ""
+    },
+    {
+     "ad": "Açıklama",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kullanıldığı yer",
+     "ipucu": "STEP / MAP / UI"
+    }
+   ],
+   "ornek_satir": [
+    "OBJ-01",
+    "ZPO_SEND_LOG",
+    "TABL",
+    "Z",
+    "Yeni",
+    "ZMM_PO_SEND",
+    "ABAP for Cloud Development",
+    "Gönderim log tablosu",
+    "STEP-04, STEP-06"
+   ]
+  },
+  {
+   "no": "4.2",
+   "baslik": "DDIC yapıları",
+   "kisa": "DDIC",
+   "grup": "4",
+   "agirlik": 4,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Özel tablo, yapı ve veri elemanlarını alan düzeyinde tanımlar.",
+   "kural": "Her alan için anahtar bilgisi, veri elemanı veya tip, uzunluk ve değer aralığı yazın. Nesne adı 4.1'deki OBJ satırıyla aynı olmalı.",
+   "iyi": "ZPO_SEND_LOG · STATUS · anahtar değil · ZMM_PO_SEND_STATUS (CHAR 1) · sabit değerler Q, S, E, X.",
+   "kotu": "Log tablosunda gerekli alanlar bulunacaktır.",
+   "pratik": "Alan adları 3.4 ve 3.7'deki adlarla birebir aynı yazılır; aynı kavram için tek veri elemanı kullanılır.",
+   "besler": [
+    "6.3"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "SAP_003",
+    "SAP_004"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Nesne (OBJ)",
+     "ipucu": "Tablo / yapı adı"
+    },
+    {
+     "ad": "Alan",
+     "ipucu": ""
+    },
+    {
+     "ad": "Anahtar",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Veri elemanı / tip",
+     "ipucu": ""
+    },
+    {
+     "ad": "Uzunluk",
+     "ipucu": ""
+    },
+    {
+     "ad": "Açıklama",
+     "ipucu": ""
+    },
+    {
+     "ad": "Değer aralığı / domain",
+     "ipucu": ""
+    },
+    {
+     "ad": "Not",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "ZPO_SEND_LOG",
+    "STATUS",
+    "Hayır",
+    "ZMM_PO_SEND_STATUS",
+    "CHAR 1",
+    "Gönderim durumu",
+    "Q, S, E, X",
+    "3.8 ile aynı"
+   ]
+  },
+  {
+   "no": "4.3",
+   "baslik": "Genişletmeler (BAdI / Exit)",
+   "kisa": "Genişletmeler",
+   "grup": "4",
+   "agirlik": 3,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Standart davranışa müdahale edilen noktaları ve müdahalenin mantığını tanımlar.",
+   "kural": "Genişletme noktasının teknik adını, released olup olmadığını, filtre değerini, tetiklenme anını ve mantığı (STEP ref) yazın.",
+   "iyi": "EXT-01: BAdI MM_PUR_S4_PO_MODIFY_HEADER (released) · uygulama ZMM_PO_HDR_PORTAL_FLAG · onay sonrası özel alan YY1_PortalSend_PDH = 'X' · STEP-01.",
+   "kotu": "Gerekirse uygun bir BAdI kullanılacaktır.",
+   "pratik": "Public Cloud'da yalnız released genişletme noktaları kullanılabilir; implicit enhancement ve modifikasyon clean core seviye D'dir.",
+   "besler": [
+    "6.3"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "SAP_003",
+    "SAP_004"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "EXT ID",
+     "ipucu": "",
+     "kimlik": [
+      "EXT"
+     ]
+    },
+    {
+     "ad": "Genişletme noktası",
+     "ipucu": "BAdI / özel alan / özel mantık adı"
+    },
+    {
+     "ad": "Released mı",
+     "ipucu": "",
+     "secenekler": [
+      "Evet",
+      "Hayır"
+     ]
+    },
+    {
+     "ad": "Uygulama adı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Filtre",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tetiklenme anı",
+     "ipucu": ""
+    },
+    {
+     "ad": "Mantık → STEP",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "EXT-01",
+    "MM_PUR_S4_PO_MODIFY_HEADER",
+    "Evet",
+    "ZMM_PO_HDR_PORTAL_FLAG",
+    "—",
+    "Sipariş kaydı öncesi",
+    "STEP-01"
+   ]
+  },
+  {
+   "no": "4.4",
+   "baslik": "Form tasarımı",
+   "kisa": "Form",
+   "grup": "4",
+   "agirlik": 3,
+   "sinif": "Normal",
+   "turler": [
+    "F"
+   ],
+   "amac": "Çıktı formunun düzenini, alan kaynaklarını ve basım koşullarını tanımlar.",
+   "kural": "Form teknolojisini, çıktı kanalını ve dili yazın; her form alanı için bölgeyi, kaynağı, biçimi ve gösterim koşulunu verin.",
+   "iyi": "Alan 'Teslim tarihi' · kalem tablosu · I_PurchaseOrderScheduleLineAPI01.ScheduleLineDeliveryDate · GG.AA.YYYY · yalnız kalem kategorisi standart ise.",
+   "kotu": "Form müşterinin istediği şekilde tasarlanacaktır.",
+   "pratik": "Form FS'inde düzen, çıktı kanalları ve basım koşulları birlikte bulunur; örnek çıktı görseli eklenir.",
+   "besler": [
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [
+    "COND_005"
+   ],
+   "alanlar": [
+    {
+     "anahtar": "form_teknolojisi",
+     "etiket": "Form teknolojisi",
+     "ipucu": "Örn. Adobe Forms (form şablonu)",
+     "karar": true
+    },
+    {
+     "anahtar": "cikti_kanal",
+     "etiket": "Çıktı tipi ve kanal",
+     "ipucu": "Yazdırma, e-posta, EDI"
+    },
+    {
+     "anahtar": "dil_kagit",
+     "etiket": "Dil ve kağıt",
+     "ipucu": "Örn. TR, EN · A4"
+    },
+    {
+     "anahtar": "tetikleme",
+     "etiket": "Tetikleme koşulu",
+     "ipucu": "Çıktı belirleme kuralı"
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Alan ID",
+     "ipucu": "",
+     "kimlik": [
+      "FRM"
+     ]
+    },
+    {
+     "ad": "Form bölgesi",
+     "ipucu": "",
+     "secenekler": [
+      "Başlık",
+      "Kalem",
+      "Alt bilgi"
+     ]
+    },
+    {
+     "ad": "Etiket",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kaynak",
+     "ipucu": "CDS.alan"
+    },
+    {
+     "ad": "Biçim",
+     "ipucu": ""
+    },
+    {
+     "ad": "Gösterim koşulu",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "FRM-07",
+    "Kalem",
+    "Teslim tarihi",
+    "I_PurchaseOrderScheduleLineAPI01.ScheduleLineDeliveryDate",
+    "GG.AA.YYYY",
+    "Her kalemde"
+   ]
+  },
+  {
+   "no": "5.1",
+   "baslik": "Hata kontrolleri ve mesajlar",
+   "kisa": "Hata ve mesajlar",
+   "grup": "5",
+   "agirlik": 6,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Hangi durumda hangi mesajın, hangi tipte verileceğini ve sistemin ne yapacağını tanımlar.",
+   "kural": "En az iki farklı hata durumu yazın. Durumlar anlatılan kurallardan çıkar: zorunlu girdi eksik, yetki yok, veri bulunamadı, karşı sistem yanıt vermiyor. Her satırda tip (E/W/I/S/A), mesaj metni, tetiklendiği STEP/UI ve sistemin davranışı bulunur. Çerçevenin kendi verdiği mesajda sınıf sütununa 'Standart (çerçeve mesajı)' yazılır; özel mesajın sınıfı ve numarası teknik taslaktır.",
+   "iyi": "MSG-03 · E · ZMM_PO_SEND 003 · 'Sipariş &1 portala gönderilemedi: HTTP &2' · STEP-05 · Status = 'E', sonraki siparişe geçilir.",
+   "kotu": "Hata oluşursa kullanıcıya uygun mesaj gösterilir.",
+   "pratik": "Mesaj, kullanıcının bir sonraki adımı anlayacağı şekilde yazılır. RAP'te mesajlar 'reported' yapısıyla döner; istenmeyen durumlar EARS 'If … then' kalıbıyla ifade edilir.",
+   "besler": [
+    "5.4",
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "ERR_001",
+    "ERR_002",
+    "ERR_003"
+   ],
+   "eski_kurallar": [
+    "QUAL_006"
+   ],
+   "alanlar": [],
+   "en_az_satir": 2,
+   "sutunlar": [
+    {
+     "ad": "MSG ID",
+     "ipucu": "",
+     "kimlik": [
+      "MSG"
+     ]
+    },
+    {
+     "ad": "Kontrol / durum",
+     "ipucu": "Ne zaman oluşur"
+    },
+    {
+     "ad": "Nerede",
+     "ipucu": "STEP-nn / UI-nn"
+    },
+    {
+     "ad": "Tip",
+     "ipucu": "",
+     "secenekler": [
+      "E",
+      "W",
+      "I",
+      "S",
+      "A"
+     ]
+    },
+    {
+     "ad": "Mesaj sınıfı – no",
+     "ipucu": ""
+    },
+    {
+     "ad": "Mesaj metni",
+     "ipucu": "&1 &2 değişkenleriyle"
+    },
+    {
+     "ad": "Sistem davranışı",
+     "ipucu": "Durur, devam eder, geri alır"
+    },
+    {
+     "ad": "Kullanıcının yapacağı",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "MSG-03",
+    "Portal 4xx/5xx döndü",
+    "STEP-05",
+    "E",
+    "ZMM_PO_SEND 003",
+    "Sipariş &1 portala gönderilemedi: HTTP &2",
+    "Status = 'E'; sonraki siparişe geçilir",
+    "İzleme uygulamasından 'Yeniden gönder'"
+   ]
+  },
+  {
+   "no": "5.2",
+   "baslik": "Backend yetkilendirme",
+   "kisa": "Backend yetki",
+   "grup": "5",
+   "agirlik": 4,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Sunucu tarafında hangi yetki nesnesinin, hangi alan ve değerle, nerede kontrol edileceğini tanımlar.",
+   "kural": "Yetki nesnesini, alanlarını, aktiviteyi, kontrol noktasını ve başarısızlıkta verilecek MSG'yi yazın.",
+   "iyi": "AUTH-01: ZMM_POSND · BUKRS = siparişin şirket kodu, ACTVT = 02 · BDEF 'authorization master (instance)' içinde 'resend' aksiyonu için · başarısızsa MSG-07 (E).",
+   "kotu": "Yetkisi olmayan kullanıcılar işlem yapamayacaktır.",
+   "pratik": "Public Cloud'da yetki nesnesi restriction type/field üzerinden business role'de kısıtlanır: Read, Write ve Value Help erişimleri ayrı ayrı tanımlanır.",
+   "besler": [
+    "6.1",
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "AUTH_001"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "AUTH ID",
+     "ipucu": "",
+     "kimlik": [
+      "AUTH"
+     ]
+    },
+    {
+     "ad": "Yetki nesnesi",
+     "ipucu": ""
+    },
+    {
+     "ad": "Alanlar ve değerler",
+     "ipucu": ""
+    },
+    {
+     "ad": "Aktivite",
+     "ipucu": "01 | 02 | 03 | 06 | 16"
+    },
+    {
+     "ad": "Kontrol noktası",
+     "ipucu": "STEP / BDEF authorization"
+    },
+    {
+     "ad": "Restriction type / field",
+     "ipucu": ""
+    },
+    {
+     "ad": "Başarısızlık → MSG",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "AUTH-01",
+    "ZMM_POSND",
+    "BUKRS = sipariş şirket kodu",
+    "02",
+    "BDEF instance authorization, aksiyon 'resend'",
+    "Şirket kodu (leading)",
+    "MSG-07"
+   ]
+  },
+  {
+   "no": "5.3",
+   "baslik": "Frontend yetkilendirme",
+   "kisa": "Frontend yetki",
+   "grup": "5",
+   "agirlik": 4,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Uygulamanın kime, hangi katalog ve rol üzerinden görüneceğini tanımlar.",
+   "kural": "IAM app, business catalog, business role şablonu ve launchpad yerleşimini yazın; yetkiye göre gizlenen/pasifleşen UI öğelerini belirtin.",
+   "iyi": "AUTH-02: IAM app ZMM_PO_SEND_MON_EXT · business catalog ZMM_BC_PO_SEND_MON · rol şablonu 'Satınalmacı' · 'Yeniden gönder' butonu Write erişimi yoksa pasif.",
+   "kotu": "Uygulama ilgili kullanıcılara açılacaktır.",
+   "pratik": "Özel uygulama bir IAM app ile business catalog'a, katalog da business role'e bağlanır. Aynı kullanıcıdaki ikinci rolde 'Unrestricted' varsa kısıt geçersiz kalır.",
+   "besler": [
+    "6.1",
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "AUTH_001"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "AUTH ID",
+     "ipucu": "",
+     "kimlik": [
+      "AUTH"
+     ]
+    },
+    {
+     "ad": "IAM app",
+     "ipucu": ""
+    },
+    {
+     "ad": "Business catalog",
+     "ipucu": ""
+    },
+    {
+     "ad": "Business role (şablon)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Space / page / tile",
+     "ipucu": ""
+    },
+    {
+     "ad": "Gizlenen / pasif UI öğesi",
+     "ipucu": "UI-nn ve koşul"
+    },
+    {
+     "ad": "Erişim türü",
+     "ipucu": "Read | Write | Value help"
+    }
+   ],
+   "ornek_satir": [
+    "AUTH-02",
+    "ZMM_PO_SEND_MON_EXT",
+    "ZMM_BC_PO_SEND_MON",
+    "Satınalmacı (BR_PURCHASER kopyası)",
+    "Satınalma / Sipariş izleme / Gönderim izleme",
+    "UI-04: Write yoksa pasif",
+    "Read, Write"
+   ]
+  },
+  {
+   "no": "5.4",
+   "baslik": "Mesaj sözlüğü",
+   "kisa": "Mesaj sözlüğü",
+   "grup": "5",
+   "agirlik": 4,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Mesaj sınıfındaki tüm mesajların iki dilde tek listesini tutar.",
+   "kural": "5.1'deki her MSG için mesaj sınıfı, numara, tip, TR ve EN kısa metin ile değişkenleri yazın.",
+   "iyi": "ZMM_PO_SEND · 003 · E · 'Sipariş &1 portala gönderilemedi: HTTP &2' · 'Purchase order &1 could not be sent: HTTP &2' · &1 sipariş no, &2 HTTP kodu.",
+   "kotu": "Mesajlar geliştirme sırasında belirlenecektir.",
+   "pratik": "Mesaj metinleri çevrilebilir olmalı; metin kod içine gömülmez, mesaj sınıfında tutulur.",
+   "besler": [
+    "6.1"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "ERR_003"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [
+    "U"
+   ],
+   "sutunlar": [
+    {
+     "ad": "MSG ref",
+     "ipucu": "5.1'deki MSG-nn"
+    },
+    {
+     "ad": "Kısa metin (EN)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Değişkenler",
+     "ipucu": "&1…&4 anlamları"
+    },
+    {
+     "ad": "Uzun metin",
+     "ipucu": "",
+     "secenekler": [
+      "Var",
+      "Yok"
+     ]
+    }
+   ],
+   "birlestir": {
+    "kaynak": "5.1",
+    "ekle": [
+     [
+      "Mesaj sınıfı – no",
+      4
+     ],
+     [
+      "Tip",
+      3
+     ],
+     [
+      "Kısa metin (TR)",
+      5
+     ]
+    ]
+   },
+   "not": "Mesaj sınıfı, tip ve TR metin 5.1'den birleştirilir; burada yalnız bu 4 sütun yazılır.",
+   "ornek_satir": [
+    "MSG-03",
+    "Purchase order &1 could not be sent: HTTP &2",
+    "&1 sipariş no, &2 HTTP kodu",
+    "Var"
+   ]
+  },
+  {
+   "no": "6.1",
+   "baslik": "Test senaryoları ve verileri",
+   "kisa": "Test senaryoları",
+   "grup": "6",
+   "agirlik": 10,
+   "sinif": "Kritik",
+   "turler": [
+    "*"
+   ],
+   "amac": "Geliştirmenin kabul edilmesi için çalıştırılacak senaryoları gerçek veriyle tanımlar.",
+   "kural": "En az 2 senaryo; en az biri mutlu yol, en az biri negatif/sınır. Her senaryoda gerçek test verisi (belge no, tedarikçi, şirket kodu), adımlar, beklenen sonuç ve beklenen MSG bulunur.",
+   "iyi": "TC-03 Negatif: sipariş 4500001240, tedarikçi 17300001, portal 500 döner → 3 deneme sonrası Status = 'E', MSG-03 (E) log'da, izleme uygulamasında kırmızı.",
+   "kotu": "Çeşitli siparişlerle test edilir ve doğru çalıştığı görülür.",
+   "pratik": "Kabul kriteri 'X olduğunda Y, Z'de gözlenir' biçiminde yazılır. ABAP Unit birim testleri ve OPA5/QUnit UI testleri test tipi olarak belirtilir.",
+   "besler": [
+    "6.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "TEST_001",
+    "TEST_002"
+   ],
+   "eski_kurallar": [
+    "CONT_002",
+    "QUAL_004",
+    "QUAL_005"
+   ],
+   "alanlar": [],
+   "en_az_satir": 2,
+   "sutunlar": [
+    {
+     "ad": "TC ID",
+     "ipucu": "",
+     "kimlik": [
+      "TC"
+     ]
+    },
+    {
+     "ad": "Senaryo türü",
+     "ipucu": "",
+     "secenekler": [
+      "Mutlu yol",
+      "Negatif",
+      "Sınır"
+     ]
+    },
+    {
+     "ad": "Kapsadığı REQ / SC",
+     "ipucu": ""
+    },
+    {
+     "ad": "Ön koşul ve test verisi",
+     "ipucu": "Gerçek belge no, ana veri"
+    },
+    {
+     "ad": "Adımlar",
+     "ipucu": ""
+    },
+    {
+     "ad": "Beklenen sonuç",
+     "ipucu": "Gözlenebilir"
+    },
+    {
+     "ad": "Beklenen MSG",
+     "ipucu": "MSG-nn"
+    },
+    {
+     "ad": "Test tipi",
+     "ipucu": "",
+     "secenekler": [
+      "ABAP Unit",
+      "Entegrasyon",
+      "UI (OPA5)",
+      "UAT"
+     ]
+    },
+    {
+     "ad": "Durum",
+     "ipucu": "",
+     "secenekler": [
+      "Planlandı",
+      "Geçti",
+      "Kaldı"
+     ]
+    }
+   ],
+   "ornek_satir": [
+    "TC-01",
+    "Mutlu yol",
+    "REQ-01, SC-01",
+    "Sipariş 4500001234, tedarikçi 17300001, şirket kodu 1710, onaylı",
+    "1) Job'u çalıştır 2) İzleme uygulamasını aç",
+    "Portal 201; log Status = 'S'; gönderim ≤ 5 dk",
+    "MSG-02",
+    "Entegrasyon",
+    "Planlandı"
+   ]
+  },
+  {
+   "no": "6.2",
+   "baslik": "İzlenebilirlik matrisi",
+   "kisa": "İzlenebilirlik",
+   "grup": "6",
+   "agirlik": 4,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Her gereksinimin tasarlandığını, kodlandığını ve test edildiğini tek tabloda kanıtlar.",
+   "kural": "Her REQ için tek satır: SC → STEP → OBJ/MAP → MSG → TC. Boş hücre = kapsanmamış gereksinim.",
+   "iyi": "REQ-01 → SC-01, SC-03 → STEP-01, STEP-02 → OBJ-01, OBJ-03 → MAP-01, MAP-02 → MSG-01, MSG-03 → TC-01, TC-03 · Kapsama: Tam.",
+   "kotu": "Tüm gereksinimler test edilmiştir.",
+   "pratik": "İki yönlü izlenebilirlik: her REQ en az bir TC'ye, her TC en az bir REQ'e bağlanır (ISO/IEC/IEEE 29148).",
+   "besler": [],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 0,
+   "bonus_acilis": [
+    "*"
+   ],
+   "turetilmis": true,
+   "sutunlar": [
+    {
+     "ad": "REQ",
+     "ipucu": ""
+    },
+    {
+     "ad": "SC",
+     "ipucu": ""
+    },
+    {
+     "ad": "STEP",
+     "ipucu": ""
+    },
+    {
+     "ad": "OBJ",
+     "ipucu": ""
+    },
+    {
+     "ad": "MAP",
+     "ipucu": ""
+    },
+    {
+     "ad": "MSG",
+     "ipucu": ""
+    },
+    {
+     "ad": "TC",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kapsama",
+     "ipucu": ""
+    }
+   ],
+   "not": "Tamamen türetilir: kimlik atıflarından betik üretir. JSON'a yazılmaz."
+  },
+  {
+   "no": "6.3",
+   "baslik": "Kod kalitesi ve doğrulama kanıtı",
+   "kisa": "Kod kalitesi",
+   "grup": "6",
+   "agirlik": 3,
+   "sinif": "Bonus",
+   "turler": [
+    "*"
+   ],
+   "amac": "Kodun teslimden önce hangi araçlarla doğrulandığını ve sonucunu kayıt altına alır.",
+   "kural": "Her kanıt için aracı, hedefi, sonucu ve kanıtın konumunu yazın. Açık bulgu varsa 7.3'e ve hazırlık cezası tablosuna işleyin.",
+   "iyi": "QA-01: ATC, varyant ABAP_CLOUD_DEVELOPMENT_DEFAULT · hedef öncelik 1–2 bulgu = 0 · sonuç 0/0 · kanıt: ATC sonuç ekran görüntüsü, 20.05.2026.",
+   "kotu": "Kod kalite kontrollerinden geçmiştir.",
+   "pratik": "ABAP Test Cockpit clean core yönetişiminin ana aracıdır; öncelik 1 ve 2 bulgular yayını engeller, istisnalar (exemption) kayıt altına alınır.",
+   "besler": [
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "bonus_acilis": [],
+   "sutunlar": [
+    {
+     "ad": "QA ID",
+     "ipucu": "",
+     "kimlik": [
+      "QA"
+     ]
+    },
+    {
+     "ad": "Kanıt",
+     "ipucu": "",
+     "secenekler": [
+      "ATC",
+      "ABAP Unit",
+      "CVA / güvenlik",
+      "UI5 lint",
+      "OPA5-QUnit",
+      "Kod incelemesi",
+      "İstisna kaydı"
+     ]
+    },
+    {
+     "ad": "Araç / varyant",
+     "ipucu": ""
+    },
+    {
+     "ad": "Hedef",
+     "ipucu": ""
+    },
+    {
+     "ad": "Sonuç",
+     "ipucu": ""
+    },
+    {
+     "ad": "Kanıt konumu",
+     "ipucu": ""
+    },
+    {
+     "ad": "Tarih",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "QA-01",
+    "ATC",
+    "ABAP_CLOUD_DEVELOPMENT_DEFAULT",
+    "Öncelik 1–2 bulgu = 0",
+    "0 / 0",
+    "Ek-3 ATC sonucu",
+    "20.05.2026"
+   ]
+  },
+  {
+   "no": "7.1",
+   "baslik": "Loglama ve izlenebilirlik",
+   "kisa": "Loglama",
+   "grup": "7",
+   "agirlik": 3,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Üretimde sorun çıktığında neye bakılacağını tanımlar.",
+   "kural": "Her log olayı için seviye, hedef (application log nesnesi/alt nesnesi), yazılan anahtar alanlar ve saklama süresi yazılır.",
+   "iyi": "LOG-02: Gönderim hatası · Error · Application Log nesnesi ZMM_PO_SEND / alt nesne OUTBOUND · sipariş no, HTTP kodu, deneme sayısı · 90 gün.",
+   "kotu": "Hatalar loglanacaktır.",
+   "pratik": "ABAP Cloud'da application log için released API kullanılır; log anahtarı (sipariş no) ile izleme uygulamasından log'a navigasyon planlanır.",
+   "besler": [
+    "7.2"
+   ],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "LOG ID",
+     "ipucu": "",
+     "kimlik": [
+      "LOG"
+     ]
+    },
+    {
+     "ad": "Olay",
+     "ipucu": ""
+    },
+    {
+     "ad": "Seviye",
+     "ipucu": "",
+     "secenekler": [
+      "Info",
+      "Warning",
+      "Error"
+     ]
+    },
+    {
+     "ad": "Hedef",
+     "ipucu": "Application log nesne / alt nesne"
+    },
+    {
+     "ad": "İçerik (anahtar alanlar)",
+     "ipucu": ""
+    },
+    {
+     "ad": "Saklama süresi",
+     "ipucu": ""
+    },
+    {
+     "ad": "İzleme uygulaması",
+     "ipucu": ""
+    }
+   ],
+   "ornek_satir": [
+    "LOG-02",
+    "Gönderim hatası",
+    "Error",
+    "ZMM_PO_SEND / OUTBOUND",
+    "Sipariş no, HTTP kodu, deneme sayısı",
+    "90 gün",
+    "Gönderim izleme (UI-01) → Application Logs"
+   ]
+  },
+  {
+   "no": "7.2",
+   "baslik": "Transport ve devreye alma",
+   "kisa": "Transport",
+   "grup": "7",
+   "agirlik": 3,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Nesnelerin hangi sırayla, hangi taşıma aracıyla canlıya gideceğini ve elle yapılacak adımları tanımlar.",
+   "kural": "Taşıma birimlerini (transport request, software collection) ve her sistemde elle yapılacak adımları sırayla yazın; geri alma planını ekleyin.",
+   "iyi": "Sıra 3: Test ve üretimde communication arrangement ZCS_PO_SUPPLIER_PORTAL elle oluşturulur (Basis, portal OAuth istemci bilgileriyle); geri alma: arrangement pasifleştirilir.",
+   "kotu": "Geliştirme canlıya taşınacaktır.",
+   "pratik": "3 sistemli Public Cloud yapısında geliştirici nesneleri transport request ile, key user genişletmeleri software collection ile taşınır; iş yapılandırması customizing tenant'ından gelir.",
+   "besler": [],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002"
+   ],
+   "eski_kurallar": [],
+   "alanlar": [
+    {
+     "anahtar": "bilesen_paket",
+     "etiket": "Yazılım bileşeni / paket",
+     "ipucu": ""
+    },
+    {
+     "anahtar": "transportlar",
+     "etiket": "Transport request(ler)",
+     "ipucu": "Bilinmiyorsa BİLGİ BEKLİYOR"
+    },
+    {
+     "anahtar": "software_collection",
+     "etiket": "Software collection (key user)",
+     "ipucu": "Yoksa —"
+    },
+    {
+     "anahtar": "canli_tarihi",
+     "etiket": "Planlanan canlı tarihi",
+     "ipucu": ""
+    }
+   ],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "Sıra",
+     "ipucu": ""
+    },
+    {
+     "ad": "Adım",
+     "ipucu": ""
+    },
+    {
+     "ad": "Taşınan / yapılan",
+     "ipucu": "Transport, collection, elle adım"
+    },
+    {
+     "ad": "Sistem",
+     "ipucu": "Geliştirme | Test | Üretim"
+    },
+    {
+     "ad": "Sorumlu",
+     "ipucu": ""
+    },
+    {
+     "ad": "Geri alma",
+     "ipucu": "",
+     "karar": true
+    }
+   ],
+   "ornek_satir": [
+    "3",
+    "Communication arrangement oluştur",
+    "ZCS_PO_SUPPLIER_PORTAL, elle",
+    "Test, Üretim",
+    "Basis",
+    "Arrangement pasifleştirilir"
+   ]
+  },
+  {
+   "no": "7.3",
+   "baslik": "Açık noktalar",
+   "kisa": "Açık noktalar",
+   "grup": "7",
+   "agirlik": 2,
+   "sinif": "Normal",
+   "turler": [
+    "*"
+   ],
+   "amac": "Henüz karara bağlanmamış her konuyu sahibi ve tarihiyle görünür kılar.",
+   "kural": "Her açık noktanın sahibi (ad ya da rol) ve hazırlık cezası kategorisi olur; hedef tarih yalnız verilmişse yazılır, yoksa — kalır. Bu satırlarda BEKLİYOR işareti kullanılmaz. Karar verilince 'Karar' sütunu doldurulur ve durum 'Kararlaştırıldı' olur. Hiç açık nokta yoksa bölüm 'Açık nokta yok' gerekçesiyle geçersiz kılınır.",
+   "iyi": "OPEN-02: Portal 409 yanıtı başarı mı sayılacak? · Sahibi: portal ekibi · 22.05.2026 · Kategori: Tasarım/sözleşme açığı · Karar: başarı sayılır (INT-01 güncellendi).",
+   "kotu": "Bazı konular netleştirilecektir.",
+   "pratik": "Açık nokta bırakılmış FS geliştirmeye verilmez ya da açık noktanın etkilediği bölüm açıkça işaretlenir; imzalı sürüm arşivlenir.",
+   "besler": [],
+   "kurallar": [
+    "GEN_001",
+    "GEN_002",
+    "OPEN_001"
+   ],
+   "eski_kurallar": [
+    "CONT_003"
+   ],
+   "alanlar": [],
+   "en_az_satir": 1,
+   "sutunlar": [
+    {
+     "ad": "OPEN ID",
+     "ipucu": "",
+     "kimlik": [
+      "OPEN"
+     ]
+    },
+    {
+     "ad": "Konu",
+     "ipucu": "Soru biçiminde; 'DOĞRULANACAK nesneler: …' ve 'Teknik taslak geliştirici onayı bekliyor: …' satırları dışında"
+    },
+    {
+     "ad": "Etkilediği bölüm",
+     "ipucu": "Bölüm numaraları, virgülle: 3.4, 3.5"
+    },
+    {
+     "ad": "Sahibi",
+     "ipucu": "Ad ya da rol"
+    },
+    {
+     "ad": "Hedef tarih",
+     "ipucu": "Verilmişse; yoksa —"
+    },
+    {
+     "ad": "Durum",
+     "ipucu": "",
+     "secenekler": [
+      "Açık",
+      "Kararlaştırıldı",
+      "Kapandı"
+     ]
+    },
+    {
+     "ad": "Karar",
+     "ipucu": "Karar verilene kadar —"
+    },
+    {
+     "ad": "Hazırlık cezası kategorisi",
+     "ipucu": "",
+     "secenekler": [
+      "Yayına alınmamış nesne",
+      "Açık ATC/CVA bulgusu",
+      "Tasarım/sözleşme açığı",
+      "Geçici çözüm / hardcode",
+      "Karar bekleyen konu",
+      "İstisna kaydı yapılmamış bulgu",
+      "—"
+     ]
+    }
+   ],
+   "ornek_satir": [
+    "OPEN-02",
+    "Portal 409 yanıtı başarı mı sayılacak?",
+    "3.10, 3.9",
+    "Portal ekibi",
+    "22.05.2026",
+    "Kararlaştırıldı",
+    "Başarı sayılır",
+    "Tasarım/sözleşme açığı"
+   ]
+  }
+ ]
+}

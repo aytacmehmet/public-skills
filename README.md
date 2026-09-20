@@ -6,8 +6,8 @@ Dillere göre düzenlenmiş, yeniden kullanılabilir AI skill'leri. Skill'leri i
 
 | Language / Dil | Catalog / Katalog | Skills / Skill'ler |
 | --- | --- | --- |
-| English | [Browse English skills](en/README.md) | [Prompter](en/prompter/README.md), [SAP Development Documentation](en/sap-development-documentation/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md) |
-| Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yordamla](tr/yordamla/README.md), [SAP Geliştirme Dokümantasyonu](tr/sap-gelistirme-dokumantasyonu/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md) |
+| English | [Browse English skills](en/README.md) | [Prompter](en/prompter/README.md), [SAP Development Documentation](en/sap-development-documentation/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md), [Spec Writer](en/spec-writer/README.md) |
+| Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yordamla](tr/yordamla/README.md), [SAP Geliştirme Dokümantasyonu](tr/sap-gelistirme-dokumantasyonu/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md), [Belirtim Yazmanı](tr/belirtim-yazmani/README.md) |
 
 ```text
 en/
@@ -32,6 +32,12 @@ en/
     references/
     tests/
     archived/          ← first public release: guide only
+  spec-writer/
+    SKILL.md           ← English instructions; Turkish FS-TS content model
+    scripts/
+    assets/
+    references/
+    archived/          ← first public release: guide only
 tr/
   README.md
   CONTRIBUTING.md
@@ -53,6 +59,12 @@ tr/
     assets/
     references/
     tests/
+    archived/          ← ilk herkese açık yayın: yalnız rehber
+  belirtim-yazmani/
+    SKILL.md           ← Türkçe yönergeler; Türkçe FS-TS içerik modeli
+    scripts/
+    assets/
+    references/
     archived/          ← ilk herkese açık yayın: yalnız rehber
 ```
 

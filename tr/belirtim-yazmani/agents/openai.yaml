@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belirtim Yazmanı"
+  short_description: "Kararları verilmiş SAP geliştirmesinin FS-TS'sini yazar"
+  default_prompt: "$belirtim-yazmani ile ekteki geliştirme talebinin FS-TS'sini yaz: önce denetlenmiş JSON içerik dosyasını üret, sonra hangi çıktıyı istediğimi sor."

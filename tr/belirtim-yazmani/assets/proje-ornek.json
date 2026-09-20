@@ -1,0 +1,16 @@
+{
+ "proje": "Örnek Müşteri A.Ş. – S/4HANA Cloud Public Edition",
+ "aciklama": "Proje profili skill'in dışında, proje klasöründe tutulur. Her belgeyle büyür: doğrulanan her SAP nesnesi 'katalog'a eklenir.",
+ "adlandirma": {
+  "on_ekler": ["Z", "YY1_"],
+  "azami_uzunluk": {"TABL": 16, "SUSO": 10, "MSAG": 20},
+  "not": "Azami uzunlukları projenizin adlandırma standardından yazın; buradaki değerler örnektir."
+ },
+ "katalog": [
+  {"ad": "I_PurchaseOrderAPI01", "tip": "DDLS", "sozlesme": "C1", "dogrulayan": "ABAP geliştirici", "tarih": "2026-05-08"},
+  {"ad": "I_PurchaseOrderItemAPI01", "tip": "DDLS", "sozlesme": "C1", "dogrulayan": "ABAP geliştirici", "tarih": "2026-05-08"},
+  {"ad": "MM_PUR_S4_PO_MODIFY_HEADER", "tip": "BAdI", "sozlesme": "Released", "dogrulayan": "ABAP geliştirici", "tarih": "2026-05-08"},
+  {"ad": "CL_BALI_LOG", "tip": "CLAS", "sozlesme": "C1", "dogrulayan": "ABAP geliştirici", "tarih": "2026-05-08"},
+  {"ad": "F0842A", "tip": "Fiori app", "sozlesme": "—", "dogrulayan": "SAP danışmanı", "tarih": "2026-05-08"}
+ ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Writer"
+  short_description: "Writes the FS-TS for a decided SAP Cloud ERP development"
+  default_prompt: "Use $spec-writer to write the FS-TS for the attached development request: produce the validated JSON content file first, then ask me which output to render."
