@@ -24,7 +24,7 @@
       "release": "unknown",
       "ui5Runtime": "unknown",
       "fioriGuidelineVersion": "unknown",
-      "launchContext": "flp",
+      "launchContext": "unknown",
       "launchIntent": "unknown"
     },
     "evidence": [
@@ -45,12 +45,7 @@
     "serviceProtocol": "odata-v4",
     "draft": "unknown",
     "decisionRationale": "Replace with task, data, device and lifecycle rationale",
-    "alternativesRejected": [
-      {
-        "option": "freestyle-sapui5",
-        "reason": "Standard floorplan currently appears sufficient"
-      }
-    ]
+    "alternativesRejected": []
   },
   "informationArchitecture": {
     "pages": [
@@ -153,6 +148,7 @@
       "nextAction": "return-or-request-access"
     }
   ],
+  "stateExceptions": [],
   "responsive": {
     "strategy": "mobile-first",
     "density": {

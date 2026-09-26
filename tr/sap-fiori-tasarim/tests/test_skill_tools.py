@@ -13,6 +13,7 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 SCAFFOLD = SKILL_ROOT / "scripts" / "scaffold_fiori_workspace.py"
 VALIDATOR = SKILL_ROOT / "scripts" / "validate_fiori_delivery.py"
 INSPECTOR = SKILL_ROOT / "scripts" / "inspect_abap_package.py"
+RECORDER = SKILL_ROOT / "scripts" / "record_captures.py"
 
 
 def run(*arguments: object) -> subprocess.CompletedProcess[str]:
@@ -540,13 +541,21 @@ define root view entity Z_C_Order as projection on Z_I_Order
             self.assertIn("designer change", marker.read_text(encoding="utf-8"))
             self.assertTrue((root / "app" / "webapp" / "controller" / "Detail.controller.ts").is_file())
 
-            # --force refreshes scaffold trees, never the contract; only --reset-contract starts it again, with a backup.
+            self.assertEqual(contract["architecture"]["alternativesRejected"][0]["option"], "fiori-elements-odata-v4")
+            self.assertEqual(len([row for row in contract["context"]["evidence"] if row["fact"].startswith("Scaffold profile ")]), 1)
+            self.assertTrue((root / "abap-backend-contract.schema.json").is_file())
+
+            # --force refreshes scaffold trees, never the contract; --reset-contract alone starts the contract again, with a backup, and keeps the trees.
             self.assertEqual(run(SCAFFOLD, root, *self.CODE_ARGS, "--output", "all", "--framework", "freestyle-sapui5", "--force").returncode, 0)
             self.assertEqual(json.loads(contract_path.read_text(encoding="utf-8"))["context"]["primaryRole"], "Internal sales representative")
             self.assertNotIn("designer change", marker.read_text(encoding="utf-8"))
-            self.assertEqual(run(SCAFFOLD, root, *self.CODE_ARGS, "--output", "all", "--framework", "freestyle-sapui5", "--force", "--reset-contract").returncode, 0)
+            marker.write_text(marker.read_text(encoding="utf-8") + "<!-- second designer change -->\n", encoding="utf-8")
+            reset = run(SCAFFOLD, root, *self.CODE_ARGS, "--output", "all", "--framework", "freestyle-sapui5", "--reset-contract", "--json")
+            self.assertEqual(reset.returncode, 0, reset.stderr)
+            self.assertEqual(json.loads(reset.stdout)["keptTrees"], ["prototype", "app"])
             self.assertNotEqual(json.loads(contract_path.read_text(encoding="utf-8"))["context"]["primaryRole"], "Internal sales representative")
             self.assertIn("Internal sales representative", (root / "design-contract.json.bak").read_text(encoding="utf-8"))
+            self.assertIn("second designer change", marker.read_text(encoding="utf-8"))
             other = run(SCAFFOLD, root, "--app-id", "com.other.app", "--name", "Other", "--output", "interactive")
             self.assertEqual(other.returncode, 2)
             self.assertIn("already belongs to", other.stderr)
@@ -576,7 +585,18 @@ define root view entity Z_C_Order as projection on Z_I_Order
             without = root / "without"
             self.assertEqual(run(SCAFFOLD, without, *self.CODE_ARGS, "--output", "code", "--framework", "freestyle-sapui5").returncode, 0)
             _, found = self.findings(without, "--allow-warnings")
-            self.assertTrue({"SEMANTIC_FLP_INBOUND", "SEMANTIC_SEARCH_UNVERIFIED"} <= found["warning"], found)
+            self.assertIn("SEMANTIC_SEARCH_UNVERIFIED", found["warning"], found)
+            self.assertFalse({"SEMANTIC_FLP_INBOUND", "SEMANTIC_I18N_KEY", "SEMANTIC_ACTION_ID"} & found["warning"], found)
+            contract_path = without / "design-contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            self.assertEqual(contract["context"]["targetSystem"]["launchContext"], "unknown")
+            contract["context"]["targetSystem"]["launchContext"] = "flp"
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
+            _, found = self.findings(without, "--allow-warnings")
+            self.assertIn("SEMANTIC_FLP_INBOUND", found["warning"], found)
+            orphan = run(SCAFFOLD, root / "orphan", *self.CODE_ARGS, "--output", "code", "--framework", "freestyle-sapui5", "--action", "manage")
+            self.assertEqual(orphan.returncode, 2)
+            self.assertIn("--action requires --semantic-object", orphan.stderr)
 
             intent = root / "intent"
             scaffold = run(SCAFFOLD, intent, *self.CODE_ARGS, "--output", "code", "--framework", "freestyle-sapui5", "--semantic-object", "SalesOrder", "--action", "manage")
@@ -587,6 +607,7 @@ define root view entity Z_C_Order as projection on Z_I_Order
             self.assertEqual(manifest["sap.ui5"]["routing"]["config"]["bypassed"], {"target": "notFound"})
             contract_path = intent / "design-contract.json"
             contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            self.assertEqual(contract["context"]["targetSystem"]["launchContext"], "flp")
             self.assertEqual(contract["context"]["targetSystem"]["launchIntent"], {"semanticObject": "SalesOrder", "action": "manage"})
             contract["dataContract"]["serverCapabilities"]["search"] = True
             contract_path.write_text(json.dumps(contract), encoding="utf-8")
@@ -616,6 +637,20 @@ define root view entity Z_C_Order as projection on Z_I_Order
             clean = json.loads(run(VALIDATOR, project, "--review", "--json").stdout)
             self.assertEqual((clean["policy"], clean["passed"]), ("review", True), clean["findings"])
             self.assertNotIn("CONTRACT_MISSING", {item["code"] for item in clean["findings"]})
+            manifest_path = project / "webapp" / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["_version"] = "1.65.0"
+            manifest["sap.ui5"]["rootView"]["async"] = True
+            del manifest["sap.app"]["i18n"]["supportedLocales"]
+            del manifest["sap.ui5"]["contentDensities"]
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            existing = json.loads(run(VALIDATOR, project, "--review", "--json").stdout)
+            conventions = {item["code"]: item["severity"] for item in existing["findings"]}
+            self.assertEqual((conventions.get("MANIFEST_V2"), conventions.get("MANIFEST_I18N"), conventions.get("MANIFEST_DENSITY")), ("warning",) * 3, conventions)
+            self.assertTrue(existing["passed"], existing["findings"])
+            strict = json.loads(run(VALIDATOR, root, "--allow-warnings", "--json").stdout)
+            self.assertIn("MANIFEST_V2", {item["code"] for item in strict["findings"] if item["severity"] == "error"})
+            manifest_path.write_text(json.dumps(json.loads(manifest_path.read_text(encoding="utf-8")) | {"_version": "2.11.0"}), encoding="utf-8")
             legacy = project / "webapp" / "controller" / "Legacy.controller.js"
             legacy.write_text('sap.ui.define([], function () {\n  return sap.ui.getCore().byId("x");\n});\n', encoding="utf-8")
             result = run(VALIDATOR, project, "--review", "--json")
@@ -693,6 +728,38 @@ annotate entity Z_C_Order with {
 
         self.assertEqual(module.entity_header("define view ZV_Classic as select from mara { matnr }")["kind"], "classic-view")
 
+    def test_inspector_reads_compositions_and_matches_selections_by_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / "abap"
+            self.create_rap_package(package)
+            (package / "z_i_order.ddls.asddls").write_text(
+                """define root view entity Z_I_Order as select from zorder {
+  key order_id as OrderId,
+  composition [0..*] of Z_I_OrderItem as _Items,
+  association [0..1] to Z_I_Customer as _Customer on $projection.CustomerId = _Customer.CustomerId
+}
+""",
+                encoding="utf-8",
+            )
+            output = root / "backend.json"
+            self.assertEqual(run(INSPECTOR, package, "--output", output, "--entity-set", "orders").returncode, 0)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            relations = {(row["kind"], row["alias"]) for row in payload["model"]["associations"] if row["sourceObject"] == "Z_I_ORDER"}
+            self.assertEqual(relations, {("composition", "_Items"), ("association", "_Customer")})
+            self.assertEqual(payload["service"]["entitySet"], "Orders")
+            self.assertFalse(any("--entity-set" in gap for gap in payload["gaps"]))
+
+            (package / "z_ui_order_o4.srvb.xml").write_text(
+                "<serviceBinding><bindingType>ODATA V4</bindingType><serviceDefinition>Z_API_ORDER</serviceDefinition></serviceBinding>",
+                encoding="utf-8",
+            )
+            self.assertEqual(run(INSPECTOR, package, "--output", output).returncode, 0)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(payload["service"]["definition"], "Z_UI_ORDER")
+            self.assertTrue(any("not to the only service definition" in gap for gap in payload["gaps"]), payload["gaps"])
+            self.assertEqual(payload["recommendation"]["readiness"], "partial")
+
     def test_inspector_rejects_a_zip_bomb(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -715,6 +782,123 @@ annotate entity Z_C_Order with {
         self.assertTrue(module.lockfile_for("1.151.0", profiles, "1.151.0", template).is_file())
         self.assertIsNone(module.lockfile_for("1.136.0", profiles, "1.151.0", template))
         self.assertIsNone(module.lockfile_for("1.120.0", profiles, "1.151.0", template))
+
+    # ---- 2.0.0: state exceptions, $metadata search support, explicit review handlers, recorded captures
+
+    METADATA_V4 = (
+        '<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">'
+        '<edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">'
+        '<edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/></edmx:Reference>'
+        '<edmx:DataServices><Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="z_ui_order" Alias="SAP__self">'
+        '<EntityType Name="Order"><Key><PropertyRef Name="OrderId"/></Key><Property Name="OrderId" Type="Edm.String" Nullable="false"/></EntityType>'
+        '<EntityContainer Name="Container"><EntitySet Name="Orders" EntityType="z_ui_order.Order"/><EntitySet Name="Customers" EntityType="z_ui_order.Order"/></EntityContainer>'
+        '<Annotations Target="SAP__self.Container/Orders"><Annotation Term="Capabilities.SearchRestrictions"><Record>'
+        '<PropertyValue Property="Searchable" Bool="false"/></Record></Annotation></Annotations>'
+        '</Schema></edmx:DataServices></edmx:Edmx>'
+    )
+
+    def test_a_required_state_may_be_excepted_with_a_reason(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.assertEqual(run(SCAFFOLD, root, "--app-id", "com.acme.app", "--name", "App", "--language", "en", "--output", "interactive").returncode, 0)
+            contract_path = root / "design-contract.json"
+            contract = self.fill_in(contract_path)
+            contract["states"] = [row for row in contract["states"] if row["id"] != "no-auth"]
+            contract["verification"]["states"] = [state for state in contract["verification"]["states"] if state != "no-auth"]
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
+            _, found = self.findings(root)
+            self.assertIn("CONTRACT_STATE", found["error"])
+            contract["stateExceptions"] = [{"state": "no-auth", "reason": "Every user of this app may read all orders; the backend still enforces changes"}]
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
+            code, found = self.findings(root)
+            self.assertEqual((code, found["error"], found["warning"]), (0, set(), set()), found)
+            contract["stateExceptions"].append({"state": "empty", "reason": "Contradicts the designed empty state"})
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
+            _, found = self.findings(root)
+            self.assertIn("CONTRACT_STATE_EXCEPTION_CONFLICT", found["error"])
+
+    def test_metadata_records_search_support_and_the_gate_rejects_a_conflicting_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / "abap"
+            self.create_rap_package(package)
+            metadata = root / "metadata.xml"
+            metadata.write_text(self.METADATA_V4, encoding="utf-8")
+            backend = root / "backend.json"
+            result = run(
+                INSPECTOR, package, "--output", backend, "--package-name", "Z_ORDER", "--protocol", "odata-v4",
+                "--service-uri", "/sap/opu/odata4/sap/z_ui_order/srvd/sap/z_ui_order/0001/", "--metadata", metadata,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            recorded = json.loads(backend.read_text(encoding="utf-8"))["service"]["metadata"]
+            self.assertEqual((recorded["protocol"], {row["name"]: row["search"] for row in recorded["entitySets"]}), ("odata-v4", {"Orders": False, "Customers": None}))
+            delivery = root / "delivery"
+            scaffold = run(SCAFFOLD, delivery, "--app-id", "com.acme.orders", "--name", "Orders", "--output", "code", "--ui5-version", "1.151.0", "--backend-contract", backend)
+            self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+            contract_path = delivery / "design-contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["dataContract"]["serverCapabilities"]["search"] = True
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
+            _, found = self.findings(delivery, "--allow-warnings")
+            self.assertIn("SEMANTIC_SEARCH_CONFLICT", found["error"])
+            v2 = root / "v2.xml"
+            v2.write_text(
+                '<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">'
+                '<edmx:DataServices><Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="Z"><EntityContainer Name="C">'
+                '<EntitySet Name="Items" EntityType="Z.Item" sap:searchable="true"/></EntityContainer></Schema></edmx:DataServices></edmx:Edmx>',
+                encoding="utf-8",
+            )
+            result = run(INSPECTOR, package, "--output", root / "v2.json", "--package-name", "Z_ORDER", "--metadata", v2)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            data = json.loads((root / "v2.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["service"]["metadata"]["entitySets"], [{"name": "Items", "search": True}])
+            self.assertTrue(any("absent from the supplied $metadata" in gap for gap in data["gaps"]), data["gaps"])
+            doctype = root / "doctype.xml"
+            doctype.write_text('<!DOCTYPE x [<!ENTITY e "x">]><edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0"/>', encoding="utf-8")
+            self.assertEqual(run(INSPECTOR, package, "--output", root / "bad.json", "--metadata", doctype).returncode, 2)
+
+    def test_review_accepts_explicit_handlers_and_skips_comments_and_test_code(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.assertEqual(run(SCAFFOLD, root, *self.CODE_ARGS, "--output", "code", "--framework", "freestyle-sapui5").returncode, 0)
+            project = root / "app"
+            view = project / "webapp" / "view" / "App.view.xml"
+            buttons = (
+                '<Button id="aliasButton" text="{i18n>appTitle}" core:require="{handler: \'com/acme/orders/Handler\'}" press="handler.run"/>'
+                '<Button id="commandButton" text="{i18n>appTitle}" press="cmd:Save"/>'
+                '<Button id="legacyButton" text="{i18n>appTitle}" press="onLegacy"/>'
+            )
+            text = view.read_text(encoding="utf-8").replace("<mvc:View ", '<mvc:View xmlns:core="sap.ui.core" ', 1)
+            view.write_text(text.replace("</mvc:View>", buttons + "</mvc:View>"), encoding="utf-8")
+            (project / "webapp" / "controller" / "Legacy.controller.js").write_text(
+                'sap.ui.define([], function () {\n  // sap.ui.getCore() is legacy; see https://example.invalid/docs\n  /* jQuery.sap.log */\n  return {};\n});\n',
+                encoding="utf-8",
+            )
+            (project / "webapp" / "test").mkdir(exist_ok=True)
+            (project / "webapp" / "test" / "opa.js").write_text('sap.ui.getCore();\ndocument.querySelector("#x");\n', encoding="utf-8")
+            report = json.loads(run(VALIDATOR, project, "--review", "--json").stdout)
+            codes = [item["code"] for item in report["findings"]]
+            self.assertEqual(codes.count("XML_HANDLER_SCOPE"), 1, report["findings"])
+            self.assertFalse({"LEGACY_CORE", "LEGACY_JQUERY", "DIRECT_DOM_QUERY"} & set(codes), report["findings"])
+
+    def test_recorded_captures_bind_each_png_to_its_hash(self) -> None:
+        png = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\rIHDR" + (1280).to_bytes(4, "big") + (800).to_bytes(4, "big") + b"\x08\x06\x00\x00\x00"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.assertEqual(run(SCAFFOLD, root, "--app-id", "com.acme.app", "--name", "App", "--output", "png").returncode, 0)
+            capture = root / "visuals" / "sales-order-list-populated-L-horizon-compact.png"
+            capture.write_bytes(png)
+            _, found = self.findings(root, "--allow-warnings")
+            self.assertIn("PNG_REPORT_MISSING", found["warning"])
+            recorded = run(RECORDER, root, "--ui5-version", "1.151.0", "--json")
+            self.assertEqual(recorded.returncode, 0, recorded.stderr)
+            self.assertEqual(json.loads(recorded.stdout)["files"][0]["width"], 1280)
+            _, found = self.findings(root, "--allow-warnings")
+            self.assertFalse({"PNG_REPORT_MISSING", "PNG_DIGEST"} & (found["warning"] | found["error"]), found)
+            capture.write_bytes(png + b"\x00")
+            _, found = self.findings(root, "--allow-warnings")
+            self.assertIn("PNG_DIGEST", found["error"])
+            self.assertEqual(run(RECORDER, root / "missing").returncode, 2)
 
 
 if __name__ == "__main__":

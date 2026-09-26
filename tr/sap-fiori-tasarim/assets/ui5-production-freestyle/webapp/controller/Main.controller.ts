@@ -2,7 +2,6 @@ import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v4/Context";
 import ODataListBinding from "sap/ui/model/odata/v4/ODataListBinding";
 import Table from "sap/m/Table";
-import MessageBox from "sap/m/MessageBox";
 import Component from "../Component";
 import { contextTitle } from "../model/formatter";
 
@@ -18,7 +17,11 @@ export default class Main extends Controller {
 
   public onSearch(event: { getParameter(name: string): string }): void {
     const query = event.getParameter("query");
-    const binding = (this.byId("itemsTable") as Table).getBinding("items") as ODataListBinding;
+    const table = this.byId("itemsTable") as Table;
+    // "No data" and "no results" are different states: the second one tells the user to change the search.
+    table.setNoDataText(this.getResourceText(query ? "noResultsText" : "noDataText"));
+    const binding = table.getBinding("items") as ODataListBinding;
+    // $search is generated only as a starting point: keep it when serverCapabilities.search is verified true, otherwise switch to $filter.
     binding.changeParameters({ $search: query || undefined });
   }
 

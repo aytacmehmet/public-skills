@@ -1,35 +1,24 @@
-# Resmî SAP kaynak indeksi ve güncellik kuralı
+# Official SAP source index and currency rule
 
-Bu referansı hedef sürümü doğrulamak veya belirli bir kontrol/pattern/API hakkında canlı kaynak bulmak için kullan.
+Use to verify the target version or to find the live page for a control, pattern or API.
 
-## Güncellik akışı
+## Currency workflow
 
-1. Hedef sistem ürününü ve gerçek SAPUI5 runtime sürümünü bul.
-2. `manifest.json` içindeki minimum sürümü, sistem runtime'ı sanma.
-3. Hedefe uygun versioned SAP Fiori guideline sayfasını aç.
-4. Kontrol/API'nin target UI5 API Reference'ta public ve non-deprecated olduğunu doğrula.
-5. Fiori elements feature/prerequisite'i hedef sürüm Help/Demo Kit'te doğrula.
-6. ABAP object/API release durumunu hedef S/4HANA release/ADT içinde doğrula.
-7. Kaynak URL, sayfa sürümü ve kontrol tarihini `design-contract.json` içine yaz.
+1. Find the target product and the real SAPUI5 runtime version; the `manifest.json` minimum is not the runtime.
+2. Open the versioned SAP Fiori guideline page that matches the target.
+3. Confirm the control/API is public and non-deprecated in the target UI5 API Reference.
+4. Confirm Fiori elements features/prerequisites in the target-version Help/Demo Kit.
+5. Confirm ABAP object/API release status in the target S/4HANA release/ADT.
+6. Write source URL, page version and check date into `design-contract.json`.
 
-27 Ağustos 2026 araştırma fotoğrafı:
+Research snapshot, 27 August 2026 (not a fixed fact for later work): SAP Fiori for Web portal 1.151 with content consolidated up to 1.148 · skill scaffold profile SAPUI5/types 1.151.0 (never target-runtime evidence) · SAP's experimental Fiori AI skill based on v1.145 (May 2026).
 
-- SAP Fiori for Web portal sürümü: 1.151; içerik güncellemeleri 1.148'e kadar konsolide edilmiş
-- Skill scaffold profili: SAPUI5/types 1.151.0; bunu hedef runtime kanıtı sayma
-- SAP'nin deneysel Fiori AI skill'i: v1.145 (Mayıs 2026) tabanlı
+## Main portals
 
-Bu değerleri gelecekte sabit gerçek olarak kullanma.
+- [SAP Design System](https://www.sap.com/design-system) · [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web) · [SAPUI5 Demo Kit](https://ui5.sap.com/) · [SAP Help Portal](https://help.sap.com/)
+- [SAP Fiori AI skill description](https://www.sap.com/design-system/fiori-design-web/v1-145/resources/ai-skills/sap-fiori-guidelines) · [SAP AI Skills Library sources](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines)
 
-## Ana portallar
-
-- [SAP Design System](https://www.sap.com/design-system)
-- [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web)
-- [SAPUI5 Demo Kit](https://ui5.sap.com/)
-- [SAP Help Portal](https://help.sap.com/)
-- [SAP'nin Fiori AI skill açıklaması](https://www.sap.com/design-system/fiori-design-web/v1-145/resources/ai-skills/sap-fiori-guidelines)
-- [SAP AI Skills Library kaynakları](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines)
-
-## Görsel sistem ve erişilebilirlik
+## Visual system and accessibility
 
 - [Design Principles](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/vision-and-mission/design-principles)
 - [Guideline Versioning](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/versioning)
@@ -42,7 +31,7 @@ Bu değerleri gelecekte sabit gerçek olarak kullanma.
 - [Keyboard Support](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/interaction/keyboard-support)
 - [UI5 ARIA Labeling](https://ui5.sap.com/#/topic/f38c21c2f71e455e8d4a959522035a1f)
 
-## Floorplan ve pattern
+## Floorplans and patterns
 
 - [When to Use Which Floorplan](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/when-to-use-which-floorplan)
 - [List Report](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/list-report-floorplan-sap-fiori-element)
@@ -55,7 +44,7 @@ Bu değerleri gelecekte sabit gerçek olarak kullanma.
 - [Messaging](https://www.sap.com/design-system/fiori-design-web/v1-120/foundations/best-practices/global-patterns/messaging/messaging)
 - [Busy Handling](https://www.sap.com/design-system/fiori-design-web/v1-136/foundations/best-practices/ui-elements/busy-handling)
 
-## UI5 mühendislik
+## UI5 engineering
 
 - [Best Practices for Developers](https://ui5.sap.com/docs/topics/28fcd55b04654977b63dacbee0552712.html)
 - [Performance Checklist](https://ui5.sap.com/docs/topics/9c6400eb7dc145b78e94a81e6e390780.html)
@@ -71,7 +60,7 @@ Bu değerleri gelecekte sabit gerçek olarak kullanma.
 - [UI5 CLI](https://ui5.github.io/cli/stable/)
 - [UI5 Linter](https://github.com/UI5/linter)
 
-## RAP, ABAP Cloud ve Clean Core
+## RAP, ABAP Cloud and Clean Core
 
 - [ABAP RAP](https://help.sap.com/docs/abap-cloud/abap-rap)
 - [Defining Business Service for Fiori UI](https://help.sap.com/docs/abap-cloud/abap-rap/defining-business-service-for-fiori-ui?version=s4hana_cloud)
@@ -81,15 +70,8 @@ Bu değerleri gelecekte sabit gerçek olarak kullanma.
 - [Public Released APIs](https://help.sap.com/docs/abap-cloud/abap-cloud/public-released-apis)
 - [Clean Core Extensibility](https://help.sap.com/docs/abap-cloud/developer-guide-from-classic-abap-to-abap-cloud/clean-core-extensibility-and-abap-based-extensions)
 
-## Bağlantı sürümleri
+## Link versions and source guardrail
 
-Bu paketteki rehber bağlantıları, araştırma sırasında içeriği doğrulanan sayfa sürümlerini gösterir (v1-96 … v1-148); tek bir taban sürüme körlemesine çekilmemiştir, çünkü her sayfa her sürümde aynı adreste bulunmaz. Bağlantıyı kanıt olarak kullanmadan önce aynı sayfanın hedef sürümdeki karşılığını aç ve sözleşmeye o URL'yi yaz. Depodaki bağlantı kontrolü yalnız erişilebilirliği raporlar; içeriğin güncelliğini kanıtlamaz.
+Guideline links point at the page versions whose content was checked during research (v1-96 … v1-148); pages do not exist at the same address in every version, so they were not moved to one base version. Before citing a link, open the same page for the target version and record that URL. The repository link check proves reachability only, not currency.
 
-## Kaynak kullanma guardrail'i
-
-- Resmî SAP/official UI5 birincil kaynağını tercih et.
-- Search sonucu özetini, açılmış kaynak sayfasının yerine kullanma.
-- Eski `experience.sap.com` sayfasını yalnız güncel `sap.com/design-system` eşdeğeri yoksa ve sürümü açıkça not ederek kullan.
-- Demo/sample'ın çalışması, pattern'in Fiori uyumlu olduğunu tek başına kanıtlamaz.
-- Public API dokümanı olmayan module/class/property üretme.
-- “Latest” kelimesini tarih ve sürümle mutlaklaştır.
+Prefer official SAP/UI5 primary sources · never a search summary in place of the opened page · legacy `experience.sap.com` pages only when no current `sap.com/design-system` equivalent exists, with the version noted · a working sample does not prove Fiori compliance · never generate a module/class/property without public API documentation · make "latest" concrete with a date and a version.

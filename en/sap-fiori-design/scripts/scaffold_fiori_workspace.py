@@ -119,9 +119,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--service-uri", help="OData V4 service URI; required for code")
     parser.add_argument("--entity-set", help="OData V4 entity set; required for code")
     parser.add_argument("--semantic-object", help="SAP Fiori launchpad semantic object of the app tile; omit while unknown")
-    parser.add_argument("--action", default="display", help="SAP Fiori launchpad action of the inbound (default: display)")
+    parser.add_argument("--action", help="SAP Fiori launchpad action of the inbound; needs --semantic-object (default: display)")
     parser.add_argument("--force", action="store_true", help="Overwrite the planned prototype/ and app/ files; the design contract is still kept")
-    parser.add_argument("--reset-contract", action="store_true", help="Start design-contract.json again from the template; the old file is saved as .bak")
+    parser.add_argument("--reset-contract", action="store_true", help="Start design-contract.json again from the template; the old file is saved as .bak and prototype/ and app/ are kept")
     parser.add_argument("--json", action="store_true", help="Print machine-readable summary")
     return parser
 
@@ -136,6 +136,8 @@ def validate_args(args: argparse.Namespace, outputs: list[str], profiles: dict, 
         value = getattr(args, name)
         if value and not IDENTIFIER.fullmatch(value):
             errors.append(f"--{name.replace('_', '-')} must be an identifier such as SalesOrder or display")
+    if args.action and not args.semantic_object:
+        errors.append("--action requires --semantic-object; an inbound needs both")
     if "code" in outputs:
         for name in ("framework", "ui5_version", "service_protocol", "service_uri", "entity_set"):
             if not getattr(args, name):
@@ -230,6 +232,8 @@ def main() -> int:
     if contract_target.is_file() and not args.reset_contract:
         try:
             existing = json.loads(contract_target.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_pairs)
+            if not isinstance(existing["project"]["outputs"], list):
+                raise ValueError("project.outputs must be a list")
             if existing["project"]["id"] != args.app_id:
                 errors.append(
                     f"The workspace already belongs to {existing['project']['id']!r}; "
@@ -243,6 +247,8 @@ def main() -> int:
         return 2
 
     # An existing contract is the designer's work: later runs add outputs to it and never start it again.
+    # --reset-contract renews only the contract; existing prototype/ and app/ trees are kept unless --force says otherwise.
+    workspace_exists = contract_target.is_file()
     trees = {"interactive": (ASSETS / "ui5-prototype", target / "prototype")}
     if "code" in outputs:
         trees["code"] = (ASSETS / TEMPLATES[args.framework], target / "app")
@@ -252,18 +258,19 @@ def main() -> int:
     for output, (source, destination) in trees.items():
         if output not in outputs:
             continue
-        if existing is not None and destination.exists() and not args.force:
+        if workspace_exists and destination.exists() and not args.force:
             kept_trees.append(destination.name)
             continue
         planned.extend(plan_tree(source, destination))
         added_trees.append(destination.name)
     try:
-        ensure_no_conflicts(planned + ([] if existing is not None else [(ASSETS / "design-contract.template.json", contract_target)]), args.force)
+        ensure_no_conflicts(planned + ([] if workspace_exists else [(ASSETS / "design-contract.template.json", contract_target)]), args.force)
     except FileExistsError as error:
         print(error, file=sys.stderr)
         return 1
 
     profile = profiles.get(args.ui5_version or default_profile, profiles[default_profile])
+    launch_action = args.action or "display"
     tokens = {
         "APP_ID": args.app_id,
         "APP_PATH": args.app_id.replace(".", "/"),
@@ -285,13 +292,12 @@ def main() -> int:
         shutil.copy2(contract_target, contract_target.with_suffix(".json.bak"))
     if existing is None:
         render_file(ASSETS / "design-contract.template.json", contract_target, tokens)
-    # Schemas belong to the skill, not to the designer: keep them in step with the validator.
+    # Schemas belong to the skill, not to the designer: both are renewed on every run to stay in step with the validator.
     render_file(ASSETS / "design-contract.schema.json", target / "design-contract.schema.json", tokens)
+    render_file(ASSETS / "abap-backend-contract.schema.json", target / "abap-backend-contract.schema.json", tokens)
     if backend_path:
-        target.mkdir(parents=True, exist_ok=True)
         if backend_path != (target / "abap-backend-contract.json").resolve():
             shutil.copy2(backend_path, target / "abap-backend-contract.json")
-        render_file(ASSETS / "abap-backend-contract.schema.json", target / "abap-backend-contract.schema.json", tokens)
     for source, destination in planned:
         render_file(source, destination, tokens)
     if "app" in added_trees:
@@ -299,7 +305,7 @@ def main() -> int:
         if lockfile and lockfile != ASSETS / TEMPLATES[args.framework] / "package-lock.json":
             render_file(lockfile, target / "app" / "package-lock.json", tokens)
         if args.semantic_object:
-            add_flp_inbound(target / "app" / "webapp" / "manifest.json", args.semantic_object, args.action)
+            add_flp_inbound(target / "app" / "webapp" / "manifest.json", args.semantic_object, launch_action)
 
     contract = existing if existing is not None else json.loads(contract_target.read_text(encoding="utf-8"))
     fresh = existing is None
@@ -320,10 +326,16 @@ def main() -> int:
             if not (isinstance(row, dict) and row.get("fact") == "Target runtime is not yet verified")
         ]
         add_evidence(contract, f"Target SAPUI5 runtime {args.target_ui5_runtime} was supplied to the scaffold; record where it was observed", "assumed", "--target-ui5-runtime")
+    # One row describes the current scaffold profile; a later run with another profile replaces it instead of piling up.
+    contract["context"]["evidence"] = [
+        row for row in contract["context"].get("evidence", [])
+        if not (isinstance(row, dict) and str(row.get("fact", "")).startswith("Scaffold profile "))
+    ]
     add_evidence(contract, f"Scaffold profile {profile['ui5Version']} sets tooling, prototype runtime and minUI5Version; it is not target-system evidence", "verified", "bundled version profile")
     if args.semantic_object:
-        target_system["launchIntent"] = {"semanticObject": args.semantic_object, "action": args.action}
-        add_evidence(contract, f"Launchpad intent {args.semantic_object}-{args.action} was supplied to the scaffold; verify it against the target catalog", "assumed", "--semantic-object")
+        target_system["launchContext"] = "flp"
+        target_system["launchIntent"] = {"semanticObject": args.semantic_object, "action": launch_action}
+        add_evidence(contract, f"Launchpad intent {args.semantic_object}-{launch_action} was supplied to the scaffold; verify it against the target catalog", "assumed", "--semantic-object")
 
     if backend and backend_path:
         backend_source = backend.get("source", {})
@@ -388,6 +400,13 @@ def main() -> int:
         quality_command = "npm run typecheck" if freestyle else "npm run validate:manifest"
         test_commands = ["npm run test:unit", "npm run test:integration"] if freestyle else ["npm run test:integration"]
         contract["verification"]["commands"] = ["npm ci", quality_command, "npm run lint", "npm run build", *test_commands]
+        if not contract["architecture"].get("alternativesRejected"):
+            # The rejected alternative follows the framework decision; a freestyle choice still has to be justified by the designer.
+            contract["architecture"]["alternativesRejected"] = [
+                {"option": "fiori-elements-odata-v4", "reason": "Replace with the verified requirement that the standard floorplan cannot meet"}
+                if freestyle else
+                {"option": "freestyle-sapui5", "reason": "The standard List Report and Object Page cover the task; no freestyle-only interaction was verified"}
+            ]
         if fresh:
             # Only a new contract gets the skeleton's own pages; an existing design is the designer's to keep.
             contract["architecture"]["floorplan"] = "dynamic-page-list-with-detail-page" if freestyle else "list-report-object-page"
@@ -397,7 +416,6 @@ def main() -> int:
             ]
             contract["informationArchitecture"]["navigation"] = [{"from": "main", "to": "detail", "trigger": "row-press", "deepLinkable": True}]
             contract["fieldsAndActions"]["actions"] = []
-            contract["fieldsAndActions"]["fields"][0]["labelKey"] = "itemColumn"
     contract_target.write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     if "png" in outputs:
         (target / "visuals").mkdir(parents=True, exist_ok=True)

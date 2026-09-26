@@ -1,277 +1,111 @@
-# SAP Fiori floorplan ve UI pattern kararları
+# SAP Fiori floorplan and UI pattern decisions
 
-Bu referansı bilgi mimarisi, floorplan, tablo/form/filter/dialog, eylem yerleşimi, mesaj ve durum tasarlarken oku.
+Read when designing information architecture, floorplans, tables/forms/filters/dialogs, action placement, messages and states.
 
-## İçindekiler
+Sections: 1 decision order · 2 floorplan matrix · 3 Dynamic Page and FCL · 4 List Report and Object Page · 5 form, table, Filter Bar · 6 dialog and navigation · 7 action placement · 8 states and messaging · 9 empty, error, loading · 10 stop conditions
 
-1. Karar sırası
-2. Floorplan seçim matrisi
-3. Dynamic Page ve Flexible Column Layout
-4. List Report ve Object Page
-5. Form, tablo ve Filter Bar
-6. Dialog ve navigation
-7. Eylem yerleşimi
-8. State ve messaging
-9. Empty, error ve loading
-10. Stop/uyarı koşulları
+## 1. Decision order
 
-## 1. Karar sırası
+1. Derive role, task, data volume, transaction frequency, object lifecycle, devices and runtime.
+2. Look for a standard floorplan ([When to Use Which Floorplan](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/when-to-use-which-floorplan)).
+3. Standard annotation/OData scenario → Fiori elements.
+4. Freestyle only for an unsupported interaction or a genuinely unique layout.
+5. Choose controls by data semantics, volume, task and device support, not aesthetics.
+6. Write the state and responsive matrix before code.
 
-1. Rolü, görevi, veri hacmini, işlem sıklığını, nesne yaşam döngüsünü, cihazları ve runtime'ı çıkar.
-2. Standart floorplan ara.
-3. Standart annotation/OData senaryosunda Fiori elements'i seç.
-4. Yalnız desteklenmeyen etkileşim veya gerçekten özgün düzen varsa freestyle seç.
-5. Kontrolü estetiğe göre değil veri semantiği, hacmi, görev ve cihaz desteğine göre seç.
-6. Koddan önce state ve responsive matrisi oluştur.
+## 2. Floorplan selection matrix
 
-Ana kaynak: [When to Use Which Floorplan](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/when-to-use-which-floorplan)
-
-## 2. Floorplan seçim matrisi
-
-| İhtiyaç | Varsayılan seçim | Kaçın |
+| Need | Default | Avoid |
 |---|---|---|
-| Rol bazlı KPI, görev ve farklı uygulamalardan özet | Overview Page | Tek veri kümesinde ayrıntılı arama/işleme |
-| Büyük veri kümesinde arama, filtre, sıralama ve işlem | List Report | Yoğun chart-table kök neden analizi |
-| KPI, görsel filtre, slice-and-dice ve chart/table analizi | Analytical List Page | Yalnız kayıt bulma |
-| Önceden belirlenmiş iş öğelerini sırayla işleme | Worklist | Genel kayıt keşfi |
-| Tek nesneyi görüntüleme/oluşturma/düzenleme | Object Page | Toplu düzenleme veya kayıt arama |
-| Alışılmadık, uzun 3–8 adımlı işlem | Wizard | İki adımdan kısa veya sekizden uzun akış |
-| Bilinen kimlikle tek nesneye gitme | Initial Page | Sonucun liste olacağı arama |
-| List-detail veya list-detail-detail | Flexible Column Layout + uygun floorplan'ler | Dashboard/workbench/bağımsız sayfalar |
+| Role-based KPIs, tasks, cross-app summaries | Overview Page | Detailed search/processing of one data set |
+| Search, filter, sort and act on a large data set | List Report | Chart-table root-cause analysis |
+| KPI, visual filter, slice-and-dice, chart/table analysis | Analytical List Page | Merely finding records |
+| Predefined work items processed in sequence | Worklist | General record discovery |
+| Display/create/edit one object | Object Page | Mass editing or record search |
+| Unfamiliar, long process, 3–8 steps | Wizard | Flows under 2 or over 8 steps |
+| Jump to one object by known identifier | Initial Page | A search whose result is a list |
+| List-detail or list-detail-detail | Flexible Column Layout + fitting floorplans | Dashboards, workbenches, independent pages |
 
-Kaynaklar:
+Pages: [List Report](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/list-report-floorplan-sap-fiori-element) · [Analytical List Page](https://experience.sap.com/fiori-design-web/analytical-list-page/) and [Object Page](https://experience.sap.com/fiori-design-web/object-page/) (legacy `experience.sap.com`; verify the current `sap.com/design-system` page for the target version) · [Worklist](https://www.sap.com/design-system/fiori-design-web/v1-120/page-types/floorplans/work-list/usage) · [Initial Page](https://www.sap.com/design-system/fiori-design-web/v1-96/page-types/floorplans/initial-page-floorplan/usage) · [Wizard](https://www.sap.com/design-system/fiori-design-web/v1-108/ui-elements/wizard/usage).
 
-- [List Report](https://www.sap.com/design-system/fiori-design-web/v1-145/page-types/floorplans/list-report-floorplan-sap-fiori-element)
-- [Analytical List Page](https://experience.sap.com/fiori-design-web/analytical-list-page/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
-- [Object Page](https://experience.sap.com/fiori-design-web/object-page/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
-- [Worklist](https://www.sap.com/design-system/fiori-design-web/v1-120/page-types/floorplans/work-list/usage)
-- [Initial Page](https://www.sap.com/design-system/fiori-design-web/v1-96/page-types/floorplans/initial-page-floorplan/usage)
-- [Wizard](https://www.sap.com/design-system/fiori-design-web/v1-108/ui-elements/wizard/usage)
+## 3. Dynamic Page and Flexible Column Layout
 
-## 3. Dynamic Page ve Flexible Column Layout
+**Dynamic Page** ([usage](https://www.sap.com/design-system/fiori-design-web/v1-136/page-types/page-layouts/dynamic-page-layout/usage)) = title/header + content + optional finalizing footer. Never rebuild a fitting standard floorplan by hand as a Dynamic Page. Keep the main title and key actions when the header collapses · no expand/collapse/pin without header content · footer only for workflow-finishing actions · Object Page uses the Dynamic Page Header, never the old Object Header · new freestyle pages put the Filter Bar in the header content · never embed a whole floorplan in the content area.
 
-### Dynamic Page
+**Flexible Column Layout** ([usage](https://www.sap.com/design-system/fiori-design-web/v1-96/page-types/page-layouts/flexible-column-layout/)): list-detail(-detail) only, at most three columns. Never start with three columns · no empty detail column · each column owns its header, scroll and footer · no second app header/footer wrapping all columns · on S show the last drill-down column full screen and keep the back flow · M limited to two columns, L/XL fitting ratios · dialogs centered over the whole screen, not over one column · never for dashboards, workbenches, side panels or splitting one object.
 
-Dynamic Page, title/header, content ve isteğe bağlı finalizing footer'dan oluşan temel sayfa layout'udur. Standart floorplan uygunsa onu elle Dynamic Page olarak yeniden kurma.
+## 4. List Report and Object Page
 
-- Header daraldığında ana başlık ve önemli eylemleri koru.
-- Header içeriği yoksa expand/collapse/pin ekleme.
-- Footer'ı yalnız workflow'u bitiren eylemler için kullan.
-- Object Page'de Dynamic Page Header kullan; eski Object Header kullanma.
-- Yeni freestyle sayfada Filter Bar'ı Dynamic Page header content'e koy.
-- Floorplan'in tamamını bir Dynamic Page content alanına gömme.
+**List Report** — find records and act on a data set: Filter Bar in the header content · Basic Search in the Filter Bar, not the table toolbar · Fiori elements default is manual update with `Go`; consider live update only with few filter fields, a cheap query and low traffic, and verify against the target-version Filter Bar page · mandatory filters get a safe default or an explicitly designed empty start · page variant and table variant are one personalization model · sort/group/column settings via P13n, only the needed features enabled · no arbitrary page actions in the footer · KPI and chart-table analysis at the center → Analytical List Page.
 
-Kaynak: [Dynamic Page Layout](https://www.sap.com/design-system/fiori-design-web/v1-136/page-types/page-layouts/dynamic-page-layout/usage)
+**Object Page** ([content area](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/frameworks/sap-fiori-elements/object-page/object-page-content-area-sap-fiori-elements)) — display/create/edit lifecycle of one object: section → subsection → form/table/chart hierarchy · anchor navigation for several sections, tab navigation for long distinct topics, no navigation for a single section · no title repetition in content · breadcrumb only for a real parent-child hierarchy · top-aligned form labels by default · responsive columns S=1, M=2, L=3, XL=6, reduced by content length · a very long table that breaks context becomes a separate List Report or tab.
 
-### Flexible Column Layout
+## 5. Form, table and Filter Bar
 
-FCL yalnız list-detail veya list-detail-detail için, en fazla üç kolonla kullanılır.
+**Form** ([Form Layout](https://experience.sap.com/fiori-design-web/explore_group/form-layout-container/), [Form Field Validation](https://experience.sap.com/fiori-design-web/form-field-validation/), both legacy pages — verify the current equivalent): group by task order · repeating records are a table, not a form · short, clear, persistent labels; placeholder never the label · display-only in display mode; read-only for an unchangeable important value in edit, never imitated with disabled · required indicator in edit context · run all validations on Save/Create, not only at the end · error text names field, cause and fix.
 
-- Doğrudan üç kolonla başlama.
-- Boş detail kolonu gösterme.
-- Her kolonun kendi header, scroll ve gerekiyorsa footer davranışı olsun.
-- Bütün kolonları saran ikinci bir app header/footer üretme.
-- S ekranda son drill-down kolonu tam ekran göster; back akışını koru.
-- M ekranda sınırlı iki kolon; L/XL'de uygun oranları kullan.
-- Dialog'u tek kolon üzerinde sağa hizalama; bütün ekran üzerinde ortala.
-- FCL'yi dashboard, workbench, side panel veya aynı nesneyi bölmek için kullanma.
+**Table/list** ([Table Overview](https://www.sap.com/design-system/fiori-design-web/v1-145/foundations/best-practices/ui-elements/tables/table-overview), [Responsive Table](https://www.sap.com/design-system/fiori-design-web/v1-96/ui-elements/responsive-table/usage)):
 
-Kaynak: [Flexible Column Layout](https://www.sap.com/design-system/fiori-design-web/v1-96/page-types/page-layouts/flexible-column-layout/)
-
-## 4. List Report ve Object Page
-
-### List Report
-
-Kayıt bulma ve veri kümesi üzerinde işlem yapma için kullan.
-
-- Filter Bar'ı header content'e yerleştir.
-- Basic Search'ü tablo toolbar'ına değil Filter Bar'a koy.
-- Mümkünse canlı filtreleme kullan; `Go` yalnız pahalı sorgu/yoğun trafik/birden çok filtreyi hazırlama gerektiğinde kullan.
-- Mandatory filtreye güvenli varsayılan değer ver veya boş başlangıcı açıkça tasarla.
-- Page variant ve table variant'ı kopuk iki kişiselleştirme modeli yapma.
-- Sıralama, gruplama ve kolon ayarlarını P13n yaklaşımında topla; yalnız gereken personalization özelliklerini aç.
-- Rastgele page action için footer kullanma.
-- KPI ve chart-table analizi merkezdeyse Analytical List Page'e geç.
-
-### Object Page
-
-Tek business object'in display/create/edit yaşam döngüsü için kullan.
-
-- Section → subsection → form/table/chart hiyerarşisini koru.
-- Birden çok bölümde anchor navigation; uzun ve ayrık konularda tab navigation değerlendir.
-- Tek bölümde gereksiz navigation gizle.
-- Başlıkları içerikte tekrar etme.
-- Breadcrumb'ı yalnız gerçek nesne üst-alt hiyerarşisinde kullan.
-- Form label'ını top-aligned seçmeyi varsayılan değerlendir.
-- Responsive kolon başlangıcı: S=1, M=2, L=3, XL=6; içerik uzunluğuna göre azalt.
-- Çok uzun tablo bağlamı bozuyorsa ayrı List Report veya tab tasarla.
-
-Kaynak: [Object Page Content Area](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/frameworks/sap-fiori-elements/object-page/object-page-content-area-sap-fiori-elements)
-
-## 5. Form, tablo ve Filter Bar
-
-### Form
-
-- Field/value verisini görev sırasına göre grupla.
-- Tekrar eden kayıt için form değil tablo kullan.
-- Label'ı kısa, açık ve kalıcı yap; placeholder'ı label yapma.
-- Display modunda display-only; edit içinde değiştirilemeyen önemli değerde read-only kullan. Disabled ile taklit etme.
-- Required işaretini edit bağlamında göster.
-- Save/Create sırasında bütün doğrulamaları çalıştır; geri bildirimi yalnız finale bırakma.
-- Hata metninde alanı, nedeni ve çözümü anlat.
-
-Kaynaklar:
-
-- [Form Layout](https://experience.sap.com/fiori-design-web/explore_group/form-layout-container/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
-- [Form Field Validation](https://experience.sap.com/fiori-design-web/form-field-validation/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
-
-### Tablo/list seçimi
-
-| Veri/görev | Kontrol |
+| Data/task | Control |
 |---|---|
-| Bağımsız satırlar, tüm cihazlar | Responsive Table |
-| Az ayrıntılı basit öğe | List |
-| 1000+ satır, hücre karşılaştırma, yoğun masaüstü kullanım | Grid Table + mobil adaptive alternatif |
-| Gerçek çok seviyeli grouping, subtotal/grand total | Analytical Table |
-| Gerçek hiyerarşik veri, sınırlı seviye | Tree Table + mobil alternatif |
+| Independent rows, all devices | Responsive Table |
+| Simple items with little detail | List |
+| 1000+ rows, cell comparison, intensive desktop | Grid Table + mobile adaptive alternative |
+| Real multi-level grouping, subtotals/grand totals | Analytical Table |
+| Real hierarchy, limited levels | Tree Table + mobile alternative |
 
-Kurallar:
+No table for a field/value form, a small selection list or a dashboard visual · on a phone keep the key/identity field, pop-in/hide low-importance columns · horizontal scrolling is not a mobile strategy · separate no-data from no-results and state the next action · server-side paging/filter/sort for large data.
 
-- Tabloyu field/value formu, küçük seçim listesi veya dashboard görselleştirmesi için kullanma.
-- Telefonda key/kimlik alanını koru; düşük önemi pop-in/hide yap.
-- Yatay kaydırmayı mobil strateji sayma.
-- No-data ve no-results durumlarını ayır; sonraki eylemi söyle.
-- Büyük veri için server-side paging/filter/sort kullan.
+**Filter Bar** ([page](https://www.sap.com/design-system/fiori-design-web/ui-elements/filter-bar/)): standard in List Report and Overview Page, Visual Filter as the ALP alternative · never inside an Object Page section table, a Wizard or a simple List · desktop expanded/collapsed, tablet collapsed by default, phone filter dialog · frequently used, mandatory and most selective filters visible by default · simple domains use select/combo/date controls, no unnecessary value help · re-filtering never silently keeps stale selections.
 
-Kaynaklar:
+## 6. Dialog and navigation
 
-- [Table Overview](https://www.sap.com/design-system/fiori-design-web/v1-145/foundations/best-practices/ui-elements/tables/table-overview)
-- [Responsive Table](https://www.sap.com/design-system/fiori-design-web/v1-96/ui-elements/responsive-table/usage)
+**Dialog** ([page](https://experience.sap.com/fiori-design-web/dialog/), legacy — verify the current equivalent): temporary, modal, limited complexity · MessageBox for simple messages, toast for normal success, Object Page for large create/edit · no nested dialogs, no floorplan inside a dialog · full screen on a phone · usually 1–2 actions; primary may be emphasized, Cancel never · Message Popover for validation errors hidden in a long form.
 
-### Filter Bar
+**Navigation** ([Navigation](https://www.sap.com/design-system/fiori-design-web/v1-136/foundations/best-practices/global-patterns/navigation/navigation), [Breadcrumb](https://www.sap.com/design-system/fiori-design-web/ui-elements/breadcrumb/), [Icon Tab Bar](https://www.sap.com/design-system/fiori-design-web/ui-elements/icontabbar/), [Dynamic Side Content](https://www.sap.com/design-system/fiori-design-web/v1-108/ui-elements/dynamic-side-content/usage)): important page state is deep-linkable/bookmarkable · display/edit is not a route state · breadcrumb never replaces back or cross-app navigation · Dynamic Side Content never holds critical content, navigation or list-detail · Icon Tab Bar only for genuinely distinct content views.
 
-- List Report ve Overview Page'de standart; ALP'de Visual Filter alternatifi vardır.
-- Object Page section table, Wizard veya basit List içine koyma.
-- Desktop expanded/collapsed; tablet varsayılan collapsed; telefon filter dialog davranışı tasarla.
-- Sık kullanılan, mandatory ve veri hacmini en çok azaltan filtreleri varsayılan görünür yap.
-- Basit domain için select/combo/date control kullan; gereksiz value help açma.
-- Yeniden filtrelemede eski seçimlerin yanlışlıkla korunmasını engelle.
+## 7. Action placement
 
-Kaynak: [Filter Bar](https://www.sap.com/design-system/fiori-design-web/ui-elements/filter-bar/)
+[Action Placement](https://www.sap.com/design-system/fiori-design-web/v1-145/foundations/best-practices/global-patterns/action-placement): navigation actions left, business/page actions right · one page-level primary action across header + footer · footer for finalizing actions (Save/Create/Submit) · table/chart toolbar only for local actions on that content · destructive actions get clear text, semantic treatment and, if needed, confirmation · hiding is not securing — backend authorization is mandatory.
 
-## 6. Dialog ve navigation
+## 8. States and messaging
 
-### Dialog
+**Element states** ([UI Element States](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/best-practices/ui-elements/ui-element-states)):
 
-- Geçici, modal ve sınırlı karmaşıklıktaki işlem için kullan.
-- Basit mesaj için MessageBox; normal başarı için toast; büyük create/edit için Object Page kullan.
-- Nested dialog yapma.
-- Dialog içine floorplan koyma.
-- Telefonda full-screen davranış seç.
-- Genellikle 1–2 action kullan; primary emphasized olabilir, Cancel emphasized olmasın.
-- Uzun formda görünmeyen validation hataları için Message Popover sağla.
-
-Kaynak: [Dialog](https://experience.sap.com/fiori-design-web/dialog/) — eski `experience.sap.com` sayfası; güncel `sap.com/design-system` eşdeğerini hedef sürümde doğrula
-
-### Navigation
-
-- Önemli page state'i deep link/bookmark ile yeniden kurulabilir yap.
-- Display/edit değişimini gereksiz route state yapma.
-- Breadcrumb'ı back veya cross-app navigation yerine kullanma.
-- Dynamic Side Content'i kritik içerik, navigation veya list-detail yerine kullanma.
-- Icon Tab Bar'ı yalnız gerçekten ayrık içerik görünümleri için kullan.
-
-Kaynaklar:
-
-- [Navigation](https://www.sap.com/design-system/fiori-design-web/v1-136/foundations/best-practices/global-patterns/navigation/navigation)
-- [Breadcrumb](https://www.sap.com/design-system/fiori-design-web/ui-elements/breadcrumb/)
-- [Icon Tab Bar](https://www.sap.com/design-system/fiori-design-web/ui-elements/icontabbar/)
-- [Dynamic Side Content](https://www.sap.com/design-system/fiori-design-web/v1-108/ui-elements/dynamic-side-content/usage)
-
-## 7. Eylem yerleşimi
-
-- Navigation action'ını solda; business/page action'ını sağda tut.
-- Header + footer toplamında yalnız bir page-level primary action kullan.
-- Footer'ı Save/Create/Submit gibi finalizing action için kullan.
-- Table/chart toolbar'ını yalnız o içerik üzerindeki local action için kullan.
-- Destructive action'a açık metin, uygun semantic treatment ve gerekiyorsa confirmation ver.
-- Yetkisiz action'ı yalnız gizlemekle güvenceye alma; backend yetkisini zorunlu kıl.
-
-Kaynak: [Action Placement](https://www.sap.com/design-system/fiori-design-web/v1-145/foundations/best-practices/global-patterns/action-placement)
-
-## 8. State ve messaging
-
-### UI element state
-
-| State | Kullanım |
+| State | Use |
 |---|---|
-| Enabled | Kullanılabilir veya neden kullanılamadığı önceden anlaşılmıyor |
-| Disabled | Geçici olarak kullanılamıyor ve nasıl açılacağı açık |
-| Hidden | Rol/state/mode nedeniyle gerçekten mevcut değil |
-| Read-only | Edit modunda önemli ama değiştirilemez |
-| Display-only | Display modunda veya hiçbir zaman düzenlenmez |
-| Error | Finalize etmeyi engeller |
-| Warning | Engellemeyen risk |
-| Success | Kalıcı başarı durumu gerçekten önemli |
-| Information | Gerçek dikkat gerektiren nötr bilgi |
+| Enabled | Available, or unavailability cannot be known in advance |
+| Disabled | Temporarily unavailable and the way to enable it is clear |
+| Hidden | Genuinely absent for this role/state/mode |
+| Read-only | Important in edit mode but unchangeable |
+| Display-only | Display mode or never edited |
+| Error | Blocks finalizing |
+| Warning | Non-blocking risk |
+| Success | A persistent success that really matters |
+| Information | Neutral information that needs attention |
 
-Bir kontrolü aynı anda birden fazla value state ile işaretleme. Selection checkbox'ını disabled yaparak yetki anlatma.
+One value state per control at a time. Never express authorization by disabling the selection checkbox.
 
-Kaynak: [UI Element States](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/best-practices/ui-elements/ui-element-states)
+**Message components** ([Messaging](https://www.sap.com/design-system/fiori-design-web/v1-120/foundations/best-practices/global-patterns/messaging/messaging)):
 
-### Mesaj bileşeni
-
-| İhtiyaç | Bileşen |
+| Need | Component |
 |---|---|
-| Karar/onay gerektiren non-field sorun | MessageBox |
-| Birden çok form/table alan mesajı | MessagePopover |
-| Action sonucunda birden çok non-field mesaj | MessageView |
-| Kısa, kesintisiz başarı | MessageToast |
-| Kalıcı genel/object-level bilgi | MessageStrip |
-| Page/component empty veya message state | IllustratedMessage/Message Page |
-| Field validation | Value State + açıklayıcı metin |
+| Non-field issue needing a decision/confirmation | MessageBox |
+| Several form/table field messages | MessagePopover |
+| Several non-field messages after an action | MessageView |
+| Short, non-interrupting success | MessageToast |
+| Persistent general/object-level information | MessageStrip |
+| Page/component empty or message state | IllustratedMessage / Message Page |
+| Field validation | Value State + explanatory text |
 
-Toast'ı error/warning için kullanma. Navigation sonrası toast'ı hedef sayfada göster. Veri kaybı yaratacak cancel/back/navigation için uyarı ver.
+No toast for errors/warnings · after navigation the toast appears on the target page · warn before a cancel/back/navigation that loses data.
 
-Kaynak: [Messaging](https://www.sap.com/design-system/fiori-design-web/v1-120/foundations/best-practices/global-patterns/messaging/messaging)
+## 9. Empty, error and loading
 
-## 9. Empty, error ve loading
+Design separately ([Designing for Empty States](https://www.sap.com/design-system/fiori-design-web/v1-96/foundations/best-practices/global-patterns/designing-for-empty-states)): first use / no data yet · no search/filter results · emptied by a user action · system/service error · missing authorization or configuration. Each state has a title, a cause and a next step; no-results is never shown as a system error.
 
-Şu durumları ayrı tasarla:
+Loading ([Busy Handling](https://www.sap.com/design-system/fiori-design-web/v1-136/foundations/best-practices/ui-elements/busy-handling)): no spinner flash under ≈ 1 s · busy only the affected control/region, never the shell without need · Busy Dialog only for a long operation that really locks all interaction · skeleton/placeholder on initial and app-to-app load, mirroring the real floorplan · Progress Indicator only for measurable progress · on error leave busy and enter the error/retry state.
 
-- İlk kullanım / henüz veri yok
-- Search/filter sonucu yok
-- Kullanıcı eylemi sonrası boşalma
-- Sistem/servis hatası
-- Yetki veya configuration eksikliği
+## 10. Stop/warning conditions
 
-Her durumda başlık, neden ve sonraki adım ver. No-results'ı sistem hatası gibi gösterme.
-
-Kaynak: [Designing for Empty States](https://www.sap.com/design-system/fiori-design-web/v1-96/foundations/best-practices/global-patterns/designing-for-empty-states)
-
-Loading kuralları:
-
-- Yaklaşık bir saniyeden kısa işlemde spinner flaşı üretme.
-- Yalnız etkilenen control/region'ı busy yap; shell'i gereksiz bloklama.
-- Busy Dialog'u tüm etkileşimin gerçekten kilitleneceği uzun işlemde kullan.
-- Skeleton/placeholder'ı ilk app/app-to-app yüklemede, gerçek floorplan yapısını temsil ederek kullan.
-- Progress Indicator'ı belirsiz spinner yerine kullanma; yalnız ölçülebilir ilerleme için kullan.
-- Hata oluşunca busy state'i kapat, error/retry state'ine geç.
-
-Kaynak: [Busy Handling](https://www.sap.com/design-system/fiori-design-web/v1-136/foundations/best-practices/ui-elements/busy-handling)
-
-## 10. Stop/uyarı koşulları
-
-Şunlardan biri varsa düzelt veya açık blokaj bildir:
-
-- Eski Object Header
-- Object Page subsection içinde Filter Bar
-- Form amacıyla tablo
-- Nested dialog veya dialog içinde floorplan
-- Birden fazla page-level primary action
-- Semantik rengin dekorasyon/tek anlam kanalı olması
-- Grid/Analytical/Tree Table için mobil alternatif olmaması
-- Hard-coded renk/ölçü/layout
-- Loading/empty/error/no-auth durumunun eksikliği
-- Hedef runtime'ın desteklemediği kontrol/API
-- Mockup ile kodun alan/eylem/state bakımından ayrışması
+Fix or report an explicit blocker for: old Object Header · Filter Bar inside an Object Page subsection · table used as a form · nested dialog or floorplan inside a dialog · more than one page-level primary action · semantic color as decoration or the only meaning channel · Grid/Analytical/Tree Table without a mobile alternative · hard-coded color/dimension/layout · missing loading/empty/error/no-auth state · a control/API the target runtime does not support · mockup and code diverging in fields/actions/states.

@@ -8,8 +8,9 @@ sap.ui.define([
 ], function (Controller, Filter, FilterOperator, JSONModel, MessageBox, MessageToast) {
   "use strict";
 
-  // Open the prototype with ?state=loading|empty|no-results|error|no-auth to demonstrate every designed state.
-  const STATES = ["populated", "loading", "empty", "no-results", "error", "no-auth"];
+  // Open the prototype with ?state=initial|loading|populated|empty|no-results|error|no-auth to demonstrate every designed state.
+  // "initial" is the first load before any data arrived; "loading" is a later request while the page is already known.
+  const STATES = ["initial", "loading", "populated", "empty", "no-results", "error", "no-auth"];
 
   return Controller.extend("__APP_ID__.controller.App", {
     onInit: function () {
@@ -26,11 +27,12 @@ sap.ui.define([
       const bundle = await this.getOwnerComponent().getModel("i18n").getResourceBundle();
       const sample = this.getOwnerComponent().getModel("sample");
       const blocked = state === "error" || state === "no-auth";
+      const waiting = state === "initial" || state === "loading";
       this.getView().getModel("ui").setData({
         state: state,
         tableVisible: !blocked,
-        busy: state === "loading",
-        actionsEnabled: !blocked && state !== "loading",
+        busy: waiting,
+        actionsEnabled: !blocked && !waiting,
         noDataText: bundle.getText(state === "empty" ? "emptyText" : "noDataText"),
         messageVisible: blocked,
         retryVisible: state === "error",

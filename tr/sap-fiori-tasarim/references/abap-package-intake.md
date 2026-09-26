@@ -1,126 +1,97 @@
-# ABAP paketinden UI sözleşmesi çıkarma
+# Deriving the UI contract from an ABAP package
 
-Bu referansı kullanıcı bir ABAP paketi, ADT projesi, abapGit dışa aktarımı veya paket adı üzerinden UI5/Fiori ekranı geliştirilmesini istediğinde oku.
+Read when a UI5/Fiori screen is requested from an ABAP package, ADT project, abapGit export or package name.
 
-## Amaç ve sınır
+## Purpose and boundary
 
-Paket kaynaklarını ekran gereksinimi gibi yorumlamadan önce makine-okunur `abap-backend-contract.json` üret. Bu sözleşme paket envanterini, RAP/CDS/OData kabiliyetlerini ve her çıkarımın kaynak dosyasını UI tasarımına bağlar.
+Produce the machine-readable `abap-backend-contract.json` before interpreting package sources as a screen requirement. It ties the inventory, the RAP/CDS/OData capabilities and the source file of every inference to the UI design. Reading source does not prove the backend's business purpose: never invent a requirement, role, process, published service URI, target release or runtime authorization that the package does not contain. The parser is lexical; it is not compiler, activation, service-preview or authorization evidence.
 
-Kaynak okumak, backend'in iş amacını tek başına kanıtlamaz. Paket içinde bulunmayan gereksinim, rol, süreç, yayımlanmış servis URI'si, hedef tenant release'i veya runtime yetkisini uydurma. Parser lexical bir kanıt çıkarır; ABAP compiler, ADT activation, service preview veya runtime authorization kanıtı değildir.
+## Inputs
 
-## Desteklenen girişler
-
-### Yerel paket
-
-ADT veya abapGit dışa aktarım klasörü ya da ZIP'i için:
+### Local package (ADT/abapGit folder or ZIP)
 
 ```powershell
-python -B "<skill kökü>/scripts/inspect_abap_package.py" <paket-klasörü-veya-zip> `
-  --output <çıktı>/abap-backend-contract.json `
+python -B "<skill root>/scripts/inspect_abap_package.py" <package-folder-or-zip> `
+  --output <output>/abap-backend-contract.json `
   --package-name Z_MY_PACKAGE `
   --service-uri /sap/opu/odata4/sap/z_ui_service/srvd/sap/z_ui_service/0001/ `
   --protocol odata-v4
 ```
 
-`--service-uri` yalnız hedef sistemde gözlenmişse ver. Kaynak dosyadan URI tahmin etme.
+`--service-uri` only when observed in the target system; never derived from source. Add `--metadata <file>` with the service `$metadata` observed or exported from the target system: the contract then records `service.metadata` (file hash, protocol, every entity set with its declared `$search` support from V4 `Capabilities.SearchRestrictions/Searchable` or V2 `sap:searchable`, `null` when undeclared), and a protocol mismatch or a leading entity set absent from the metadata becomes a gap. DTD/entity declarations are rejected.
 
-Pakette birden fazla service definition varsa inspector ilkini seçmez; `service.definition` değerini `unknown` bırakır ve `gaps` içine yazar. UI servisini `--service-definition <ad>` ile ver. Seçilen servis birden fazla entity expose ediyorsa ve tek bir root entity ayırt edilemiyorsa ana entity set'i `--entity-set <ad>` ile ver. İkisini de kaynak veya `$metadata` kanıtıyla seç.
+Several service definitions: the inspector never picks the first. It selects the definition that every readable service binding names (evidence); otherwise `service.definition` stays `unknown` with a gap. With a single definition, a binding that names another definition keeps the selection and adds a gap. Override with `--service-definition <name>`; if the service exposes several entities and no single root entity stands out, name the leading set with `--entity-set <name>`. Both flags are case-insensitive; choose both from source or `$metadata` evidence.
 
-Service binding protokolü `ODATA V4` gibi tek ifadeden ya da abapGit/ADT export'larındaki ayrı tip + sürüm alanlarından (`<TYPE>ODATA</TYPE><VERSION>V4</VERSION>`, `type="ODATA" version="V2"`) okunur; ikisi de yoksa `unknown` kalır.
+Binding protocol is read from `ODATA V4`-style text or from separate type + version fields (`<TYPE>ODATA</TYPE><VERSION>V4</VERSION>`, `type="ODATA" version="V2"`); otherwise `unknown`.
 
-### Canlı ADT paketi
+### Live ADT package (read-only tools only)
 
-Yalnız önceden yapılandırılmış salt-okunur ADT bağlantısı ve araçları mevcutsa (örnek adımlar `sap-cloud-erp` MCP sunucusuna göredir; başka bir host'ta aynı okuma işlemlerinin karşılığını kullan):
+Example tool names belong to the `sap-cloud-erp` MCP server; use the equivalent read operations on another host.
 
-1. `load_toolset(profile="source-read")` veya gerekli araçları içeren read-only profil kullan.
-2. `list_packages` ile tüm sayfaları oku; `truncated=true` veya `nextOffset` varsa devam et.
-3. UI sözleşmesini etkileyen `DDLS`, `DDLX`, `BDEF`, `SRVD`, `SRVB`, `DCLS` ve ilgili `CLAS` kaynaklarını `read_source`, `read_cds_source` veya `read_repository_object` ile **active** sürümden oku.
-4. Sayfalı kaynakta her devam çağrısında önceki `sha256` değerini `expectedSha256` olarak geçir. Son sayfaya kadar okumadan kaynağı tam sayma.
-5. Sonuçları aşağıdaki normalleştirilmiş snapshot biçiminde, credential/host/client içermeden kaydet ve inspector'a ver.
+1. Load the read-only tool profile (`load_toolset(profile="source-read")`).
+2. Read the package list with all pages (`list_packages`; continue while `truncated=true` or `nextOffset` is present).
+3. Read the `DDLS`, `DDLX`, `BDEF`, `SRVD`, `SRVB`, `DCLS` and relevant `CLAS` sources from the **active** version (`read_source`, `read_cds_source`, `read_repository_object`).
+4. For paged sources pass the previous `sha256` as the expected hash on each continuation (`expectedSha256`); a source is complete only after its last page. Paging is the tool's job; the inspector does not page.
+5. Save the normalized snapshot without credentials/host/client and feed it to the inspector.
 
 ```json
 {
   "packageName": "Z_MY_PACKAGE",
   "objectCount": 3,
   "objects": [
-    {
-      "name": "Z_I_ORDER",
-      "type": "DDLS/DF",
-      "uri": "/sap/bc/adt/ddic/ddl/sources/z_i_order",
-      "version": "active",
-      "truncated": false,
-      "source": "define root view entity Z_I_Order ..."
-    }
+    {"name": "Z_I_ORDER", "type": "DDLS/DF", "uri": "/sap/bc/adt/ddic/ddl/sources/z_i_order",
+     "version": "active", "truncated": false, "source": "define root view entity Z_I_Order ..."}
   ]
 }
 ```
 
-Ardından:
+Snapshot fields: `name` (or `objectName`), `type` (or `objectType`) and `source` are mandatory; `uri`, `version` (absent = `active`, verify yourself), `truncated` and `sha256` are optional. A given `sha256` is compared with `source` and a mismatch aborts with exit 2; `truncated: true` adds a gap per object and sets `complete: false`; `inventoryVerified` becomes `true` when `objectCount` equals the number of objects.
 
 ```powershell
-python -B "<skill kökü>/scripts/inspect_abap_package.py" <adt-snapshot.json> `
-  --output <çıktı>/abap-backend-contract.json `
-  --service-uri <gözlenen-uri> --protocol odata-v4
+python -B "<skill root>/scripts/inspect_abap_package.py" <adt-snapshot.json> `
+  --output <output>/abap-backend-contract.json --service-uri <observed-uri> --protocol odata-v4
 ```
 
-Skill, SAP bağlantısı yoksa kullanıcıdan parola/RSA/private key istemez. Yerel export ister veya bağlantının proje sahibi tarafından yapılandırılmasını blocker olarak bildirir. Paket okuma isteği yazma, aktivasyon, publish, transport veya deploy yetkisi vermez.
+No SAP connection → ask for a local export or report the missing connection as a blocker; never ask for a password, RSA or private key. Reading grants no write, activation, publish, transport or deploy right.
 
-## Okuma önceliği
+## Reading priority
 
-Paket büyükse önce ince uçtan uca dilim oku:
+Large package → thin end-to-end slice first: 1 `SRVB` + `SRVD` (protocol, published service, entity-set boundary) · 2 projection `DDLS` + `DDLX` (exposed fields, associations, annotations) · 3 projection/root `BDEF` (draft, CUD, actions, validations, side effects) · 4 interface/root `DDLS` (keys, compositions/associations, currency/unit/text/value help) · 5 `DCLS` and behavior authorization · 6 only the behavior implementation methods that affect UI behavior. Over 200 objects: record the paging and reading plan in the contract; never skip an object by name silently — record per type why it is out of scope.
 
-1. `SRVB` + `SRVD`: protokol, yayımlanan servis ve entity set sınırı
-2. Projection `DDLS` + `DDLX`: UI'ya açılan alan, association ve annotation
-3. Projection/root `BDEF`: draft, create/update/delete, action, validation ve side effect
-4. Interface/root `DDLS`: anahtarlar, composition/association, currency/unit/text/value help
-5. `DCLS` ve behavior authorization: backend yetki kanıtı
-6. Yalnız UI davranışını etkileyen behavior implementation class/method'ları
+## Reading the inspector output
 
-Paket envanteri 200 öğeyi aşıyorsa sayfalama ve kapsamlı okuma planını sözleşmede belirt. İsme bakıp ilgili görünmeyen nesneyi sessizce atlama; tür bazında neden kapsam dışı olduğunu kaydet.
+- `model.entities[].fields/keys`: elements read from the element list; `exposedAssociations` are navigation candidates, not fields.
+- `model.entities[].unparsedElements`: elements the lexical reader could not classify (e.g. an alias-less `case`). One gap per entity (first three listed) blocks `ready`; verify against `$metadata` and map manually.
+- `model.entities[].kind`: `view-entity`, `custom-entity`, `abstract-entity`, `classic-view`. Abstract entities are action parameters, not screen objects; a custom entity's query lives in an ABAP class — verify filter/sort/paging with `$metadata` and a test.
+- `model.associations[]`: `association … to` and `composition … of`, distinguished by `kind`; derive navigation, sections/tables and the `$expand` budget from them. Facets are not summarized: read the DDLX source for `@UI.facet`.
+- `behavior.definitions[]`: one record per `define behavior for`; parenthesized `create/update/delete` (`update ( features : instance );`) is recognized; `createByAssociation` keeps sub-object creation separate.
+- `behavior.actions` are business actions; `draftActions` (Edit, Activate, Discard, Resume, Prepare) belong to the framework and are never buttons. The five names classify only `use action` lines of a projection; anything declared with `draft action` / `draft determine action` lands in `draftActions` regardless of name.
+- `dynamicFeatureControl`: operations/actions whose enablement is decided at runtime — plan their disabled/hidden state and its test.
+- `etag` and `totalEtag` are separate; write the concurrency scenario for both.
+- `uiSemantics.fields`: field → annotation map from DDLS and DDLX, summarized in `lineItemFields`, `selectionFields`, `identificationFields`, `fieldGroupFields`, `hiddenFields`, `valueHelpFields`, `textFields`, `amountFields`, `quantityFields` (`Entity.Field`). Derive columns, filters and value helps from them; read the source for annotation values (position, importance, qualifier).
+- `uiSemantics.searchableEntities`: entities with `@Search.searchable: true`; never send `$search` elsewhere.
+- `service.bindings[].serviceDefinition`: the definition a binding names; with several definitions the inspector selects only when all readable bindings agree. Unreadable (`unknown`) bindings leave the choice to you.
+- `source.inventoryVerified` and `notes`: only a snapshot that declares `objectCount` can be compared with the inventory; a local export stays `false` (reported as `info`). For a local export `source.complete` and `source.activeSourcesOnly` are written as `true` unconditionally — a declaration, not an observation; the validator ties `source-verified` to these two values and an empty `gaps` list, so for a local export only `gaps` guards the gate.
+- Limits: 2 MB per source in every input kind (a gap in a snapshot); 5,000 files for folders and ZIPs; 50 MB total and a compression ratio of 200 for ZIPs; beyond that the package is rejected.
 
-## Inspector çıktısını okuma
+## Converting into UI decisions
 
-- `model.entities[].fields/keys`: element listesinden okunan alanlar. `exposedAssociations` alan değildir; navigation adayıdır.
-- `model.entities[].unparsedElements`: lexical okuyucunun sınıflandıramadığı elementler (örneğin alias'sız `case` ifadesi). Her biri bir `gap` üretir ve `ready` sonucunu engeller; alanı `$metadata` ile doğrulayıp sözleşmeye elle bağla.
-- `behavior.definitions[]`: her `define behavior for` için ayrı kayıt. `create/update/delete`, parantezli yazımı da (`update ( features : instance );`) tanır; `createByAssociation` alt nesne oluşturmayı ayrı tutar.
-- `behavior.actions` yalnız iş action'larıdır; `draftActions` (Edit, Activate, Discard, Resume, Prepare) framework'e aittir, buton olarak tasarlanmaz.
-- `dynamicFeatureControl`: enablement'ı çalışma zamanında belirlenen işlem ve action'lar. Disabled/hidden durumunu ve testini bunlar için planla.
-- `etag` ve `totalEtag` ayrı alanlardır; concurrency senaryosunu ikisine göre yaz.
-- `model.entities[].kind`: `view-entity`, `custom-entity`, `abstract-entity` veya `classic-view`. Abstract entity action parametresidir, ekran nesnesi değildir; custom entity'nin sorgusu ABAP sınıfındadır, filtre/sıralama/sayfalama desteğini `$metadata` ve testle doğrula.
-- `uiSemantics.fields`: DDLS ve DDLX'ten okunan alan → annotation eşlemesi. Özetleri `lineItemFields`, `selectionFields`, `identificationFields`, `fieldGroupFields`, `hiddenFields`, `valueHelpFields`, `textFields`, `amountFields`, `quantityFields` listeleridir (`Entity.Alan`). List Report kolonlarını, filtreleri ve value help'leri bunlardan türet; annotation değerlerinin kendisi (position, importance, qualifier) için kaynağı oku.
-- `uiSemantics.searchableEntities`: `@Search.searchable: true` taşıyan entity'ler. Listede olmayan entity set'e `$search` gönderme.
-- `service.bindings[].serviceDefinition`: binding'in gösterdiği tanım. Birden fazla tanım varken okunabilen binding'lerin hepsi aynı tanımı gösteriyorsa inspector onu seçer; bu bir tahmin değil kanıttır. Binding okunamıyorsa (`unknown`) seçim yine sana kalır.
-- `source.inventoryVerified` ve `notes`: yalnız nesne sayısını beyan eden ADT snapshot'ı envanterle karşılaştırılabilir. Yerel export'ta değer `false` kalır; eksiksizlik sağlayanın beyanıdır ve doğrulayıcı bunu `info` olarak bildirir.
-- ZIP girişinde üye başına 2 MB, toplamda 50 MB ve 200 kat sıkıştırma oranı sınırı vardır; aşan paket okunmadan reddedilir.
-
-## UI kararına dönüştürme
-
-`abap-backend-contract.json` içinden en az şu eşlemeyi kur:
-
-| Backend kanıtı | UI kararı |
+| Backend evidence | UI decision |
 |---|---|
-| Projection entity ve expose alias | Entity set, route ve sayfa kimliği |
-| `@UI.lineItem`, selection field, facet, field group | List Report/Object Page bilgi mimarisi |
-| Draft behavior | Edit/save/cancel ve unsaved-change akışı |
-| RAP action + feature control | Action placement, enablement ve test |
-| Validation/message target | Field/message popover ve hata senaryosu |
-| Association/composition | Navigation, section/table ve `$expand` bütçesi |
-| Value help/text/currency/unit | Kontrol tipi, display formatı ve request planı |
-| DCL/authorization master | Backend enforcement ve no-auth state |
-| ETag/lock/side effect | Concurrency, refresh ve stale-data senaryosu |
+| Projection entity and expose alias | Entity set, route, page identity |
+| `@UI.lineItem`, selection field, facet, field group | List Report / Object Page information architecture |
+| Draft behavior | Edit/save/cancel and unsaved-change flow |
+| RAP action + feature control | Action placement, enablement, test |
+| Validation / message target | Field and message popover, error scenario |
+| Association / composition | Navigation, section/table, `$expand` budget |
+| Value help / text / currency / unit | Control type, display format, request plan |
+| DCL / authorization master | Backend enforcement, no-auth state |
+| ETag / lock / side effect | Concurrency, refresh, stale-data scenario |
 
-Her satırı `design-contract.json.traceability` içinde backend nesne/dosya ve test kimliğiyle bağla. Bir action veya alan kaynakta yoksa frontend'de varmış gibi üretme.
+Bind every row in `design-contract.json.traceability` to the backend object/file and a test ID. An action or field absent from source is never generated in the frontend.
 
-## Hazırlık kapısı
+## Readiness gate
 
-Üretim koduna geçmeden:
+Before production code: package/snapshot complete and from active sources? · service definition and binding protocol proven? · real service URI and `$metadata` seen in the target? · exposed entity set and projection/BDEF in the same transaction boundary? · draft, authorization, value help, messages and side effects clear? · UI annotations consistent with the design contract? · target release and released status of used SAP objects verified separately?
 
-- Paket/snapshot eksiksiz ve active kaynaklardan mı?
-- Service definition ve binding protocol kanıtlandı mı?
-- Gerçek servis URI'si ve `$metadata` hedef sistemde görüldü mü?
-- Exposed entity set ile projection/BDEF aynı transaction sınırında mı?
-- Draft, authorization, value help, message ve side effect durumu açık mı?
-- UI annotation'ları tasarım sözleşmesiyle tutarlı mı?
-- Hedef release ve kullanılan SAP nesnelerinin release durumu ayrıca doğrulandı mı?
-
-Eksik olanı `gaps` ve `blocked/assumed` olarak koru. Inspector'ın `ready` sonucu dahi gerçek `$metadata`, preview, activation, authorization veya released-object kanıtının yerine geçmez.
+Keep what is missing as `gaps` and `blocked`/`assumed`. Even `ready` does not replace real `$metadata`, preview, activation, authorization or released-object evidence.

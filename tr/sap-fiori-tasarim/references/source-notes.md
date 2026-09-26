@@ -1,37 +1,40 @@
-# Kaynak ve tasarım notları
+# Source and design notes
 
-Kaynak kontrol tarihi: 2026-08-27 (SAP kaynakları), 2026-09-19 (paket yapısı). Bu dosya bakım içindir; çalışma zamanında okunmaz ve her tasarımda web'den yenilenmez. Çalışma zamanında canlı doğrulanacak bağlantılar [official-sources.md](official-sources.md) içindedir.
+Maintenance only; not read at runtime and not refreshed from the web per task. Source check dates: 2026-08-27 (SAP sources), 2026-09-23 (package structure). Links to verify live at runtime are in [official-sources.md](official-sources.md).
 
-## Dayanaklar
+## Foundations
 
-- [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web): floorplan, pattern, görsel sistem ve erişilebilirlik kuralları. Rehber sürümlüdür; skill sabit bir sürümü gerçek kabul etmez, hedefe uygun sürümlü sayfayı açtırır.
-- [SAPUI5 Demo Kit](https://ui5.sap.com/): API Reference, developer best practices, Fiori elements ve test rehberleri. Örneğin çalışması pattern'in Fiori uyumlu olduğunu kanıtlamaz.
-- [ABAP RAP](https://help.sap.com/docs/abap-cloud/abap-rap): business service, behavior definition, draft, side effects ve backend-driven UI özellikleri.
-- [SAP AI Skills Library — sap-fiori-guidelines](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines): SAP'nin deneysel Fiori AI skill'i; yararlı taban, insan doğrulaması gerektirir.
-- [OpenAI — Build skills](https://learn.chatgpt.com/docs/build-skills): ayırt edici açıklama, gerektiğinde yüklenen yönerge ve isteğe bağlı referanslar.
+- [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web): floorplans, patterns, visual system, accessibility. Versioned; the skill never treats one version as truth and makes the model open the target-version page.
+- [SAPUI5 Demo Kit](https://ui5.sap.com/): API Reference, developer best practices, Fiori elements and testing guides. A working sample does not prove Fiori compliance.
+- [ABAP RAP](https://help.sap.com/docs/abap-cloud/abap-rap): business services, behavior definitions, draft, side effects, backend-driven UI.
+- [SAP AI Skills Library — sap-fiori-guidelines](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines): SAP's experimental Fiori AI skill; useful baseline, needs human verification.
+- [OpenAI — Build skills](https://learn.chatgpt.com/docs/build-skills): a distinctive description, instructions loaded on demand, optional references.
 
-## Yapı tercihleri
+## Structural choices
 
-- **Yönerge biçimi (1.1.0):** `SKILL.md` emir kipinde, XML bölümleriyle (`<invariants>`, `<references>`, `<scope>`, `<evidence>`, `<contract>`, `<architecture>`, `<prototype>`, `<production>`, `<verification>`, `<self_check>`, `<delivery>`, `<resources>`), karar tablolarıyla ve iki iyi/kötü örnekle yazılır. Bölüm adları iş akışının sırasını izler.
-- **İki tür referans:** alan referansları (yedi dosya, yaklaşık 75 KB) çalışma zamanında yalnız gerektiğinde okunur; Fiori/UI5/RAP bilgisi tek dosyaya sığdırılamayacak kadar geniştir ve her çağrıda yüklenmesi gereksiz maliyettir. `behavior-checks.md` ile bu dosya yalnız bakım içindir ve `SKILL.md` bunu açıkça söyler.
-- **Sözleşme zinciri:** `abap-backend-contract.json` → `design-contract.json` → prototip/PNG/kod. Sözleşmeler SHA-256 ile bağlanır; doğrulayıcı zinciri kontrol eder. Amaç, PNG ile kodun ayrı ayrı "tasarlanıp" birbirinden kaymasını engellemektir.
-- **Fail-closed doğrulama:** uyarı da kapıyı kapatır. Yanlış pozitif maliyeti bilinçli kabul edilmiştir; renk ve sabit metin denetimleri bu yüzden dar tutulur.
-- **Tahmin yerine boşluk:** inspector lexical bir okuyucudur. Sınıflandıramadığı elementi, birden fazla servis veya entity set adayını seçmez; `gaps` içine yazar. `ready` sonucu yalnız boşluk kalmadığında verilir.
-- **İki ayrı sürüm:** scaffold profili tooling ve `minUI5Version` değerini belirler; hedef runtime yalnız gözlenince yazılır. İkisinin aynı alana yazılması, şablon değerinin sistem bulgusu gibi raporlanmasına yol açıyordu.
-- **Ortak çalışma zamanı:** betikler, şemalar, şablonlar ve testler iki dil paketinde bayt düzeyinde aynıdır; betik mesajları ve sözleşme anahtarları İngilizcedir. Depo testi bu eşitliği korur.
+- **Model-facing files are English and shared (1.4.0):** `SKILL.md` (body) and every file under `references/` are identical in the English and Turkish packages; only the `SKILL.md` front matter (`name`, `language`, `counterpart`) differs. The model answers in the user's language. `README.md`, `CHANGELOG.md`, `agents/openai.yaml` and `archived/README.md` stay in the package language because people read them. The repository pair test guards the equality.
+- **Token budget:** `SKILL.md` carries only the workflow, gates and commands (about 13 KB); domain knowledge lives in seven references read on demand. References use terse imperative bullets, one primary link per topic and no repeated link blocks; the full link index is `official-sources.md`.
+- **Instruction format (1.1.0):** imperative mood, XML sections in workflow order (`<invariants>` … `<resources>`), decision tables, two bad/good examples.
+- **Two kinds of reference:** seven domain references read only when needed; `behavior-checks.md` and this file are maintenance-only and `SKILL.md` says so.
+- **Contract chain:** `abap-backend-contract.json` → `design-contract.json` → prototype/PNG/code, bound by SHA-256 and checked by the validator so that PNG and code cannot drift apart.
+- **Review mode (1.3.0):** `--review` reports new-project conventions (Manifest V2, locale, density) as `warning` and real defects as `error`; contract, package and PNG checks are off. At the delivery gate the same conventions stay `error`.
+- **Fail-closed validation:** a warning also closes the gate; the false-positive cost is accepted, which is why color and hard-coded-text checks stay narrow.
+- **Gap instead of guess:** the inspector is lexical; unclassifiable elements and ambiguous service/entity-set candidates become `gaps`; `ready` only with no gap left.
+- **Two versions:** the scaffold profile sets tooling and `minUI5Version`; the target runtime is written only when observed. One field for both once caused template values to be reported as system findings.
+- **Shared runtime:** scripts, schemas, templates and tests are byte-identical in both packages; script messages and contract keys are English.
 
-## Sınırlar
+## Limits
 
-- Inspector ABAP derleyicisi, ADT aktivasyonu, service preview veya çalışma zamanı yetki kanıtı değildir; CDS/BDEF sözdiziminin tamamını kapsamaz. Yeni bir sözdizimi boşluğu bulunduğunda önce test ekle, sonra ayrıştırıcıyı genişlet; emin olunamayan durumda `gaps` üret.
-- Tek bir gözden geçirilmiş profil vardır (`assets/version-profiles.json`). Şablon lockfile'ları o profile aittir; yeni profil kendi lockfile'ını gerektirir. Eski LTS runtime'lar için üretim scaffold'u, profil eklenene kadar reddedilir.
-- Statik doğrulayıcı build, test, tarayıcı render'ı, Support Assistant ve gözle incelemenin yerini tutmaz.
-- Davranış kontrollerinin (FD01–FD32) her ortamda geçtiği iddia edilmez; bunlar bakım senaryolarıdır. Skill bir modelin her oturumda kurala uyacağını garanti edemez.
-- `official-sources.md` içindeki sürüm notları araştırma tarihine aittir; sürüm numaralı bağlantılar eskiyebilir.
-- Skill SAP sistemine yazmaz; aktivasyon, transport ve deploy kapsam dışıdır.
+- The inspector is not a compiler, ADT activation, service preview or authorization evidence and does not cover the whole CDS/BDEF syntax. New syntax gap: add a test first, then extend the parser; when in doubt, produce `gaps`.
+- One reviewed profile (`assets/version-profiles.json`); template lockfiles belong to it; a new profile needs its own lockfile. Older LTS runtimes are refused until a profile exists.
+- The static validator does not replace build, tests, browser rendering, Support Assistant or visual inspection.
+- Behavior checks FD01–FD32 are maintenance scenarios, not a guarantee that a model follows every rule in every session.
+- Version notes in `official-sources.md` belong to the research date; versioned links may age.
+- The skill never writes to an SAP system; activation, transport and deploy are out of scope.
 
-## Dağıtım ve tek kaynak
+## Distribution and single source
 
-- Bu depo (`public-skills`) skill'in tek kaynağıdır. Başka bir host'a (örneğin bir plugin içine) giden kopya elle düzenlenmez; `python .github/scripts/skills.py export tr/sap-fiori-tasarim --dest <klasör> [--name <skill-adı>] [--overlay <ek.md>]` ile üretilir. `--name` frontmatter adını ve hazır çağrıyı değiştirir; `--overlay` host'a özgü bölümü `SKILL.md` sonuna ekler. Export edilen kopya, kaynak sürümünü ve commit'ini `EXPORT-MANIFEST.json` içinde taşır.
-- Host'a özgü kurallar (yetki kökü, araç geçidi, yazma izni) overlay dosyasında yaşar; çekirdek yönergeye taşınmaz.
-- Şablonlar depo CI'ında ayrı bir iş akışıyla gerçekten kurulur, lint/typecheck/build edilir ve tarayıcıda sınanır; 1.2.0 şablonları bu yolla ve elle Chromium'da doğrulandı (prototipin altı durumu, fragment dialog, freestyle liste → ayrıntı ve not-found yolculukları, Fiori elements smoke testi).
-- Ortak `scripts/`, `assets/` ve `tests/` iki dil paketinde bilinçli olarak yinelenir: depo kuralı her skill klasörünün tek başına kurulabilmesini ister. Eşitliği depo testi korur.
+- This repository is the single source. Copies for another host are produced, never hand-edited: `python .github/scripts/skills.py export en/sap-fiori-design --dest <folder> [--name <skill-name>] [--overlay <extra.md>]`. `--name` changes the front-matter name and default invocation; `--overlay` appends a host-specific section (English, model-facing) to `SKILL.md`; `EXPORT-MANIFEST.json` records source version and commit.
+- Host rules (authority root, tool gateway, write permission) live in the overlay, never in the core instructions.
+- Templates are installed, linted, type-checked, built and browser-tested by a separate CI workflow; the 1.2.0 templates were also verified by hand in Chromium (prototype states, fragment dialog, freestyle list → detail and not-found journeys, Fiori elements smoke test); the 1.3.0 freestyle and Fiori elements skeletons passed install, lint, typecheck/manifest validation and build.
+- `scripts/`, `assets/` and `tests/` are deliberately duplicated in both packages: every skill folder must install on its own. The repository test guards the equality.

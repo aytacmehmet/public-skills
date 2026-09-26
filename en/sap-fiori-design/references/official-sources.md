@@ -1,33 +1,22 @@
 # Official SAP source index and currency rule
 
-Use this reference to verify the target version or to find a live source about a specific control/pattern/API.
+Use to verify the target version or to find the live page for a control, pattern or API.
 
 ## Currency workflow
 
-1. Find the target system product and the actual SAPUI5 runtime version.
-2. Do not mistake the minimum version in `manifest.json` for the system runtime.
-3. Open the versioned SAP Fiori guideline page that matches the target.
-4. Verify that the control/API is public and non-deprecated in the target UI5 API Reference.
-5. Verify the Fiori elements feature/prerequisite in the Help/Demo Kit of the target version.
-6. Verify the ABAP object/API release status in the target S/4HANA release/ADT.
-7. Write the source URL, the page version and the check date into `design-contract.json`.
+1. Find the target product and the real SAPUI5 runtime version; the `manifest.json` minimum is not the runtime.
+2. Open the versioned SAP Fiori guideline page that matches the target.
+3. Confirm the control/API is public and non-deprecated in the target UI5 API Reference.
+4. Confirm Fiori elements features/prerequisites in the target-version Help/Demo Kit.
+5. Confirm ABAP object/API release status in the target S/4HANA release/ADT.
+6. Write source URL, page version and check date into `design-contract.json`.
 
-Research snapshot of 27 August 2026:
-
-- SAP Fiori for Web portal version: 1.151; content updates consolidated up to 1.148
-- Skill scaffold profile: SAPUI5/types 1.151.0; do not treat this as evidence of the target runtime
-- SAP's experimental Fiori AI skill: based on v1.145 (May 2026)
-
-Do not use these values as fixed facts in the future.
+Research snapshot, 27 August 2026 (not a fixed fact for later work): SAP Fiori for Web portal 1.151 with content consolidated up to 1.148 · skill scaffold profile SAPUI5/types 1.151.0 (never target-runtime evidence) · SAP's experimental Fiori AI skill based on v1.145 (May 2026).
 
 ## Main portals
 
-- [SAP Design System](https://www.sap.com/design-system)
-- [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web)
-- [SAPUI5 Demo Kit](https://ui5.sap.com/)
-- [SAP Help Portal](https://help.sap.com/)
-- [SAP's Fiori AI skill description](https://www.sap.com/design-system/fiori-design-web/v1-145/resources/ai-skills/sap-fiori-guidelines)
-- [SAP AI Skills Library sources](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines)
+- [SAP Design System](https://www.sap.com/design-system) · [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web) · [SAPUI5 Demo Kit](https://ui5.sap.com/) · [SAP Help Portal](https://help.sap.com/)
+- [SAP Fiori AI skill description](https://www.sap.com/design-system/fiori-design-web/v1-145/resources/ai-skills/sap-fiori-guidelines) · [SAP AI Skills Library sources](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines)
 
 ## Visual system and accessibility
 
@@ -81,15 +70,8 @@ Do not use these values as fixed facts in the future.
 - [Public Released APIs](https://help.sap.com/docs/abap-cloud/abap-cloud/public-released-apis)
 - [Clean Core Extensibility](https://help.sap.com/docs/abap-cloud/developer-guide-from-classic-abap-to-abap-cloud/clean-core-extensibility-and-abap-based-extensions)
 
-## Link versions
+## Link versions and source guardrail
 
-The guideline links in this package point at the page versions whose content was checked during research (v1-96 … v1-148); they were not moved blindly to one base version, because not every page exists at the same address in every version. Before using a link as evidence, open the counterpart of the same page for the target version and record that URL in the contract. The repository's link check reports reachability only; it does not prove that content is current.
+Guideline links point at the page versions whose content was checked during research (v1-96 … v1-148); pages do not exist at the same address in every version, so they were not moved to one base version. Before citing a link, open the same page for the target version and record that URL. The repository link check proves reachability only, not currency.
 
-## Source usage guardrail
-
-- Prefer the official SAP/official UI5 primary source.
-- Do not use a search result summary in place of the opened source page.
-- Use an old `experience.sap.com` page only if there is no current `sap.com/design-system` equivalent, and note its version explicitly.
-- A working demo/sample does not by itself prove that the pattern is Fiori compliant.
-- Do not generate a module/class/property that has no public API documentation.
-- Make the word "Latest" absolute with a date and a version.
+Prefer official SAP/UI5 primary sources · never a search summary in place of the opened page · legacy `experience.sap.com` pages only when no current `sap.com/design-system` equivalent exists, with the version noted · a working sample does not prove Fiori compliance · never generate a module/class/property without public API documentation · make "latest" concrete with a date and a version.

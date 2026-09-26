@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -621,11 +622,11 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
                 if re.search(r"@Search\.searchable\s*:\s*true\b", text, re.I):
                     searchable.append(entity)
                 traceability.append({"backendObject": entity, "sourcePath": obj.path, "uiImpact": "entity-and-fields"})
-            for target, alias in re.findall(
-                r"\bassociation(?:\s+\[[^\]]+\])?\s+to(?:\s+parent)?\s+([A-Za-z_][A-Za-z0-9_]*)\s+as\s+(_[A-Za-z_][A-Za-z0-9_]*)",
+            for kind, target, alias in re.findall(
+                r"\b(association|composition)(?:\s+\[[^\]]+\])?\s+(?:to(?:\s+parent)?|of)\s+([A-Za-z_][A-Za-z0-9_]*)\s+as\s+(_[A-Za-z_][A-Za-z0-9_]*)",
                 text, re.I,
             ):
-                associations.append({"sourceObject": obj.name, "target": target, "alias": alias, "path": obj.path})
+                associations.append({"kind": kind.lower(), "sourceObject": obj.name, "target": target, "alias": alias, "path": obj.path})
 
         elif obj.object_type == "DDLX":
             target, extension = metadata_extension(text)
@@ -677,6 +678,12 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
             gaps.append(f"Explicit service definition {service_definition} was not observed in the package")
     elif len(services) == 1:
         main_service = services[0]
+        named = {item["serviceDefinition"].upper() for item in bindings if item["serviceDefinition"] != "unknown"}
+        if named and main_service["name"].upper() not in named:
+            gaps.append(
+                f"Service binding refers to {', '.join(sorted(named))}, not to the only service definition {main_service['name']}; "
+                "verify which definition the UI service publishes"
+            )
     elif len(bound := {item["serviceDefinition"] for item in bindings if item["serviceDefinition"] != "unknown"}) == 1:
         # Several definitions but every readable service binding points at the same one: that is evidence, not a guess.
         main_service = next((item for item in services if item["name"].upper() in bound), None)
@@ -692,7 +699,7 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
     root_sets = [item["entitySet"] for item in exposed if item["sourceEntity"].upper() in root_names]
     main_entity_set = "unknown"
     if entity_set:
-        main_entity_set = next((item["entitySet"] for item in exposed if item["entitySet"] == entity_set), "unknown")
+        main_entity_set = next((item["entitySet"] for item in exposed if item["entitySet"].upper() == entity_set.upper()), "unknown")
         if main_entity_set == "unknown":
             gaps.append(f"Explicit entity set {entity_set} is not exposed by the selected service definition")
     elif len(exposed) == 1:
@@ -796,6 +803,71 @@ def analyze(objects: list[SourceObject], package_name: str | None, source_mode: 
     }
 
 
+SEARCH_TERM = "Org.OData.Capabilities.V1.SearchRestrictions"
+SAP_DATA = "{http://www.sap.com/Protocols/SAPData}"
+EDMX_V4 = "{http://docs.oasis-open.org/odata/ns/edmx}"
+MAX_METADATA_BYTES = 20 * 1024 * 1024
+
+
+def read_metadata(path: Path) -> dict:
+    """Entity sets and declared $search support from an observed or exported service $metadata document."""
+    data = path.read_bytes()
+    if len(data) > MAX_METADATA_BYTES:
+        raise ValueError("$metadata exceeds 20 MB")
+    text = data.decode("utf-8-sig")
+    if re.search(r"<!\s*(?:DOCTYPE|ENTITY)\b", text, re.I):
+        raise ValueError("$metadata DTD/entities are not accepted")
+    root = ET.fromstring(text)
+    local = lambda tag: tag.rsplit("}", 1)[-1]
+    if local(root.tag) != "Edmx":
+        raise ValueError("--metadata is not an EDMX document")
+    protocol = "odata-v4" if root.tag.startswith(EDMX_V4) and root.get("Version") == "4.0" else "odata-v2" if root.get("Version") == "1.0" else "unknown"
+    aliases = {item.get("Alias"): item.get("Namespace", "") for item in root.iter() if local(item.tag) in ("Schema", "Include") and item.get("Alias")}
+
+    def qualified(value: str) -> str:
+        prefix, dot, suffix = value.rpartition(".")
+        return f"{aliases.get(prefix, prefix)}.{suffix}" if dot else value
+
+    def is_search(annotation: ET.Element) -> bool:
+        term = annotation.get("Term", "")
+        return local(annotation.tag) == "Annotation" and not annotation.get("Qualifier") and (qualified(term) == SEARCH_TERM or term.endswith("Capabilities.SearchRestrictions"))
+
+    def searchable(annotation: ET.Element) -> bool | None:
+        # The vocabulary default of SearchRestrictions/Searchable is true.
+        for value in (item for item in annotation.iter() if local(item.tag) == "PropertyValue" and item.get("Property") == "Searchable"):
+            text_value = value.get("Bool") or next((item.text for item in value if local(item.tag) == "Bool"), None)
+            return {"true": True, "false": False}.get((text_value or "").strip())
+        return True
+
+    targeted: dict[str, bool | None] = {}
+    for block in (item for item in root.iter() if local(item.tag) == "Annotations" and not item.get("Qualifier")):
+        container, slash, member = block.get("Target", "").partition("/")
+        if slash and "/" not in member:
+            for annotation in (item for item in block if is_search(item)):
+                targeted[f"{qualified(container)}/{member}"] = searchable(annotation)
+    entity_sets = []
+    for schema in (item for item in root.iter() if local(item.tag) == "Schema"):
+        for container in (item for item in schema if local(item.tag) == "EntityContainer"):
+            for entity_set in (item for item in container if local(item.tag) == "EntitySet"):
+                if protocol == "odata-v2":
+                    search = {"true": True, "false": False}.get(entity_set.get(f"{SAP_DATA}searchable"))
+                else:
+                    inline = [searchable(item) for item in entity_set if is_search(item)]
+                    search = inline[0] if inline else targeted.get(f"{schema.get('Namespace', '')}.{container.get('Name')}/{entity_set.get('Name')}")
+                entity_sets.append({"name": entity_set.get("Name", ""), "search": search})
+    return {"file": path.name, "sha256": hashlib.sha256(data).hexdigest(), "protocol": protocol, "entitySets": entity_sets}
+
+
+def apply_metadata(contract: dict, metadata: dict) -> None:
+    service = contract["service"]
+    service["metadata"] = metadata
+    names = {row["name"] for row in metadata["entitySets"]}
+    if service["protocol"] != "unknown" and metadata["protocol"] not in ("unknown", service["protocol"]):
+        contract["gaps"].append(f"Supplied $metadata protocol {metadata['protocol']} differs from service protocol {service['protocol']}")
+    if service["entitySet"] not in ("", "unknown") and service["entitySet"] not in names:
+        contract["gaps"].append(f"Entity set {service['entitySet']} is absent from the supplied $metadata")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Inspect an ABAP package directory, ZIP, or read-only ADT snapshot for UI-relevant contracts"
@@ -807,6 +879,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--protocol", choices=["odata-v2", "odata-v4"], help="Observed service binding protocol")
     parser.add_argument("--service-definition", help="UI service definition when the package contains several")
     parser.add_argument("--entity-set", help="Leading entity set when the service exposes several candidates")
+    parser.add_argument("--metadata", type=Path, help="Service $metadata (EDMX) observed or exported from the target system; records entity sets and declared $search support")
     parser.add_argument("--json", action="store_true", help="Print the completed contract to stdout")
     return parser
 
@@ -841,6 +914,8 @@ def main() -> int:
             args.service_uri, args.protocol, gaps,
             args.service_definition, args.entity_set, inventory_verified,
         )
+        if args.metadata:
+            apply_metadata(contract, read_metadata(args.metadata.resolve()))
         output = args.output.resolve()
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
@@ -850,7 +925,7 @@ def main() -> int:
             print(f"ABAP backend contract written: {output}")
             print(f"Objects: {len(objects)}; readiness: {contract['recommendation']['readiness']}; gaps: {len(contract['gaps'])}")
         return 0
-    except (OSError, ValueError, json.JSONDecodeError, zipfile.BadZipFile) as error:
+    except (OSError, ValueError, json.JSONDecodeError, zipfile.BadZipFile, ET.ParseError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
 

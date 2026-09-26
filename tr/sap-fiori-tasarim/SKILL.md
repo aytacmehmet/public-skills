@@ -1,206 +1,182 @@
 ---
 name: sap-fiori-tasarim
-description: "Resmî SAP Design System ve SAPUI5 rehberlerine dayalı uçtan uca SAP Fiori for Web tasarım ve geliştirme becerisi. SAP Fiori, SAPUI5/UI5, Fiori elements, mockup/prototip/PNG, List Report, Object Page, OData/RAP veya S/4HANA ekranı tasarlamak, incelemek, kodlamak ya da refactor etmek; ayrıca yerel ADT/abapGit paketi, ZIP veya yapılandırılmış salt-okunur ADT bağlantısından ABAP paketini okuyup UI'ı CDS/RAP/servis sözleşmesine göre üretmek istendiğinde kullan. Görsel tasarım, backend kanıtı ve üretim kodunu izlenebilir sözleşmelerle bağlar; hedef sürüm, erişilebilirlik, performans, güvenlik ve Clean Core kapıları uygular."
+description: "End-to-end SAP Fiori for Web design and delivery. Use it to design, review, code or refactor SAP Fiori, SAPUI5/UI5 and Fiori elements screens (List Report, Object Page, mockup/prototype/PNG, OData/RAP, S/4HANA), and to read an ABAP package from a local ADT/abapGit export, a ZIP or a configured read-only ADT connection into a backend contract and generate the UI from it. Links visual design, backend evidence and production code through traceable contracts; applies target-version, accessibility, performance, security and Clean Core gates. Accepts requests in any language and answers in the user's language."
 metadata:
-  version: "1.2.0"
+  version: "2.0.0"
   language: "tr"
   family: "sap-fiori-design"
   counterpart: "en/sap-fiori-design"
 ---
 
-# SAP Fiori Tasarım
+# SAP Fiori Design
 
-Ekranı önce iş görevi ve hedef sistem bağlamında tasarla; sonra aynı tasarımı gerçek SAPUI5 kontrolleriyle prototipe ve üretim koduna dönüştür. Görsel kaliteyi SAP standardından, teknik kaliteyi hedef çalışma zamanından ve doğrulanabilir kalite kapılarından türet. Kullanıcıyla onun dilinde konuş; varsayılan Türkçe. Kullanıcının talimatı bu yönergeden önceliklidir.
+Design the screen from the business task and the target system, then turn the same design into a prototype and production code built from real SAPUI5 controls. Visual quality comes from the SAP standard, technical quality from the target runtime and verifiable gates. Answer in the user's language; these instructions and the references are English and identical in both language packages. An explicit user instruction overrides this guideline.
 
 <invariants>
-1. Tasarım ve kodun tek kaynağı `design-contract.json`'dır. PNG, prototip ve üretim kodundaki her sayfa, alan, eylem, durum ve responsive davranışı bu sözleşmeyle eşle; sözleşmedeki her metin anahtarı ve eylem kimliği teslim edilen UI'da bulunmalıdır.
-2. PNG'yi çalışan UI5 prototipinden al. Metin ve kontrol ağırlıklı SAP ekranını generatif görselle çizme; generatif görseli yalnız açıkça istenen dekoratif illüstrasyonda kullan ve UI katmanından ayır.
-3. Önce standart floorplan ve SAP Fiori elements OData V4 seçeneğini değerlendir. Freestyle SAPUI5'i yalnız doğrulanmış gereksinim standardı aşınca seç.
-4. Hedef sistemin SAPUI5 sürümünü ve yeteneklerini doğrulamadan en yeni API'yi varsayma. Mevcut projede sürüm, dil ve yapı kurallarını koru.
-5. Özel CSS, özel kontrol, controller extension ve frontend iş mantığı son çaredir. Tema token'ı, standart kontrol, annotation ve belgelenmiş extension point kullan.
-6. Erişilebilirlik, responsive/adaptive davranış, i18n, güvenlik, hata/boş/yükleniyor durumları ve yetki modeli tasarımın parçasıdır.
-7. Frontend görünürlüğü yetkilendirme değildir. Veri ve eylem yetkisini backend'de zorunlu kıl.
-8. SAP'nin resmî AI Fiori becerisi yararlı bir tabandır, fakat deneyseldir ve insan doğrulaması ister. Hedef sürüm dokümantasyonuyla çapraz doğrula.
-9. Yalnız kullanıcının sağladığı veya açıkça hedef proje olarak işaretlediği dosyalar proje kanıtıdır. Skill şablonundaki, örnek prototipteki veya ilgisiz çalışma alanındaki `minUI5Version`/manifest değerini hedef sistem bulgusu gibi raporlama; kanıt yoksa değeri `unknown` bırak.
-10. ABAP paketi verildiyse UI mimarisi seçmeden önce `abap-backend-contract.json` üret. Kaynaktan çıkarılan bilgiyi gerçek `$metadata`, runtime, yetki veya released-object doğrulamasıyla karıştırma.
-11. Canlı paketi yalnız önceden yapılandırılmış salt-okunur ADT araçlarıyla oku. Okuma isteği yazma, aktivasyon, publish, transport veya deploy izni değildir; sohbette credential, private key veya RSA isteme.
-12. Sözleşmede şablon metni (`Replace …`, `pending-…`, `YYYY-MM-DD`) bırakma ve kapıyı geçmek için uydurma değer yazma. Bilmediğini `unknown`, ilerlemeyi durduranı `blocked` olarak kaydet.
+1. `design-contract.json` is the single source for PNG, prototype and code; every text key and action ID in it exists in the delivered UI.
+2. PNGs are captures of the running UI5 prototype; never draw a text- or control-heavy SAP screen with a generative image (decorative illustrations only, outside the UI layer).
+3. Standard floorplan and Fiori elements OData V4 first; freestyle SAPUI5 only when a verified requirement exceeds the standard.
+4. Verify the target SAPUI5 version and capabilities before using an API; keep an existing project's version, language and structure rules.
+5. Custom CSS, custom controls, controller extensions and frontend business logic are last resorts; prefer theme tokens, standard controls, annotations, documented extension points.
+6. Accessibility, responsive/adaptive behavior, i18n, security, loading/empty/error/no-auth states and the authorization model are part of the design.
+7. Frontend visibility is not authorization; the backend enforces data and action authorization.
+8. SAP's official AI Fiori skill is a useful but experimental baseline; cross-check with the target-version documentation.
+9. Only files the user provided or marked as the target project are evidence; a `minUI5Version`/manifest value from the skill template, sample prototype or an unrelated workspace is never a target finding — write `unknown`.
+10. With an ABAP package, produce `abap-backend-contract.json` before choosing the architecture; source-derived facts are not `$metadata`, runtime, authorization or released-object verification.
+11. Read a live package only through preconfigured read-only ADT tools; reading is not permission to write, activate, publish, transport or deploy; never ask for credentials, private keys or RSA in chat.
+12. Leave no template text (`Replace with …`, `replace-with-…`, `pending-…`, `verify-…`, `YYYY-MM-DD`) in the contract and never invent a value to pass the gate: unknown → `unknown`, blocking → `blocked`.
 
-- Kötü: şablon manifest'inde `minUI5Version: 1.151.0` var → "Hedef sistem SAPUI5 1.151.0" diye raporlamak.
-- İyi: `ui5Runtime: unknown` bırak; "1.151.0 yalnız scaffold profilidir, runtime'ı hedef sistemde doğrulayın" de.
+- Bad: template manifest has `minUI5Version: 1.151.0` → "target system is SAPUI5 1.151.0".
+- Good: `ui5Runtime: unknown`; "1.151.0 is the scaffold profile; verify the runtime in the target system".
 </invariants>
 
 <references>
-İş başlamadan yalnız gereken dosyayı oku:
+Read only the file the task needs:
 
-| Konu | Dosya |
+| Topic | File |
 |---|---|
-| Görsel dil, tema, token, tipografi, ikon, yoğunluk, erişilebilirlik | [design-foundations.md](references/design-foundations.md) |
-| Floorplan, kontrol ve durum kararları | [floorplans-and-patterns.md](references/floorplans-and-patterns.md) |
-| SAPUI5/Fiori elements proje ve kod kuralları, kod üretim guardrail'leri | [ui5-engineering.md](references/ui5-engineering.md) |
-| ABAP paketi/ZIP/ADT snapshot okuma, inspector çıktısı, backend → UI eşlemesi | [abap-package-intake.md](references/abap-package-intake.md) |
-| RAP, OData V4, ABAP Cloud ve Clean Core veri sözleşmesi | [rap-backend-contract.md](references/rap-backend-contract.md) |
-| Teslim biçimleri, doğrulayıcı bulguları, doğrulama matrisi | [delivery-and-quality.md](references/delivery-and-quality.md) |
-| Canlı doğrulanacak resmî bağlantılar ve sürüm notu | [official-sources.md](references/official-sources.md) |
+| Visual language, themes, tokens, typography, icons, density, accessibility | [design-foundations.md](references/design-foundations.md) |
+| Floorplans, controls, states, messaging | [floorplans-and-patterns.md](references/floorplans-and-patterns.md) |
+| SAPUI5/Fiori elements project and code rules, code-generation guardrails | [ui5-engineering.md](references/ui5-engineering.md) |
+| ABAP package/ZIP/ADT snapshot intake, inspector output, backend → UI mapping | [abap-package-intake.md](references/abap-package-intake.md) |
+| RAP, OData V4, ABAP Cloud, Clean Core data contract | [rap-backend-contract.md](references/rap-backend-contract.md) |
+| Delivery formats, validator findings, verification matrices | [delivery-and-quality.md](references/delivery-and-quality.md) |
+| Official links to verify live, version note | [official-sources.md](references/official-sources.md) |
 
-`references/behavior-checks.md` ve `references/source-notes.md` yalnız skill bakımı içindir; çalışma zamanında okuma.
+`references/behavior-checks.md` and `references/source-notes.md` are maintenance-only; do not read them at runtime.
 
-Komutlardaki `<skill kökü>`, host'un bu skill için bildirdiği taban dizindir. Betikleri `python -B "<skill kökü>/scripts/<ad>.py"` biçiminde çalıştır; her betik `--help` ile tüm bayraklarını listeler. Git Bash'te `/` ile başlayan servis URI'si yola çevrilir; PowerShell kullan veya komutun başına `MSYS_NO_PATHCONV=1` koy.
-
-Belirli bir UI öğesi veya floorplan için ayrıntı gerekiyorsa resmî, hedef sürümlü SAP sayfasını ayrıca aç. UI5 Demo Kit örneği tek başına Fiori tasarım kanıtı değildir.
+`<skill root>` is the base directory the host reports for this skill; run scripts as `python -B "<skill root>/scripts/<name>.py"` (`--help` lists every flag). Git Bash rewrites a service URI starting with `/` into a path: use PowerShell or prefix `MSYS_NO_PATHCONV=1`. For a specific control or floorplan open the official target-versioned SAP page; a Demo Kit sample alone is not design evidence.
 </references>
 
 <scope>
-Sohbet, mevcut dosyalar, servis metadata'sı, ekran görüntüleri ve gereksinimlerden şu alanları doldur; bilinmeyeni `unknown` yaz, uydurma:
+Fill from chat, files in scope, service metadata, screenshots and requirements; write `unknown` instead of inventing: `Role and task` · `Business object` (main/sub-objects, statuses, actions) · `Target system` (S/4HANA Cloud Public/Private, on-premise, BTP or standalone UI5; FLP semantic object and action) · `Version and protocol` (SAPUI5 runtime, Fiori guideline version, OData V2/V4, RAP, draft) · `Project` (existing or new; Fiori elements, freestyle or unknown) · `Device and language` (devices, language/RTL, theme/branding, accessibility target) · `Output` · `Limits` (test, deployment, delivery).
 
-`Rol ve görev` (kullanıcı rolü, karar/görev, başarı ölçütü) · `İş nesnesi` (ana nesne, alt nesneler, statüler, eylemler) · `Hedef sistem` (S/4HANA Cloud Public/Private, on-premise, BTP veya bağımsız UI5; FLP ise semantic object ve action) · `Sürüm ve protokol` (SAPUI5 runtime, Fiori guideline sürümü, OData V2/V4, RAP, draft) · `Proje` (mevcut mi yeni mi; Fiori elements, freestyle veya bilinmiyor) · `Cihaz ve dil` (birincil cihazlar, dil/RTL, tema/markalama, erişilebilirlik hedefi) · `Çıktı` (`png`, `interactive`, `png+interactive`, `code`, `all` veya `review`) · `Sınırlar` (test, dağıtım, teslim).
+Do not re-ask what the context holds. Ask one short question only for a single gap that changes the outcome; otherwise record the assumption and continue. Default visual format: `png+interactive`.
 
-Bağlamda olanı yeniden sorma. Sonucu değiştirecek tek büyük eksik varsa tek kısa soru sor; değilse varsayımı sözleşmeye kaydet ve devam et. Görsel format söylenmemişse `png+interactive` varsay.
-
-| Çıktı | Üretilen | Ön koşul | Hedef `unknown` ise |
+| Output | Produced | Prerequisite | Target `unknown` |
 |---|---|---|---|
-| `png` / `png+interactive` | `prototype/` + `visuals/*.png` | Yok; PNG gerçek tarayıcı capture'ıdır | Bilgi notu; kapı açılabilir |
-| `interactive` | `prototype/` | Yok | Bilgi notu; kapı açılabilir |
-| `code` / `all` | `app/` (prototipten bağımsız) | Framework, gözden geçirilmiş `--ui5-version` profili, gözlenmiş servis URI'si ve entity set | Uyarı; kapı kapalı kalır |
-| `review` | Bulgu raporu; dosya üretilmez | Kapsama alınmış mevcut proje | — |
+| `png` / `png+interactive` | `prototype/` + `visuals/*.png` | None; the PNG is a real browser capture | `info`; gate can open |
+| `interactive` | `prototype/` | None | `info`; gate can open |
+| `code` | `app/` (independent of the prototype) | Framework, reviewed `--ui5-version` profile, observed service URI and entity set | `warning`; gate closed |
+| `all` | `prototype/` + `visuals/` + `app/` | As `code` | `warning`; gate closed |
+| `review` | Findings report, no files (`validate_fiori_delivery.py --review`; not a scaffold `--output`) | Existing project in scope | — |
 </scope>
 
 <evidence>
-- **Mevcut proje:** kullanıcı kapsam içine koyduysa önce `package.json`, `ui5.yaml`, `manifest.json`, `Component.*`, view/fragment/controller, annotation/CDS kaynakları, testler ve servis metadata'sını oku. Proje verilmediyse ilgisiz çalışma alanını hedef proje gibi inceleme. `minUI5Version` ile gerçek runtime farkını kontrol et.
-- **ABAP paketi** (ADT export'u, abapGit klasörü/ZIP'i veya canlı paket adı): önce [abap-package-intake.md](references/abap-package-intake.md) dosyasını oku, sonra:
+- **Existing project:** read `package.json`, `ui5.yaml`, `manifest.json`, `Component.*`, views/fragments/controllers, annotation/CDS sources, tests and service metadata first; never inspect an unrelated workspace; distinguish `minUI5Version` from the real runtime.
+- **ABAP package** (ADT export, abapGit folder/ZIP, live package name): read [abap-package-intake.md](references/abap-package-intake.md), then:
 
 ```powershell
-python -B "<skill kökü>/scripts/inspect_abap_package.py" <paket-klasörü-veya-zip> `
-  --output <çıktı>/abap-backend-contract.json `
-  --package-name <paket> --service-uri <gözlenen-uri> --protocol odata-v4
+python -B "<skill root>/scripts/inspect_abap_package.py" <package-folder-or-zip> `
+  --output <output>/abap-backend-contract.json `
+  --package-name <package> --service-uri <observed-uri> --protocol odata-v4 [--metadata <observed-$metadata.xml>]
 ```
 
-- **Seçim inspector'ın değil kanıtındır:** birden fazla service definition varsa inspector yalnız okunabilen service binding'lerin hepsi aynı tanımı gösteriyorsa onu seçer; aksi halde `gaps` içine yazar. UI servisini `--service-definition`, ana entity set'i `--entity-set` ile kanıta dayanarak adlandır.
-- **Canlı sistem:** yalnız salt-okunur ADT araçları (örneğin `sap-cloud-erp` MCP sunucusu) mevcut ve bağlantı önceden yapılandırılmışsa tüm paket sayfalarını ve gerekli active kaynak sayfalarını SHA-bağlı oku, normalleştirilmiş ADT snapshot oluştur, aynı inspector'a ver. Araç yoksa yerel export iste ve blocker olarak kaydet. Paket adından nesne veya servis URI'si tahmin etme.
-- **Sözleşmeye aktar:** `uiSemantics` altındaki alan rollerini (`lineItemFields`, `selectionFields`, `valueHelpFields`, `hiddenFields`, …), draft, action, validation, side effect, DCL ve service exposure kanıtlarını tasarım sözleşmesine taşı. `gaps` çözülmeden veya açık blocker/varsayım yazılmadan üretim koduna geçme. `unparsedElements` ile `dynamicFeatureControl` altındakileri gerçek `$metadata` ile doğrula; `draftActions` listesini iş action'ı olarak tasarlama; `searchableEntities` içinde olmayan entity'ye `$search` gönderme. Parser sonucu compiler/activation/service preview kanıtı değildir; yerel export'un eksiksizliği sağlayanın beyanıdır (`inventoryVerified: false`).
-- **Sürümü kilitle:** hedef sürüm bilinmiyorsa üretim kodu scaffold etme; yalnız prototip veya sözleşme üret ve sürümü `unknown` bırak. `--ui5-version` yalnız scaffold profilini (tooling ve `minUI5Version`) seçer; hedef sistemde gözlenen runtime `--target-ui5-runtime` ile ayrıca verilir. Profil gözlenen runtime'dan yeniyse veya kendi lockfile'ı yoksa scaffold reddeder; o runtime için gözden geçirilmiş yeni profil ekle.
-- **Canlı doğrulama:** internet varsa [official-sources.md](references/official-sources.md) üzerinden resmî dokümanı aç. Bu turda sayfayı gerçekten açıp sürüm göstergesini görmeden "gözlendi/doğrulandı" deme; statik araştırma notu yalnız arama ipucudur. Fiori guideline sürümü ile SAPUI5 runtime sürümünü ayrı alanlarda, tam değer + URL + kontrol tarihiyle kaydet.
+- **Evidence chooses:** with several service definitions the inspector selects one only when every readable service binding names it; otherwise it records a gap. Name the UI service with `--service-definition` and the leading entity set with `--entity-set`, from evidence.
+- **Live system:** only with preconfigured read-only ADT tools (for example the `sap-cloud-erp` MCP server): read every package page and the needed active sources SHA-bound, build the normalized snapshot, feed it to the inspector. No tools → ask for a local export, record a blocker. Never guess objects or service URIs from a package name.
+- **Into the contract:** carry the `uiSemantics` roles (`lineItemFields`, `selectionFields`, `valueHelpFields`, `hiddenFields`, …), draft, actions, validations, side effects, DCL and service exposure into the design contract. No production code while `gaps` are unresolved without an explicit blocker/assumption. Verify `unparsedElements` and `dynamicFeatureControl` against real `$metadata`; `draftActions` are never business actions; `$search` only for entities in `searchableEntities` or whose `service.metadata` (from `--metadata`) declares search support, never against a metadata `false`. Parser output is not compiler/activation/preview evidence; local-export completeness is the provider's statement (`inventoryVerified: false`).
+- **Lock the version:** unknown target version → no production scaffold, only prototype/contract with `unknown`. `--ui5-version` selects the scaffold profile (tooling, `minUI5Version`); the observed runtime goes into `--target-ui5-runtime`. The scaffold refuses a profile newer than the observed runtime or without its own lockfile (the template lockfile belongs to `templateLockfileProfile`; other profiles bring a `lockfileDir`). It still scaffolds without `--target-ui5-runtime`: that rule is yours, and the validator keeps the gate closed with `CONTRACT_TARGET_UNKNOWN`.
+- **Live verification:** open the official page via [official-sources.md](references/official-sources.md); say "verified" only after seeing the page and its version indicator in this turn. Record the Fiori guideline version and the SAPUI5 runtime separately: value + URL + check date.
 
-- Kötü: pakette `Z_UI_ORDER` ve `Z_API_ORDER` var, binding okunamıyor → ilkini seçip manifest'e yazmak.
-- İyi: `gaps` satırını göster, UI servisini kaynaktan belirle, `--service-definition Z_UI_ORDER` ile yeniden çalıştır.
+- Bad: package has `Z_UI_ORDER` and `Z_API_ORDER`, binding unreadable → pick the first, write it into the manifest.
+- Good: show the gap, determine the UI service from source, rerun with `--service-definition Z_UI_ORDER`.
 </evidence>
 
 <contract>
-Çalışma alanını oluştur veya genişlet:
+Create or extend the workspace:
 
 ```powershell
-python -B "<skill kökü>/scripts/scaffold_fiori_workspace.py" <çıktı> --app-id <ad.alanı> --name <ad> `
-  --language <tr|en> --output <tip> [--backend-contract <çıktı>/abap-backend-contract.json] `
-  [--semantic-object <nesne> --action <eylem>]
+python -B "<skill root>/scripts/scaffold_fiori_workspace.py" <output> --app-id <name.space> --name <name> `
+  --language <tr|en> --output <png|interactive|png+interactive|code|all> `
+  [--framework <freestyle-sapui5|fiori-elements-odata-v4> --ui5-version <profile> --service-uri <observed-uri> --entity-set <set>] `
+  [--target-ui5-runtime <observed-runtime>] [--backend-contract <output>/abap-backend-contract.json] `
+  [--semantic-object <object> --action <action>] [--force] [--reset-contract] [--json]
 ```
 
-Var olan `design-contract.json` tasarımcının emeğidir: sonraki çalıştırma (örneğin prototipten sonra `--output all`) sözleşmeyi korur, yalnız eksik ağacı ve scaffold'a ait alanları ekler. `--force` yalnız `prototype/` ve `app/` dosyalarını yeniler; sözleşmeyi baştan başlatmak için `--reset-contract` gerekir ve eski dosya `.bak` olarak saklanır. Şemalar skill'e aittir ve her çalıştırmada yenilenir; şablon alanlarının türünü geçici cevap için değiştirme, yeni ihtiyaçta şemayı ve doğrulayıcıyı aynı değişiklikte güncelle.
+`code`/`all` require the first bracket (`--backend-contract` may supply URI, entity set and protocol); `--action` needs `--semantic-object`. An existing contract is the designer's work: later runs keep it and add only missing trees and scaffold-owned fields; `--force` renews only `prototype/` and `app/`; `--reset-contract` alone restarts the contract, keeps `.bak`, leaves the trees. Schemas belong to the skill and are renewed every run; a new field changes schema and validator together.
 
-Şu alanların hepsini doldur:
+Fill every field:
 
-- `context`: rol, görev, nesne, sistem, sürüm, FLP ise `launchIntent`; `context.evidence[].status` yalnız `verified`, `assumed`, `unknown` veya `blocked`
-- `architecture`: floorplan, framework, gerekçe, reddedilen alternatifler; üretim kodunda `minUI5Version`
-- `informationArchitecture`: sayfalar, bölümler, navigasyon, öncelik
-- `fieldsAndActions`: alan semantiği, zorunluluk, value help, eylem yeri ve yetki; her `labelKey`/`titleKey` i18n'de, her eylem `id`'si view'da aynı stabil ID ile bulunur
-- `states`: `initial`, `loading`, `populated`, `empty`, `no-results`, `error`, `no-auth` ve ilgili edit/draft durumları; `verification.states` aynı listeyi taşır
-- `responsive`: S/M/L/XL davranışı, cozy/compact, tablonun telefon alternatifi
-- `accessibility`: başlık hiyerarşisi, etiketler, klavye/odak, ARIA ilişkileri, metin alternatifleri
-- `dataContract`: entity, navigation, action/function, `initialSelect`, dar `$expand`, paging, side effects, `serverCapabilities.search`, `releasedApisVerified`
-- `backendEvidence`: ABAP sözleşmesi yolu/hash'i, paket, kaynak modu, bütünlük, aktif sürüm, açık boşluklar
-- `verification`: komutlar ve gerçekten sınananı `check`/`method`/`result` ile yazan `accessibilityEvidence`
-- `traceability`: gereksinim → ekran/kontrol → ABAP nesnesi/dosya → servis/annotation → test
-- `sources`: URL, sürüm, kontrol tarihi
+- `context`: role, task, object, system, version, `launchIntent` for FLP; `evidence[].status` ∈ `verified | assumed | unknown | blocked`
+- `architecture`: floorplan, framework, rationale, rejected alternatives; `minUI5Version` for code
+- `informationArchitecture`: pages, sections, navigation, priority
+- `fieldsAndActions`: field semantics, mandatory, value help, action placement and authorization; every `labelKey`/`titleKey` in i18n, every action `id` in the view with the same stable ID
+- `states`: `initial`, `loading`, `populated`, `empty`, `no-results`, `error`, `no-auth` plus edit/draft states; `verification.states` identical (missing one of the first five = `error`, missing `loading`/`no-results` = `warning`); a required state that cannot occur goes into `stateExceptions` with a reason instead of being dropped
+- `responsive`: S/M/L/XL behavior, cozy/compact, phone alternative for tables
+- `accessibility`: heading hierarchy, labels, keyboard/focus, ARIA relations, text alternatives
+- `dataContract`: entity, navigation, actions/functions, `initialSelect`, narrow `$expand`, paging, side effects, `serverCapabilities.search`, `releasedApisVerified`
+- `backendEvidence`: ABAP contract path/hash, package, source mode, completeness, active version, open gaps
+- `verification`: commands and `accessibilityEvidence` rows (`check`/`method`/`result`) for what was really tested
+- `traceability`: requirement → screen/control → ABAP object/file → service/annotation → test
+- `sources`: URL, version, check date
 
-Koddan önce sözleşmeyi yeniden oku. Görsel ve teknik karar çelişirse çelişkiyi burada çöz.
+Re-read the contract before coding; resolve visual-versus-technical conflicts here.
 </contract>
 
 <architecture>
-Öncelik sırası:
+Priority: 1 standard Fiori elements OData V4 floorplan · 2 Fiori elements + documented building block/extension point · 3 Fiori elements custom page / flexible programming model · 4 freestyle SAPUI5 · 5 custom control, only when nothing else fits.
 
-1. Standart SAP Fiori elements OData V4 floorplan
-2. Fiori elements + belgelenmiş building block/extension point
-3. Fiori elements custom page/flexible programming model
-4. Freestyle SAPUI5
-5. Özel kontrol; yalnız diğerleri gereksinimi karşılamıyorsa
-
-List/filter/drill-down için List Report + Object Page'i; analitik filtre-grafik-tablo işi için Analytical List Page'i; gerçek list-detail(-detail) akışı için Flexible Column Layout'u değerlendir. Seçimi görünüşe göre değil görev, veri hacmi, düzenleme akışı, cihaz ve backend kabiliyetine göre yap. Inspector'ın `recommendation.framework` değeri öneridir; gerekçeli freestyle kararı ondan ayrılabilir ve reddedilen alternatif sözleşmeye yazılır. Ayrıntı: [floorplans-and-patterns.md](references/floorplans-and-patterns.md), [ui5-engineering.md](references/ui5-engineering.md).
+List Report + Object Page for list/filter/drill-down; Analytical List Page for filter-chart-table analysis; Flexible Column Layout for real list-detail(-detail). Decide by task, data volume, edit flow, device and backend capability, not by looks. The inspector's `recommendation.framework` is a recommendation: a justified freestyle decision may deviate, and the rejected alternative goes into the contract (the scaffold fills an empty `alternativesRejected` from the framework decision; a freestyle reason arrives as template text you replace with the verified requirement). Details: [floorplans-and-patterns.md](references/floorplans-and-patterns.md), [ui5-engineering.md](references/ui5-engineering.md).
 </architecture>
 
 <prototype>
-`--output interactive` ile `assets/ui5-prototype/` iskeletini ayrı `prototype/` klasörüne üret veya mevcut uygulamayı prototip olarak kullan. Bu şablonu üretim kodu diye teslim etme. Gerçek SAPUI5 kontrolleri, sabitlenmiş prototip runtime'ı (CDN; çevrimdışı çalışmaz), Horizon tema ve dile göre seçilen mock veriyle çalışan akış kur.
+`--output interactive` renders `assets/ui5-prototype/` into `prototype/` (or use the existing app as the prototype); never deliver the template as production code. Real SAPUI5 controls, the pinned CDN runtime (unavailable offline), Horizon theme, language-selected mock data.
 
-- Shell ile uygulama içeriğini ayır; üretim app içinde FLP shell'i tekrar etme.
-- Kritik akışları çalıştır: filtreleme, seçim, navigasyon, create/edit/save/cancel, doğrulama, dialog ve mesajlar. Dialog'u fragment olarak yükle; alan hatasını `valueState` ile alanın üzerinde göster ve odağı ilk hatalı alana taşı.
-- Tasarlanan her durumu `?state=loading|empty|no-results|error|no-auth` ile yeniden üretilebilir kıl; şablon bu anahtarı taşır, yeni durum eklersen genişlet.
-- Sabit piksel yerleşimi yerine UI5 responsive kontrol ve layout'larını kullan.
-- Gerçek kullanıcı verisine veya üretim servisine bağlanma; mock veri kullan.
-- Kontrol metinlerini i18n kaynağına koy; örnekte dahi locale duyarlı sayı/tarih/birim göster.
+- Shell separate from app content; the FLP shell is never repeated in the production app.
+- Working critical flows: filter, select, navigate, create/edit/save/cancel, validation, dialogs, messages; dialogs as fragments, field errors via `valueState`, focus on the first invalid field.
+- Every designed state reproducible via `?state=initial|loading|populated|empty|no-results|error|no-auth`; extend the switch for new states.
+- Responsive controls and layouts, no fixed pixels; mock data only; control texts in i18n with locale-aware numbers/dates/units.
 
-**PNG:** prototipi gerçek tarayıcıda aç, yüklenme bitince incele ve ekran görüntüsü al. En az birincil hedef görünümü teslim et; kalite kontrolü için S/M/L/XL sınıflarını örnekle. Dosya adı `<app>-<ekran>-<durum>-<S|M|L|XL>-<tema>-<cozy|compact>.png` biçimindedir ve `<durum>` sözleşmedeki bir durum kimliğidir. PNG ile prototip birlikte istendiyse aynı build ve aynı veri durumunu kullan; ikisini elle ayrı tasarlama.
+**PNG:** open the prototype in a real browser, inspect after loading, capture; at least the primary target view, S/M/L/XL sampled. Name `<app>-<screen>-<state>-<S|M|L|XL>-<theme>-<cozy|compact>.png` with `<state>` a contract state ID. PNG and prototype requested together share one build and data state. Review each capture, then record them with `record_captures.py <output> --ui5-version <prototype runtime>`; the gate reports unrecorded or changed PNGs. At S, responsive tables drop non-key columns: wait for a key value before capturing.
 </prototype>
 
 <production>
-Mevcut projede yerel stile uy. Yeni scaffold'da framework, UI5 profili, servis protokolü/URI'si ve entity set kullanıcı kanıtından veya doğrulanmış `abap-backend-contract.json` dosyasından gelmeden ilerleme. `--output code`, `app/` altında prototipten bağımsız proje oluşturur. Yeni scaffold yalnız OData V4 üretir; mevcut OData V2 uygulamayı okuyup korur fakat V4 şablonuyla taklit etmez. Yeni freestyle uygulamada TypeScript kullan; mevcut JavaScript projeyi gerekçesiz toplu migration'a zorlama.
+Existing project: local style. New scaffold: only with framework, UI5 profile, service protocol/URI and entity set from user evidence or a verified `abap-backend-contract.json`; `--output code` creates `app/` independent of the prototype; OData V4 only (an existing V2 app is preserved, never imitated with the V4 template); new freestyle apps in TypeScript, no forced migration of existing JavaScript.
 
-Kod yazmadan önce [ui5-engineering.md](references/ui5-engineering.md) dosyasını oku ve 11. bölümdeki guardrail'leri hata say. Şablonların taşıdığı sözleşmeyi koru:
+Read [ui5-engineering.md](references/ui5-engineering.md) first; its section 11 guardrails are errors. Keep the template contract:
 
-- Manifest-first, asenkron bootstrap, Manifest V2 hedefinde kaldırılmış `async` alanı yok; tam sabitlenmiş tooling ve güncel lockfile.
-- Freestyle: deep-link'lenebilir ayrıntı route'u (anahtar hash'te kodlanır, yalnız key predicate kabul edilir), `bypassed` → not-found hedefi, stabil ID, i18n, server-side filtre/sort/page. `$search` yalnız `serverCapabilities.search: true` ise kalır; değilse `$filter` ile değiştir.
-- Fiori elements: annotation/config ile çöz; `webapp/annotations/annotation.xml` yalnız doğrulanmış, UI'ya özgü ihtiyaç içindir; extension kodunu yalnız belgelenmiş extension point'e koy.
-- FLP: `--semantic-object`/`--action` manifest'e inbound ekler; intent'i hedef katalogla doğrulamadan `verified` yazma.
-- Tema parametreleri ve layout sınıfları; hard-coded renk/font/gölge/radius, dinamik HTML, frontend'de güvenlik kararı yok.
-- QUnit, OPA5 (liste → ayrıntı ve not-found yolculukları dahil), sıfır-test denetimi; kapsam uygunsa wdi5/Playwright uçtan uca testleri.
+- Manifest-first, async bootstrap, no removed `async` fields under Manifest V2; exactly pinned tooling and a current lockfile.
+- Freestyle: deep-linkable detail route (encoded key predicate only), `bypassed` → not-found target, stable IDs, i18n, server-side filter/sort/page. `$search` stays only with `serverCapabilities.search: true`; the skeleton starts with `$search` and the validator reports `SEMANTIC_SEARCH_UNVERIFIED` until you switch to `$filter` or record `@Search.searchable` evidence.
+- Fiori elements: annotations/config first; `webapp/annotations/annotation.xml` only for a verified UI-only need; extension code only in documented extension points.
+- FLP: `--semantic-object`/`--action` add a manifest inbound; `verified` only after checking the target catalog.
+- Theme parameters and layout classes; no hard-coded color/font/shadow/radius, no dynamic HTML, no security decisions in the frontend.
+- Freestyle: QUnit, OPA5 (list → detail and not-found journeys), zero-test check. Fiori elements: the skeleton ships manifest validation and a Playwright smoke test; add OPA5/wdi5 journeys from the service metadata. wdi5/Playwright end-to-end when in scope.
 
-Backend tasarımı veya UI annotation gerekiyorsa [rap-backend-contract.md](references/rap-backend-contract.md) kurallarını uygula. SAP API/nesnesinin release durumunu canlı sistemde doğrulamadan "released" deme.
+Backend design or UI annotations: [rap-backend-contract.md](references/rap-backend-contract.md). Never call an SAP API/object "released" without verifying it in the live system.
 </production>
 
 <verification>
-Önce teslim tipine göre [delivery-and-quality.md](references/delivery-and-quality.md) matrisini uygula, sonra statik denetimi çalıştır:
+Apply the [delivery-and-quality.md](references/delivery-and-quality.md) matrix, then run:
 
 ```powershell
-python -B "<skill kökü>/scripts/validate_fiori_delivery.py" <çıktı-klasörü> --contract <çıktı-klasörü>/design-contract.json
+python -B "<skill root>/scripts/validate_fiori_delivery.py" <output-folder> --contract <output-folder>/design-contract.json
 ```
 
-Doğrulayıcı üç önem düzeyi kullanır: `error` ve `warning` kapıyı kapatır, `info` kapatmaz. `--allow-warnings` yalnız tasarım sürerken geçicidir; teslim kapısında kullanma. Kapı biçimle yetinmez: şablon metni, eksik durum, UI'da karşılığı olmayan metin anahtarı veya eylem, boş erişilebilirlik kanıtı, doğrulanmamış `$search`/FLP inbound'u/released durumu ve sürüm uyumsuzluğu da bulgudur. Her bulgu kodunun anlamı ve çözümü [delivery-and-quality.md](references/delivery-and-quality.md) 10. bölümdedir; bulguyu uydurma değerle susturma.
+`error` and `warning` close the gate, `info` does not; `--allow-warnings` is for work in progress, never the delivery gate. The gate checks content: template text, missing states, text keys or actions absent from the UI, empty accessibility evidence, unverified `$search`/FLP inbound/released status, unrecorded or changed captures and version mismatches are findings. Common codes with severity and fix: delivery-and-quality.md section 10; others explain themselves in `--json` (`severity`, message). Never silence a finding with an invented value.
 
-Uygun projede ayrıca `npm ci`, typecheck/manifest doğrulaması, UI5 Linter, production build, QUnit, OPA5/wdi5/Playwright, UI5 Support Assistant ve browser console çalıştır. Yalnız çıkış koduna güvenme: keşfedilen test sayısını oku, uygulamayı ve PNG'yi gözle incele.
+Where the project allows, also run `npm ci`, typecheck/manifest validation, UI5 Linter, production build, QUnit, OPA5/wdi5/Playwright, Support Assistant and the browser console. Read discovered test counts, not only exit codes; inspect the app and the PNG yourself.
 
-Karşıt test yap: uzun çeviri ve RTL · sıfır kayıt, binlerce kayıt, geciken servis · yetkisiz eylem, backend validation hatası, concurrency/draft çakışması · klavye-only ve görünür odak · S/M/L/XL, cozy/compact, Morning/Evening/HCB/HCW · PNG/prototip/kod arasında aynı alan, eylem, durum ve öncelik.
-
-Aynı doğrulama hatasına iki kez yama uyguladıysan yamayı bırak, varsayımı yeniden test et.
+Adversarial pass: long translations and RTL · zero, one, thousands of records, delayed service · unauthorized action, backend validation error, concurrency/draft conflict · keyboard-only and visible focus · S/M/L/XL, cozy/compact, Morning/Evening/HCB/HCW · identical fields, actions, states, priority across PNG/prototype/code. After patching the same error twice, stop and re-test the assumption.
 </verification>
 
 <review>
-Mevcut bir uygulamayı incelemen istendiyse tasarım akışını başlatma ve dosya değiştirme:
+A review request starts no design flow and changes no file:
 
 ```powershell
-python -B "<skill kökü>/scripts/validate_fiori_delivery.py" <proje-kökü> --review
+python -B "<skill root>/scripts/validate_fiori_delivery.py" <project-root> --review
 ```
 
-`--review` sözleşme istemez; manifest, view, controller ve stil dosyalarını tarar ve yalnız `error` bulgusunda başarısız olur. Betik yalnız statik kalıpları görür; üstüne projeyi `<evidence>` sırasıyla oku ve floorplan uygunluğu, eylem yerleşimi, durumlar, erişilebilirlik, i18n, OData kullanımı ve yetki varsayımlarını ilgili referansa göre değerlendir. Her bulguyu şu biçimde ver, önem sırasıyla:
-
-`dosya:satır` · `engelleyici | önemli | öneri` · kural ve kaynağı (referans bölümü veya resmî sayfa) · gözlem · önerilen değişiklik
-
-Görmediğin runtime, servis veya ekran davranışını bulgu olarak yazma; "doğrulanamadı" başlığında topla. Düzeltme yalnız kullanıcı isterse yapılır ve projenin kendi stiline uyar.
+`--review` needs no contract and ignores one; contract, package and PNG checks are off; new-project conventions (Manifest V2, `supportedLocales`/`fallbackLocale`, `contentDensities`) are `warning`; only `error` fails. Controller-relative, `cmd:` and `core:require` handlers are explicit; comments, `webapp/test` and `webapp/localService` are not reviewed as source. It sees static patterns only: read the project in `<evidence>` order and judge floorplan fit, action placement, states, accessibility, i18n, OData usage and authorization assumptions against the references. Findings, most severe first: `file:line` · `blocker | important | suggestion` · rule and its source (reference section or official page) · observation · proposed change. Unseen runtime, service or screen behavior goes under "could not be verified". Fix only on request, in the project's style.
 </review>
 
 <self_check>
-"Bitti" demeden önce: her dosyayı yeniden açtın · script/build/test çıktısını okudun · uygulamayı ve PNG'yi gördün · ilk, son ve en tuhaf senaryoyu örnekledin · sözleşmede şablon metni kalmadığını gördün · sonucu asıl istekle karşılaştırdın. Üretilmiş ama açılıp incelenmemiş dosya bitmiş değildir.
+Before "done": every file re-opened · script/build/test output read · app and PNG seen · first, last and strangest scenario sampled · no template text left in the contract · result compared with the original request. A generated file nobody opened is not finished.
 </self_check>
 
 <delivery>
-Önce sonucu ver, sonra yalnız karar için gereken kanıtı; süreç anlatımı yok:
-
-1. Dosya bağlantıları: PNG, interaktif prototip, kaynak kod, `design-contract.json`
-2. Seçilen floorplan/framework ve tek cümle gerekçe
-3. Hedef ve scaffold UI5 sürümü, Fiori guideline sürümü — ayrı ayrı
-4. Çalıştırılan testler ve gözlenen sonuçlar; doğrulayıcının `error`/`warning`/`info` sayıları
-5. Doğrulanamayan varsayımlar, açık `gaps` ve kalan gerçek riskler
-6. Gereksinim → tasarım → kod → test izlenebilirliği
-
-Sağlanmayan dosyayı, çalıştırılmayan testi veya görülmeyen runtime değerini gözlenmiş kanıt gibi raporlama. Niyeti değil gözlemi bildir.
+Result first, then decision-relevant evidence only, no process narration: 1 file links (PNG, prototype, source, `design-contract.json`) · 2 floorplan/framework with a one-sentence rationale · 3 target UI5 runtime, scaffold profile and Fiori guideline version, each separately · 4 tests run and observed results, validator `error`/`warning`/`info` counts · 5 unverified assumptions, open `gaps`, remaining real risks · 6 requirement → design → code → test traceability. Never report an unprovided file, an unrun test or an unseen runtime value as observed.
 </delivery>
 
 <resources>
-`assets/`: sözleşme şablonu ve iki şema, `version-profiles.json` (profiller, `defaultProfile`, şablon lockfile'ının ait olduğu `templateLockfileProfile`, profil başına `lockfileDir`), prototip ve iki üretim iskeleti. `scripts/`: `inspect_abap_package.py`, `scaffold_fiori_workspace.py`, `validate_fiori_delivery.py`. `tests/test_skill_tools.py`: betik ve şablon değişince `python -B "<skill kökü>/tests/test_skill_tools.py"` ile çalıştır. Şablonları kör kopyalama; hedef sürüme ve mevcut proje yapısına uyarla.
+`assets/`: contract template, two schemas, `version-profiles.json` (`profiles`, `defaultProfile`, `templateLockfileProfile`, per-profile `lockfileDir`), the prototype and two production skeletons. `scripts/`: `inspect_abap_package.py`, `scaffold_fiori_workspace.py`, `validate_fiori_delivery.py`, `record_captures.py`. `tests/test_skill_tools.py`: run `python -B "<skill root>/tests/test_skill_tools.py"` after any script or template change. Adapt templates to the target version and the existing structure; never copy them blindly.
 </resources>
