@@ -1,4 +1,5 @@
 """Protect the shared runtime and instruction structure of the localized Spec Writer pair."""
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -43,9 +44,11 @@ class SpecWriterPair(unittest.TestCase):
 
     def test_self_test_passes_in_both_packages(self):
         for package in (EN, TR):
+            # -B does not reach the scripts oz_test.py starts; their bytecode would count as a package change.
             result = subprocess.run(
                 [sys.executable, '-B', str(package / 'scripts/oz_test.py')],
                 capture_output=True, text=True, encoding='utf-8', errors='replace', check=False,
+                env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'},
             )
             self.assertEqual(result.returncode, 0, package.name + '\n' + result.stdout[-2000:] + result.stderr[-2000:])
 
