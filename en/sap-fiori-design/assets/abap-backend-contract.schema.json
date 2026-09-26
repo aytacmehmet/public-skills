@@ -41,7 +41,17 @@
         "protocol": {"enum": ["odata-v2", "odata-v4", "unknown"]},
         "entitySet": {"type": "string"},
         "exposedEntities": {"type": "array"},
-        "bindings": {"type": "array"}
+        "bindings": {"type": "array"},
+        "metadata": {
+          "type": "object",
+          "required": ["file", "sha256", "protocol", "entitySets"],
+          "properties": {
+            "file": {"type": "string"},
+            "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "protocol": {"enum": ["odata-v2", "odata-v4", "unknown"]},
+            "entitySets": {"type": "array", "items": {"type": "object", "required": ["name", "search"], "properties": {"name": {"type": "string"}, "search": {"type": ["boolean", "null"]}}}}
+          }
+        }
       }
     },
     "uiSemantics": {"type": "object"},

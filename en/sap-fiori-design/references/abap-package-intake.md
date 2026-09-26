@@ -1,18 +1,14 @@
 # Deriving the UI contract from an ABAP package
 
-Read this reference when the user asks for a UI5/Fiori screen to be developed from an ABAP package, an ADT project, an abapGit export or a package name.
+Read when a UI5/Fiori screen is requested from an ABAP package, ADT project, abapGit export or package name.
 
 ## Purpose and boundary
 
-Before interpreting the package sources as a screen requirement, produce a machine-readable `abap-backend-contract.json`. This contract connects the package inventory, the RAP/CDS/OData capabilities and the source file of every inference to the UI design.
+Produce the machine-readable `abap-backend-contract.json` before interpreting package sources as a screen requirement. It ties the inventory, the RAP/CDS/OData capabilities and the source file of every inference to the UI design. Reading source does not prove the backend's business purpose: never invent a requirement, role, process, published service URI, target release or runtime authorization that the package does not contain. The parser is lexical; it is not compiler, activation, service-preview or authorization evidence.
 
-Reading the source does not, on its own, prove the business purpose of the backend. Do not invent a requirement, role, process, published service URI, target tenant release or runtime authorization that is not found in the package. The parser extracts lexical evidence; it is not ABAP compiler, ADT activation, service preview or runtime authorization evidence.
+## Inputs
 
-## Supported inputs
-
-### Local package
-
-For an ADT or abapGit export folder or ZIP:
+### Local package (ADT/abapGit folder or ZIP)
 
 ```powershell
 python -B "<skill root>/scripts/inspect_abap_package.py" <package-folder-or-zip> `
@@ -22,105 +18,80 @@ python -B "<skill root>/scripts/inspect_abap_package.py" <package-folder-or-zip>
   --protocol odata-v4
 ```
 
-Provide `--service-uri` only if it has been observed in the target system. Do not guess the URI from the source file.
+`--service-uri` only when observed in the target system; never derived from source. Add `--metadata <file>` with the service `$metadata` observed or exported from the target system: the contract then records `service.metadata` (file hash, protocol, every entity set with its declared `$search` support from V4 `Capabilities.SearchRestrictions/Searchable` or V2 `sap:searchable`, `null` when undeclared), and a protocol mismatch or a leading entity set absent from the metadata becomes a gap. DTD/entity declarations are rejected.
 
-If the package contains more than one service definition, the inspector does not pick the first one; it leaves the `service.definition` value as `unknown` and writes this into `gaps`. Provide the UI service with `--service-definition <name>`. If the selected service exposes more than one entity and a single root entity cannot be distinguished, provide the main entity set with `--entity-set <name>`. Select both based on source or `$metadata` evidence.
+Several service definitions: the inspector never picks the first. It selects the definition that every readable service binding names (evidence); otherwise `service.definition` stays `unknown` with a gap. With a single definition, a binding that names another definition keeps the selection and adds a gap. Override with `--service-definition <name>`; if the service exposes several entities and no single root entity stands out, name the leading set with `--entity-set <name>`. Both flags are case-insensitive; choose both from source or `$metadata` evidence.
 
-The service binding protocol is read either from a single expression such as `ODATA V4` or from the separate type + version fields in abapGit/ADT exports (`<TYPE>ODATA</TYPE><VERSION>V4</VERSION>`, `type="ODATA" version="V2"`); if neither is present, it stays `unknown`.
+Binding protocol is read from `ODATA V4`-style text or from separate type + version fields (`<TYPE>ODATA</TYPE><VERSION>V4</VERSION>`, `type="ODATA" version="V2"`); otherwise `unknown`.
 
-### Live ADT package
+### Live ADT package (read-only tools only)
 
-Only if a preconfigured read-only ADT connection and tools are available (the example steps are based on the `sap-cloud-erp` MCP server; on another host, use the equivalent of the same read operations):
+Example tool names belong to the `sap-cloud-erp` MCP server; use the equivalent read operations on another host.
 
-1. Use `load_toolset(profile="source-read")` or a read-only profile that contains the required tools.
-2. Read all pages with `list_packages`; if `truncated=true` or `nextOffset` is present, continue.
-3. Read the `DDLS`, `DDLX`, `BDEF`, `SRVD`, `SRVB`, `DCLS` and related `CLAS` sources that affect the UI contract from the **active** version with `read_source`, `read_cds_source` or `read_repository_object`.
-4. For a paged source, pass the previous `sha256` value as `expectedSha256` on every continuation call. Do not consider the source complete without reading up to the last page.
-5. Save the results in the normalized snapshot format below, without credentials/host/client, and hand them to the inspector.
+1. Load the read-only tool profile (`load_toolset(profile="source-read")`).
+2. Read the package list with all pages (`list_packages`; continue while `truncated=true` or `nextOffset` is present).
+3. Read the `DDLS`, `DDLX`, `BDEF`, `SRVD`, `SRVB`, `DCLS` and relevant `CLAS` sources from the **active** version (`read_source`, `read_cds_source`, `read_repository_object`).
+4. For paged sources pass the previous `sha256` as the expected hash on each continuation (`expectedSha256`); a source is complete only after its last page. Paging is the tool's job; the inspector does not page.
+5. Save the normalized snapshot without credentials/host/client and feed it to the inspector.
 
 ```json
 {
   "packageName": "Z_MY_PACKAGE",
   "objectCount": 3,
   "objects": [
-    {
-      "name": "Z_I_ORDER",
-      "type": "DDLS/DF",
-      "uri": "/sap/bc/adt/ddic/ddl/sources/z_i_order",
-      "version": "active",
-      "truncated": false,
-      "source": "define root view entity Z_I_Order ..."
-    }
+    {"name": "Z_I_ORDER", "type": "DDLS/DF", "uri": "/sap/bc/adt/ddic/ddl/sources/z_i_order",
+     "version": "active", "truncated": false, "source": "define root view entity Z_I_Order ..."}
   ]
 }
 ```
 
-Then:
+Snapshot fields: `name` (or `objectName`), `type` (or `objectType`) and `source` are mandatory; `uri`, `version` (absent = `active`, verify yourself), `truncated` and `sha256` are optional. A given `sha256` is compared with `source` and a mismatch aborts with exit 2; `truncated: true` adds a gap per object and sets `complete: false`; `inventoryVerified` becomes `true` when `objectCount` equals the number of objects.
 
 ```powershell
 python -B "<skill root>/scripts/inspect_abap_package.py" <adt-snapshot.json> `
-  --output <output>/abap-backend-contract.json `
-  --service-uri <observed-uri> --protocol odata-v4
+  --output <output>/abap-backend-contract.json --service-uri <observed-uri> --protocol odata-v4
 ```
 
-If there is no SAP connection, the skill does not ask the user for a password/RSA/private key. It asks for a local export or reports as a blocker that the connection must be configured by the project owner. A package read request does not grant write, activation, publish, transport or deploy authorization.
+No SAP connection → ask for a local export or report the missing connection as a blocker; never ask for a password, RSA or private key. Reading grants no write, activation, publish, transport or deploy right.
 
 ## Reading priority
 
-If the package is large, first read a thin end-to-end slice:
-
-1. `SRVB` + `SRVD`: protocol, published service and entity set boundary
-2. Projection `DDLS` + `DDLX`: fields, associations and annotations exposed to the UI
-3. Projection/root `BDEF`: draft, create/update/delete, action, validation and side effect
-4. Interface/root `DDLS`: keys, composition/association, currency/unit/text/value help
-5. `DCLS` and behavior authorization: backend authorization evidence
-6. Only the behavior implementation classes/methods that affect UI behavior
-
-If the package inventory exceeds 200 items, state the paging and comprehensive reading plan in the contract. Do not silently skip an object that does not look relevant by its name; record per type why it is out of scope.
+Large package → thin end-to-end slice first: 1 `SRVB` + `SRVD` (protocol, published service, entity-set boundary) · 2 projection `DDLS` + `DDLX` (exposed fields, associations, annotations) · 3 projection/root `BDEF` (draft, CUD, actions, validations, side effects) · 4 interface/root `DDLS` (keys, compositions/associations, currency/unit/text/value help) · 5 `DCLS` and behavior authorization · 6 only the behavior implementation methods that affect UI behavior. Over 200 objects: record the paging and reading plan in the contract; never skip an object by name silently — record per type why it is out of scope.
 
 ## Reading the inspector output
 
-- `model.entities[].fields/keys`: fields read from the element list. `exposedAssociations` are not fields; they are navigation candidates.
-- `model.entities[].unparsedElements`: elements that the lexical reader could not classify (for example a `case` expression without an alias). Each one produces a `gap` and blocks the `ready` result; verify the field against `$metadata` and bind it to the contract manually.
-- `behavior.definitions[]`: a separate record for each `define behavior for`. It also recognizes the parenthesized notation of `create/update/delete` (`update ( features : instance );`); `createByAssociation` keeps sub-object creation separate.
-- `behavior.actions` are business actions only; `draftActions` (Edit, Activate, Discard, Resume, Prepare) belong to the framework and are not designed as buttons.
-- `dynamicFeatureControl`: operations and actions whose enablement is determined at runtime. Plan the disabled/hidden state and its test for these.
-- `etag` and `totalEtag` are separate fields; write the concurrency scenario according to both.
-- `model.entities[].kind`: `view-entity`, `custom-entity`, `abstract-entity` or `classic-view`. An abstract entity is an action parameter, not a screen object; the query of a custom entity lives in an ABAP class, so verify its filter/sort/paging support with `$metadata` and a test.
-- `uiSemantics.fields`: the field → annotation mapping read from DDLS and DDLX. Its summaries are the lists `lineItemFields`, `selectionFields`, `identificationFields`, `fieldGroupFields`, `hiddenFields`, `valueHelpFields`, `textFields`, `amountFields`, `quantityFields` (`Entity.Field`). Derive List Report columns, filters and value helps from them; read the source for the annotation values themselves (position, importance, qualifier).
-- `uiSemantics.searchableEntities`: entities that carry `@Search.searchable: true`. Do not send `$search` to an entity set that is not listed.
-- `service.bindings[].serviceDefinition`: the definition the binding points at. With several definitions, the inspector selects one only when every readable binding points at the same definition; that is evidence, not a guess. If the binding cannot be read (`unknown`), the choice remains yours.
-- `source.inventoryVerified` and `notes`: only an ADT snapshot that declares its object count can be compared with the inventory. For a local export the value stays `false`; completeness is the provider's statement and the validator reports it as `info`.
-- ZIP input is limited to 2 MB per member, 50 MB in total and a compression ratio of 200; a package beyond that is rejected unread.
+- `model.entities[].fields/keys`: elements read from the element list; `exposedAssociations` are navigation candidates, not fields.
+- `model.entities[].unparsedElements`: elements the lexical reader could not classify (e.g. an alias-less `case`). One gap per entity (first three listed) blocks `ready`; verify against `$metadata` and map manually.
+- `model.entities[].kind`: `view-entity`, `custom-entity`, `abstract-entity`, `classic-view`. Abstract entities are action parameters, not screen objects; a custom entity's query lives in an ABAP class — verify filter/sort/paging with `$metadata` and a test.
+- `model.associations[]`: `association … to` and `composition … of`, distinguished by `kind`; derive navigation, sections/tables and the `$expand` budget from them. Facets are not summarized: read the DDLX source for `@UI.facet`.
+- `behavior.definitions[]`: one record per `define behavior for`; parenthesized `create/update/delete` (`update ( features : instance );`) is recognized; `createByAssociation` keeps sub-object creation separate.
+- `behavior.actions` are business actions; `draftActions` (Edit, Activate, Discard, Resume, Prepare) belong to the framework and are never buttons. The five names classify only `use action` lines of a projection; anything declared with `draft action` / `draft determine action` lands in `draftActions` regardless of name.
+- `dynamicFeatureControl`: operations/actions whose enablement is decided at runtime — plan their disabled/hidden state and its test.
+- `etag` and `totalEtag` are separate; write the concurrency scenario for both.
+- `uiSemantics.fields`: field → annotation map from DDLS and DDLX, summarized in `lineItemFields`, `selectionFields`, `identificationFields`, `fieldGroupFields`, `hiddenFields`, `valueHelpFields`, `textFields`, `amountFields`, `quantityFields` (`Entity.Field`). Derive columns, filters and value helps from them; read the source for annotation values (position, importance, qualifier).
+- `uiSemantics.searchableEntities`: entities with `@Search.searchable: true`; never send `$search` elsewhere.
+- `service.bindings[].serviceDefinition`: the definition a binding names; with several definitions the inspector selects only when all readable bindings agree. Unreadable (`unknown`) bindings leave the choice to you.
+- `source.inventoryVerified` and `notes`: only a snapshot that declares `objectCount` can be compared with the inventory; a local export stays `false` (reported as `info`). For a local export `source.complete` and `source.activeSourcesOnly` are written as `true` unconditionally — a declaration, not an observation; the validator ties `source-verified` to these two values and an empty `gaps` list, so for a local export only `gaps` guards the gate.
+- Limits: 2 MB per source in every input kind (a gap in a snapshot); 5,000 files for folders and ZIPs; 50 MB total and a compression ratio of 200 for ZIPs; beyond that the package is rejected.
 
-## Converting into a UI decision
-
-From `abap-backend-contract.json`, establish at least the following mapping:
+## Converting into UI decisions
 
 | Backend evidence | UI decision |
 |---|---|
-| Projection entity and expose alias | Entity set, route and page identity |
-| `@UI.lineItem`, selection field, facet, field group | List Report/Object Page information architecture |
+| Projection entity and expose alias | Entity set, route, page identity |
+| `@UI.lineItem`, selection field, facet, field group | List Report / Object Page information architecture |
 | Draft behavior | Edit/save/cancel and unsaved-change flow |
-| RAP action + feature control | Action placement, enablement and test |
-| Validation/message target | Field/message popover and error scenario |
-| Association/composition | Navigation, section/table and `$expand` budget |
-| Value help/text/currency/unit | Control type, display format and request plan |
-| DCL/authorization master | Backend enforcement and no-auth state |
-| ETag/lock/side effect | Concurrency, refresh and stale-data scenario |
+| RAP action + feature control | Action placement, enablement, test |
+| Validation / message target | Field and message popover, error scenario |
+| Association / composition | Navigation, section/table, `$expand` budget |
+| Value help / text / currency / unit | Control type, display format, request plan |
+| DCL / authorization master | Backend enforcement, no-auth state |
+| ETag / lock / side effect | Concurrency, refresh, stale-data scenario |
 
-Bind every row in `design-contract.json.traceability` with the backend object/file and the test ID. If an action or field is not in the source, do not generate it in the frontend as if it existed.
+Bind every row in `design-contract.json.traceability` to the backend object/file and a test ID. An action or field absent from source is never generated in the frontend.
 
 ## Readiness gate
 
-Before moving on to production code:
+Before production code: package/snapshot complete and from active sources? · service definition and binding protocol proven? · real service URI and `$metadata` seen in the target? · exposed entity set and projection/BDEF in the same transaction boundary? · draft, authorization, value help, messages and side effects clear? · UI annotations consistent with the design contract? · target release and released status of used SAP objects verified separately?
 
-- Is the package/snapshot complete and from active sources?
-- Have the service definition and the binding protocol been proven?
-- Have the real service URI and `$metadata` been seen in the target system?
-- Are the exposed entity set and the projection/BDEF within the same transaction boundary?
-- Is the draft, authorization, value help, message and side effect status clear?
-- Are the UI annotations consistent with the design contract?
-- Have the target release and the release status of the SAP objects used been verified separately?
-
-Keep whatever is missing as `gaps` and `blocked/assumed`. Even the inspector's `ready` result does not replace real `$metadata`, preview, activation, authorization or released-object evidence.
+Keep what is missing as `gaps` and `blocked`/`assumed`. Even `ready` does not replace real `$metadata`, preview, activation, authorization or released-object evidence.

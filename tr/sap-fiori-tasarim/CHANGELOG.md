@@ -1,5 +1,30 @@
 # Değişiklik geçmişi
 
+## 2.0.0 — 2026-09-27
+
+Major sürüm: Türkçe paket artık İngilizce model talimatlarını paylaşır, sözleşme şeması daha katıdır (aşağıdaki 1.3.0'a bakın) ve yakalama kanıtı kapının parçasıdır. Geliştirme deposu kendi kopyasını özel bir plugin lehine emekliye ayırdı; bu public paket bakımı süren bağımsız sürümdür.
+
+- **Durum istisnaları:** oluşamayacak zorunlu bir durum atılmak yerine gerekçesiyle `stateExceptions` listesine yazılır; listeyi `CONTRACT_STATE_EXCEPTION` ve `CONTRACT_STATE_EXCEPTION_CONFLICT` korur, geri kalanı istisna olduğunda `states` beşten az kayıt içerebilir.
+- **`$metadata` arama desteği:** `inspect_abap_package.py --metadata <file>`, entity set'leri ve beyan edilmiş `$search` desteklerini (V4 `Capabilities.SearchRestrictions`, V2 `sap:searchable`) `service.metadata` altına yazar; protokol uyuşmazlığı veya eksik entity set gap olur. Sözleşme metadata'nın reddettiği aramayı iddia ederse kapı `SEMANTIC_SEARCH_CONFLICT` bildirir.
+- **İnceleme modu:** `cmd:` handler'ları ve `core:require` alias'ları açık handler sayılır; betik yorumları ve `webapp/test`/`webapp/localService` artık kaynak bulgusu üretmez.
+- **Kayıtlı yakalamalar:** yeni `record_captures.py`, incelenen her PNG'nin hash'ini `visuals/capture-report.json`'a yazar; kapı `PNG_REPORT_MISSING` ve `PNG_DIGEST` bildirir. S genişliğinde anahtar bir değeri bekleyin: responsive tablolar anahtar olmayan sütunları kaldırır.
+- Bakım: FD33–FD36 davranış senaryoları; dört araç testi. 1.2.0 arşivlendi.
+
+### Ayrıca: geliştirme deposunda 1.3.0 ve 1.4.0 olarak hazırlanan, burada ayrıca yayımlanmamış değişiklikler
+
+#### 1.4.0
+
+- **Modele dönük dosyalar İngilizce ve ortak:** `SKILL.md` gövdesi ve `references/` altındaki her dosya İngilizce ve Türkçe pakette aynıdır (yalnız frontmatter farklıdır); skill kullanıcıya kendi dilinde cevap verir. Yönerge ve referanslar token verimi için sıkıştırıldı: tekrar eden bağlantı blokları kaldırıldı, kurallar tek satırlık emir kipine indirildi; bölüm numaraları ile her kural, tablo, komut ve doğrulayıcı kodu korundu; eklenen kurallara ve büyüyen doğrulayıcı tablosuna rağmen 1.2.0'a göre yaklaşık %11 daha az bayt. Depo çift testi eşitliği denetler.
+
+#### 1.3.0
+
+- **Belge ↔ betik tutarlılığı:** yönergedeki scaffold komutu kod için zorunlu bayrakları (`--framework`, `--ui5-version`, `--service-uri`, `--entity-set`) ve `--target-ui5-runtime`, `--json` bayraklarını gösterir; şablon metni sözlüğü (`Replace with …`, `replace-with-…`, `pending-…`, `verify-…`, `YYYY-MM-DD`) her yerde aynıdır ve `Replace` tek başına artık bulgu değildir; bilinmeyen hedefin yalnız kod tesliminde kapıyı kapattığı README'de düzeltildi; delivery §10 önem sütunu kazandı ve `CONTRACT_STATE`, `CONTRACT_TARGET_UNKNOWN`, `SEMANTIC_MIN_UI5`, `SEMANTIC_UI5_VERSION`, `CONTRACT_TRACEABILITY_ROW`/`CONTRACT_SOURCES_ROW`, `MANIFEST_V2`, `BACKEND_PARTIAL` eklendi; `SEMANTIC_ACTION_ID` için Fiori elements muafiyeti yazıldı; PNG örneği kanonik bir durum adı kullanır; çoklu service definition kuralı intake referansında tek biçimde anlatılır.
+- **Scaffold:** `--reset-contract` tek başına çalışır, `.bak` alır ve `prototype/`/`app/` ağaçlarını korur; iki şema her çalıştırmada yenilenir; `--action` `--semantic-object` olmadan reddedilir; `--semantic-object` sözleşmede `launchContext: flp` yazar, şablon varsayılanı `unknown` oldu; kod eklenirken boş `alternativesRejected` framework kararına göre doldurulur; scaffold profili kanıt satırı birikmez; freestyle sözleşmesi iskeletin gerçek i18n anahtarını (`idColumn`) kullanır; `project.outputs` eksik sözleşme açık hatayla reddedilir.
+- **Doğrulayıcı:** `--review` mevcut projede yeni proje kurallarını (`MANIFEST_V2`, `MANIFEST_I18N`, `MANIFEST_DENSITY`) `warning` olarak bildirir; eksik izlenebilirlik/kaynak satırı ayrı `_ROW` koduyla uyarıdır; şema `context.targetSystem`, `responsive.breakpoints`, `accessibility` boolean'ları, `dataContract.authorization` ve `verification` alanlarını doğrulayıcıyla aynı sıkılıkta zorlar.
+- **Inspector:** `composition … of` ilişkileri `model.associations[]` içinde `kind` ile okunur; `--entity-set` büyük/küçük harfe duyarsızdır; tek service definition varken binding başka tanımı gösteriyorsa `gaps` uyarısı yazılır; snapshot `sha256`/`objectName` alanları, 5.000 dosya sınırı ve yerel export'ta `complete`/`activeSourcesOnly` değerlerinin beyan olduğu belgelendi.
+- **Şablonlar:** prototip `?state=initial` durumunu da üretir, kullanılmayan i18n anahtarları ve Manifest V2 altındaki iç `_version` alanları kaldırıldı; freestyle iskeletinde ölü kod temizlendi ve `empty`/`no-results` metinleri ayrıldı; Fiori elements manifest'i `sap.insights`'ı lazy bağımlılık olarak bildirir ve smoke testindeki konsol filtresi gerekçelendirildi.
+- **Referanslar:** List Report filtre modunda varsayılanın `Go` olduğu düzeltildi; Manifest V1 ile mevcut projenin kalabileceği yazıldı; tasarım temellerindeki araştırma tarihi tek kayda bağlandı; arayüz açıklaması skill'in tam kapsamını anlatır. 1.2.0 arşivlendi.
+
 ## 1.2.0 — 2026-09-19
 
 - **Teslim kapısı içeriği de denetler:** sözleşmede kalan şablon metni (`CONTRACT_PLACEHOLDER`), tasarlanmamış `loading`/`no-results`, `states` ↔ `verification.states` farkı, i18n'de olmayan metin anahtarı, view'da olmayan eylem kimliği, boş erişilebilirlik kanıtı, kod tesliminde boş `initialSelect`/komutlar, doğrulanmamış released durumu, FLP inbound'u ve `$search` artık bulgudur. PNG adları sözleşmedeki durum kimlikleriyle eşleştirilir. Yeni `info` düzeyi kapıyı kapatmaz: yalnız prototip tesliminde hedefin `unknown` olması ve envanteri doğrulanamayan paket kaynağı bilgi notudur.

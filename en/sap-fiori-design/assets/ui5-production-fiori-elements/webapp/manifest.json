@@ -16,7 +16,7 @@
   "sap.ui5": {
     "dependencies": {
       "minUI5Version": "__UI5_VERSION__",
-      "libs": {"sap.ui.core": {}, "sap.m": {}, "sap.f": {}, "sap.fe.core": {}, "sap.fe.templates": {}}
+      "libs": {"sap.ui.core": {}, "sap.m": {}, "sap.f": {}, "sap.fe.core": {}, "sap.fe.templates": {}, "sap.insights": {"lazy": true}}
     },
     "contentDensities": {"compact": true, "cozy": true},
     "models": {

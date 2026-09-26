@@ -1,135 +1,39 @@
 # Delivery formats and quality gates
 
-Read this reference when producing a PNG, an interactive design, code or a combined delivery, and before saying “done”.
+Read before producing a PNG, an interactive prototype, code or a combined delivery, and before saying "done".
 
-## Contents
-
-1. Common delivery model
-2. PNG contract
-3. Interactive design contract
-4. Production code contract
-5. Combined delivery and traceability
-6. Visual verification matrix
-7. Technical verification matrix
-8. Adversarial scenarios
-9. Delivery report
+Sections: 1 delivery model · 2 PNG · 3 interactive · 4 production code · 5 combined traceability · 6 visual matrix · 7 technical matrix · 8 adversarial scenarios · 9 report · 10 validator findings · 11 review
 
 ## 1. Common delivery model
 
-In every scope, produce `design-contract.json` first. Let this file be the single source across the following outputs:
-
-```text
-requirements
-    ↓
-ABAP package / service metadata
-    ↓
-abap-backend-contract.json
-    ↓
-design-contract.json
-    ├─ interactive prototype
-    ├─ PNG captures
-    ├─ production UI5/Fiori elements code
-    └─ tests + verification report
-```
-
-In the contract, evidence status is one of exactly four values (enforced by the schema): `verified` observed in this work · `assumed` accepted without evidence · `unknown` not known yet · `blocked` work cannot proceed without it. If the target version, the service or the authorization has not been verified, do not lose this information.
-
-The states to design are one list as well: `initial`, `loading`, `populated`, `empty`, `no-results`, `error`, `no-auth`, plus edit/draft states where they apply. `states` and `verification.states` carry the same IDs; PNG names and the prototype's `?state=` switch use these IDs.
-
-The workspace is incremental: `design-contract.json` is created once and later scaffold runs keep it. When moving from the prototype to production code, run `--output all` in the same folder; do not copy the contract by hand and do not use `--reset-contract`.
+- `design-contract.json` first, in every scope; the single source for prototype, PNG, code, tests and the verification report. Chain: requirements → ABAP package / service metadata → `abap-backend-contract.json` → `design-contract.json` → outputs.
+- Evidence status (schema-enforced): `verified` observed in this work · `assumed` accepted without evidence · `unknown` not known yet · `blocked` cannot proceed without it. Never lose an unverified target version, service or authorization.
+- One state list: `initial`, `loading`, `populated`, `empty`, `no-results`, `error`, `no-auth`, plus edit/draft states. `states` equals `verification.states`; PNG names and the `?state=` switch use these IDs. Missing `initial|populated|empty|error|no-auth` → `error`; missing `loading|no-results` → `warning`; the schema requires at least five.
+- Incremental workspace: the contract is created once; move from prototype to code with `--output all` in the same folder; never hand-copy the contract or use `--reset-contract` for that.
 
 ## 2. PNG contract
 
-A PNG is not merely an aesthetic visual; it is an implementable screen specification.
+A PNG is an implementable screen specification. Mandatory: captured from the running UI5 prototype or a verified real app render · explicit viewport, breakpoint, theme, density and state · realistic readable sample data, nothing sensitive · main task and primary action visible · loading/empty/error/no-auth/mobile variants as required · same build and data state as the prototype.
 
-Mandatory:
+Name: `<app>-<screen>-<state>-<breakpoint>-<theme>-<density>.png`, e.g. `sales-order-list-populated-L-sap_horizon-compact.png`, `sales-order-object-error-S-sap_horizon-cozy.png`. `<state>` is a contract state ID (anything else → `PNG_NAME`); `<theme>` is the contract theme name (`sap_horizon`, `sap_horizon_dark`, `sap_horizon_hcb`, `sap_horizon_hcw`).
 
-- Capture from a running UI5 prototype or a verified real app render
-- Clear viewport, breakpoint, theme, density and state
-- Readable, realistic sample data; no sensitive/production data
-- Showing the main task of the application and the primary action
-- Loading, empty, error, no-auth and mobile variants according to the requirement
-- PNG and prototype from the same build/data state
+Before capture: fonts/theme/resources loaded · no lingering busy state · no console errors or 404s · title, navigation, actions, status and columns inspected · the longest/strangest sample captured too. Never a generative image for a text-bearing SAP screen; a concept moodboard is not an implementable SAPUI5 specification.
 
-Naming:
+## 3. Interactive prototype contract
 
-```text
-<app>-<screen>-<state>-<breakpoint>-<theme>-<density>.png
-```
+Runs the task flow without a production backend. In-scope flows: search/filter/go or live filtering · selection and navigation · create/edit/save/cancel · dialog/popover/value help · validation/message popover · busy → success/error · empty/no-results/no-auth · responsive navigation and mobile adaptation.
 
-Example:
-
-```text
-sales-order-list-populated-L-horizon-compact.png
-sales-order-object-validation-S-horizon-cozy.png
-```
-
-Before capture:
-
-1. Wait for the font/theme/resource loading.
-2. Check that the busy state has not remained unintentionally.
-3. Check for console errors and 404s.
-4. Visually inspect the title, navigation, action, status and table column.
-5. Also capture the sample with the strangest/longest text.
-
-Do not use a generative image model for a text-bearing SAP screen. Even if the user only asks for a concept moodboard, make clear that this is not an implementable SAPUI5 specification.
-
-## 3. Interactive design contract
-
-The interactive design must run the task flow without a production backend.
-
-From the mandatory flows, implement those relevant to the scope:
-
-- Search/filter/go or live filtering
-- Table/list selection and navigation
-- Create/edit/save/cancel
-- Dialog/popover/value help
-- Validation/message popover
-- Busy/loading → success/error
-- Empty/no-results/no-auth
-- Responsive navigation and mobile adaptation
-
-Technical:
-
-- Real SAPUI5 controls and layouts
-- Horizon/default theme and mock JSON/OData data
-- Async bootstrap and manifest-first
-- Stable IDs and i18n
-- No writing to a production service
-- Deterministic state display through `?state=loading|empty|no-results|error|no-auth` (the template carries it); every designed state must be reproducible and capturable this way
-- The dialog is loaded as a fragment; a required-field error appears in the field's `valueState` and focus moves to the first invalid field
-- Keyboard and visible focus
-
-If the prototype contains a “fake shell”, mark it as being for context presentation only. Do not repeat the FLP shell in the production app code.
+Technical: real SAPUI5 controls and layouts · Horizon/default theme, mock JSON/OData · async bootstrap, manifest-first · stable IDs, i18n · no writes to a production service · deterministic `?state=initial|loading|populated|empty|no-results|error|no-auth` (the template ships it; every designed state reproducible and capturable) · dialogs as fragments, required-field errors in `valueState`, focus on the first invalid field · keyboard and visible focus. A "fake shell" is context only; never repeated in production code.
 
 ## 4. Production code contract
 
-A code delivery must not be just a snippet; it must have the runnable completeness that the scope requires.
+Runnable completeness for the scope, not snippets.
 
-Typical files for a new freestyle app:
-
-- `package.json`, lockfile, `ui5.yaml`, TypeScript config
-- `webapp/manifest.json`, `Component.*`
-- XML view/fragment, controller/helper/model
-- `i18n.properties`
-- Mock/config for the development profile only
-- QUnit/OPA5 and, if needed, wdi5
-- Lint/build config
-
-For Fiori elements:
-
-- Preserve the generator/project structure
-- Manifest target/page config
-- Backend/local annotations and, if required, CDS metadata extension
-- Only official extension fragments/controllers/building blocks
-- Draft/action/side effect and navigation contract
-- Test/preview that works with the service metadata
-
-In an existing project, change only the file that is required; preserve the style and dependency arrangement. Do not perform a broad migration unless the user asks for it.
+- Freestyle: `package.json`, lockfile, `ui5.yaml`, TypeScript config · `webapp/manifest.json`, `Component.*` · XML views/fragments, controllers/helpers/models · `i18n.properties` · mock/config for the dev profile only · QUnit/OPA5 (+ wdi5 if needed) · lint/build config.
+- Fiori elements: generator structure preserved · manifest target/page config · backend/local annotations, CDS metadata extension if needed · only official extension fragments/controllers/building blocks · draft/action/side-effect and navigation contract · the skeleton ships manifest validation and a Playwright smoke test; add OPA5/wdi5 journeys from the service metadata.
+- Existing project: change only what is needed; keep style and dependency layout; no broad migration without request.
 
 ## 5. Combined delivery and traceability
-
-If there is PNG + interactive + code, verify the following correspondence:
 
 | Contract element | PNG | Interactive | Code | Test |
 |---|---|---|---|---|
@@ -141,145 +45,89 @@ If there is PNG + interactive + code, verify the following correspondence:
 | Responsive | S/M/L/XL | Reflow/adapt | Responsive control/config | Viewport test |
 | Accessibility | Label/focus appearance | Keyboard | ARIA/stable ID | Manual/tool check |
 
-Mark an element that is in the contract but missing from one of the outputs as a blocker or as explicitly out of scope.
+A contract element missing from any output is a blocker or explicitly out of scope.
 
 ## 6. Visual verification matrix
 
-Test at least the following classes:
-
-| Size | Example viewport | Check |
+| Size | Viewport | Check |
 |---|---:|---|
 | S | 390×844 | Single column, mobile table/dialog/navigation |
 | M | 768×1024 | Tablet collapse/reflow |
 | L | 1280×800 | Desktop main target |
-| XL | 1600×1000 | Max width/spacing/multiple columns |
+| XL | 1600×1000 | Max width, spacing, multiple columns |
 
-Themes:
+Themes: Morning Horizon, Evening Horizon, High Contrast Black, High Contrast White. Density: cozy, compact. Not every combination needs a PNG: verify the critical screens and report the cells actually checked.
 
-- Morning Horizon
-- Evening Horizon
-- High Contrast Black
-- High Contrast White
-
-Density:
-
-- Cozy
-- Compact
-
-Delivering a separate PNG for every combination is not mandatory; however, verify the appearance of the critical screens and report which combinations you actually checked.
-
-Visual check:
-
-- Page hierarchy and whitespace
-- Uniqueness of the primary action
-- Label/field alignment
-- Table identity and column priority
-- Semantic color + text/icon
-- Focus, selected, hover, disabled/read-only
-- Truncation, overflow, pop-in and scroll
-- Long localization and RTL
-- Empty/error/loading/no-auth
+Visual check: page hierarchy and whitespace · single primary action · label/field alignment · table identity and column priority · semantic color + text/icon · focus, selected, hover, disabled/read-only · truncation, overflow, pop-in, scroll · long localization and RTL · empty/error/loading/no-auth.
 
 ## 7. Technical verification matrix
-
-Static check:
 
 ```powershell
 python -B "<skill root>/scripts/validate_fiori_delivery.py" <delivery-root> --contract <delivery-root>/design-contract.json
 ```
 
-This script checks strict JSON, contract/manifest semantics and basic structural risks; warnings close the gate by default. `--allow-warnings` is only a temporary escape hatch during development; it does not replace a real build/test/render.
+Checks strict JSON, contract/manifest semantics and structural risks; warnings close the gate by default; `--allow-warnings` is a temporary development escape and no substitute for build/test/render.
 
-The version check compares two separate values: the manifest `minUI5Version` must be the same as `architecture.minUI5Version` in the contract (`SEMANTIC_MIN_UI5`) and must not be newer than the target `context.targetSystem.ui5Runtime` value (`SEMANTIC_UI5_VERSION`). If the runtime is `unknown`, `CONTRACT_TARGET_UNKNOWN` is a warning for a code delivery and keeps the gate closed; for a PNG/prototype-only delivery it is `info`, because a prototype may not know its target yet. The color check flags only CSS values and quoted color literals; a route hash or an ID selector is not counted as a color.
+Version checks: the manifest `minUI5Version` must equal `architecture.minUI5Version` (`SEMANTIC_MIN_UI5`) and must not be newer than `context.targetSystem.ui5Runtime` (`SEMANTIC_UI5_VERSION`). An `unknown` runtime raises `CONTRACT_TARGET_UNKNOWN` as a warning for a code delivery (gate closed) and as `info` for PNG/prototype only. The color check flags only CSS values and quoted color literals; route hashes and ID selectors are not colors.
 
-If an ABAP package is in scope, the validator additionally checks the `abap-backend-contract.json` schema, the file SHA-256 integrity, the active/complete status, the package inventory hash, the service protocol/URI/entity set consistency and the backend → design traceability. A `partial` backend contract produces a warning and closes the strict delivery gate.
+With an ABAP package in scope the validator also checks the `abap-backend-contract.json` schema, file SHA-256 integrity, active/complete status, inventory hash, service protocol/URI/entity-set consistency and backend → design traceability. A `partial` backend contract is a warning and closes the strict gate.
 
-Discover the appropriate commands from the project and run them:
-
-- Dependency install/lockfile
-- TypeScript typecheck
-- UI5 Linter and project lint
-- QUnit
-- OPA5
-- wdi5 (if in scope)
-- UI5 CLI production build
-- Support Assistant
-- Browser console/network
-
-Evidence layers:
+Also discover and run from the project: install/lockfile · TypeScript typecheck · UI5 Linter and project lint · QUnit · OPA5 · wdi5 (in scope) · UI5 CLI production build · Support Assistant · browser console/network.
 
 | Claim | Evidence |
 |---|---|
-| JSON/manifest is correct | Parse + schema/structure check |
+| JSON/manifest correct | Parse + schema/structure check |
 | Code compiles | Typecheck/build output |
-| Tests pass | Test report; read the test count |
+| Tests pass | Test report with the test count |
 | App opens | Real browser render |
-| Visual is correct | Visual inspection of the PNG/screenshot |
-| Responsive | S/M/L/XL real viewport |
-| Accessible | Keyboard, focus, screen reader/ARIA and high contrast |
-| Backend compatible | Metadata, preview/integration and target release |
-| Package evidence is complete | Inventory count + source hash + backend contract hash + active/truncation check |
+| Visual correct | PNG/screenshot inspected |
+| Responsive | S/M/L/XL real viewports |
+| Accessible | Keyboard, focus, screen reader/ARIA, high contrast |
+| Backend compatible | Metadata, preview/integration, target release |
+| Package evidence complete | Inventory count + source hash + backend contract hash + active/truncation check |
 
-If zero tests are found and the command returns 0, do not count it as a successful test. When the result is too clean, verify the test discovery and the target path.
+Zero discovered tests with exit code 0 is not a pass; a suspiciously clean result means checking test discovery and the target path.
 
 ## 8. Adversarial scenarios
 
-Beyond the happy path, run at least the relevant ones:
-
-- Zero records, one record, thousands of records
-- Long text, very long object ID and null/missing field
-- Slow service, timeout, 4xx/5xx and retry
-- Backend validation, warning and multi-message
-- Unauthorized field/action and whole-page no-auth
-- Draft conflict, stale ETag, concurrent edit and cancel data loss
-- Offline/connection loss (if the product supports it)
-- RTL, Turkish characters, German-length expansion
-- Keyboard-only, focus return after dialog, screen reader label
-- Zoom/text resize and high contrast
-- Grid/Analytical/Tree Table alternative on the phone
+Run the relevant ones beyond the happy path: zero, one, thousands of records · long text, very long object IDs, null/missing fields · slow service, timeout, 4xx/5xx, retry · backend validation, warnings, multi-message · unauthorized field/action and whole-page no-auth · draft conflict, stale ETag, concurrent edit, cancel data loss · offline/connection loss (if supported) · RTL, Turkish characters, German-length expansion · keyboard-only, focus return after dialogs, screen reader labels · zoom/text resize and high contrast · Grid/Analytical/Tree Table alternative on a phone.
 
 ## 9. Delivery report
 
-Report briefly but with evidence:
+1 result and file links · 2 floorplan/framework and rationale · 3 target UI5 / Fiori guideline / backend release · 4 verifications run and observed results · 5 visual-matrix cells actually checked · 6 verified/assumed/blocked topics · 7 the known risk or the single next step needing a user decision.
 
-1. Result and file links
-2. Selected floorplan/framework and rationale
-3. Target UI5/Fiori guideline/backend release
-4. Verifications that were run and the observed results
-5. The cells of the visual matrix that were actually checked
-6. Verified/assumed/blocked topics
-7. The known risk or the single next step that requires a user decision
-
-To say “done”:
-
-- Reopen the files
-- Read the diff
-- Read the script/build/test output
-- See the app/PNG
-- Sample the first, the last and the strangest scenario
-- Compare again with the original request
+"Done" requires: files reopened · diff read · script/build/test output read · app/PNG seen · first, last and strangest scenario sampled · result compared with the original request.
 
 ## 10. Validator findings
 
-Severity: `error` and `warning` close the gate (`--allow-warnings` temporarily opens warnings only), `info` does not. The common ones:
+`error` and `warning` close the gate (`--allow-warnings` temporarily opens warnings only), `info` does not. Common codes with the script's default severity; other codes (`SCHEMA_*`, `MANIFEST_*`, `PROJECT_*`, `XML_*`, `BACKEND_*`, pattern checks) explain themselves through `severity` and message in the `--json` output.
 
-| Finding | Meaning | What to do |
-|---|---|---|
-| `CONTRACT_PLACEHOLDER` | The contract still holds `Replace …`, `pending-…`, `verify-…` or `YYYY-MM-DD` | Write the real value; `unknown` if not known, `blocked` if it stops the work |
-| `CONTRACT_STATE_RECOMMENDED` | `loading` or `no-results` is not designed | Design the state and align `verification.states` |
-| `SEMANTIC_STATES` | `states` and `verification.states` differ | Bring both lists to the same IDs |
-| `SEMANTIC_I18N_KEY` | A `labelKey`/`titleKey` of the contract is missing from the i18n bundle | Add the key or correct the contract (in a Fiori elements app texts come from annotations and are not checked) |
-| `SEMANTIC_ACTION_ID` | A contract action has no control with the same stable ID | Add the action to the UI or remove it from the contract if out of scope |
-| `CONTRACT_A11Y_EVIDENCE` | `verification.accessibilityEvidence` is empty | Record the check you really performed with `check`/`method`/`result`; perform it if you did not |
-| `CONTRACT_DATA_BUDGET` / `CONTRACT_COMMANDS` | `initialSelect` or `verification.commands` is empty for a code delivery | Name the first-render fields and the commands that were run |
-| `CONTRACT_RELEASED_UNVERIFIED` | ABAP evidence exists but `releasedApisVerified` was not verified | Check it in the target system; write `true` or `not-applicable` |
-| `SEMANTIC_FLP_INBOUND` | `launchContext: flp` but the manifest has no inbound matching `launchIntent` | Generate it with `--semantic-object/--action` or add it to the manifest; correct `launchContext` for a standalone app |
-| `SEMANTIC_SEARCH_UNVERIFIED` | The app sends `$search` and `serverCapabilities.search` is not `true` | Find the `@Search.searchable` evidence or use `$filter` |
-| `PNG_NAME` | The capture name does not follow the pattern or names a state the contract does not design | Rename the file |
-| `BACKEND_INVENTORY_UNVERIFIED` (`info`) | The package source declares no system inventory | State it in the report; it does not close the gate |
+| Finding | Severity | Meaning | Fix |
+|---|---|---|---|
+| `CONTRACT_PLACEHOLDER` | warning | Contract still holds `Replace with …`, `replace-with-…`, `pending-…`, `verify-…` or a bare `YYYY-MM-DD` | Real value; `unknown` if not known, `blocked` if it stops the work |
+| `CONTRACT_STATE` | error | `initial`, `populated`, `empty`, `error` or `no-auth` neither designed nor listed in `stateExceptions` | Design the state and align `verification.states`, or record why it does not apply |
+| `CONTRACT_STATE_EXCEPTION` / `CONTRACT_STATE_EXCEPTION_CONFLICT` | error | A `stateExceptions` row lacks a required state or a reason / excepts a state that is also designed | One reasoned row per non-applicable required state; never both design and except a state |
+| `CONTRACT_STATE_RECOMMENDED` | warning | `loading` or `no-results` not designed | Design the state, align `verification.states` |
+| `SEMANTIC_STATES` | warning | `states` and `verification.states` differ | Same IDs in both lists |
+| `SEMANTIC_I18N_KEY` | warning | A `*Key` text key (under `informationArchitecture`, `fieldsAndActions`) missing from the first `i18n.properties` of the delivered tree | Add the key or fix the contract (Fiori elements apps take texts from annotations; this check and `SEMANTIC_ACTION_ID` are skipped there) |
+| `SEMANTIC_ACTION_ID` | warning | A contract action has no control with that stable ID in any XML view/fragment | Add the action to the UI or drop it from the contract (skipped for Fiori elements) |
+| `CONTRACT_A11Y_EVIDENCE` | warning | `verification.accessibilityEvidence` empty or a row lacks `check`/`method`/`result` | Record the check really performed; perform it if missing |
+| `CONTRACT_DATA_BUDGET` / `CONTRACT_COMMANDS` | warning | `initialSelect` or `verification.commands` empty for a code delivery | Name the first-render fields and the commands run |
+| `CONTRACT_TARGET_UNKNOWN` | warning (code) / info (prototype, PNG) | A `context.targetSystem` field is `unknown`, or `launchIntent` is not an object while `launchContext: flp` | Observe and record the target; keep `unknown` and say so if not known |
+| `CONTRACT_TRACEABILITY_ROW` / `CONTRACT_SOURCES_ROW` | warning | A traceability or source row has an empty mandatory field | Complete or remove the row |
+| `CONTRACT_RELEASED_UNVERIFIED` | warning | ABAP evidence exists but `releasedApisVerified` not verified | Check in the target system; write `true` or `not-applicable` |
+| `SEMANTIC_MIN_UI5` / `SEMANTIC_UI5_VERSION` | error | Manifest `minUI5Version` differs from `architecture.minUI5Version` / is newer than the target runtime (code delivery only) | Fix the profile or the contract; record the observed runtime |
+| `SEMANTIC_FLP_INBOUND` | warning | `launchContext: flp` but `app/webapp/manifest.json` has no inbound matching `launchIntent` | Generate with `--semantic-object/--action` or add it; set `launchContext` correctly for a standalone app |
+| `SEMANTIC_SEARCH_UNVERIFIED` | warning | `app/` sends `$search` and `serverCapabilities.search` is not `true` | Find `@Search.searchable` or `$metadata` SearchRestrictions evidence, or use `$filter` |
+| `SEMANTIC_SEARCH_CONFLICT` | error | `serverCapabilities.search` is `true` but the backend contract's `service.metadata` declares the main entity set not searchable | Use `$filter`, or correct the evidence after checking the target `$metadata` |
+| `PNG_NAME` | warning | Capture name off-pattern or names a state the contract does not design | Rename the file |
+| `PNG_REPORT_MISSING` / `PNG_DIGEST` | warning / error | Reviewed captures were not recorded / a PNG is unrecorded, changed or missing since `record_captures.py` ran | Review the captures, then run `record_captures.py`; re-review and re-record after any change |
+| `MANIFEST_V2` | error (delivery) / warning (`--review`) | `minUI5Version` 1.136+ but manifest `_version` below 2 | Manifest V2 in a new project; plan the migration in an existing one |
+| `BACKEND_PARTIAL` | warning | Backend contract `partial`: gaps, truncation or inactive sources | Resolve `gaps` or report as an open risk |
+| `BACKEND_INVENTORY_UNVERIFIED` | info | Package source declares no system inventory | State it in the report; gate stays open |
 
-Do not silence a finding with an invented value to pass the gate. Every `verified` and every accessibility result you write into the contract must be an observation.
+Never silence a finding with an invented value; every `verified` and every accessibility result is an observation.
 
 ## 11. Reviewing an existing project
 
-`validate_fiori_delivery.py <project-root> --review` needs no contract, produces no files and fails only on an `error` finding. The script sees static patterns (deprecated/global APIs, synchronous loading, inline styles, hard-coded text/colors, stable IDs, manifest structure). For floorplan fit, action placement, state coverage, accessibility and OData usage, read the project and write each finding as `file:line · severity · rule and its source · observation · proposal`. Do not count runtime behavior you have not seen as a finding.
+`validate_fiori_delivery.py <project-root> --review` needs no contract (and ignores one), writes no file and fails only on `error`. Contract, package, PNG and `PROJECT_*` checks are off; new-project conventions (`MANIFEST_V2`, `MANIFEST_I18N`, `MANIFEST_DENSITY`) become `warning`. It sees static patterns (deprecated/global APIs, sync loading, inline styles, hard-coded text/colors, stable IDs, manifest structure). For floorplan fit, action placement, state coverage, accessibility and OData usage read the project and write each finding as `file:line · severity · rule and source · observation · proposal`. Unseen runtime behavior is not a finding.

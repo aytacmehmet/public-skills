@@ -6,7 +6,7 @@
 
 Create one folder under `en/` and its Turkish counterpart under `tr/`. Use short lowercase names with hyphens where needed. Names may differ by language, as `prompter` and `yordamla` do.
 
-Each package needs `SKILL.md`, `README.md`, `CHANGELOG.md`, a copy of the repository `LICENSE`, `agents/openai.yaml`, and `archived/README.md`. Add `references/`, `scripts/`, or `assets/` only when the skill needs them. Keep all introductions, instructions, UI descriptions, and supporting explanations in the package's language; preserve the original legal text of LICENSE.
+Each package needs `SKILL.md`, `README.md`, `CHANGELOG.md`, a copy of the repository `LICENSE`, `agents/openai.yaml`, and `archived/README.md`. Add `references/`, `scripts/`, or `assets/` only when the skill needs them. Keep introductions, changelogs, UI descriptions, and supporting explanations in the package's language. Write the instructions (`SKILL.md` body and `references/`) in the package's language, or in English and byte-identical in both packages when the pair shares its model-facing files (SAP Fiori Design / SAP Fiori Tasarım does; the model still answers in the user's language and the trigger text stays in `description`); preserve the original legal text of LICENSE.
 
 `SKILL.md` frontmatter identifies the skill and the paired release:
 

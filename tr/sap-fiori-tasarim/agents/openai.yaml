@@ -1,4 +1,4 @@
 interface:
   display_name: "SAP Fiori Tasarım"
-  short_description: "ABAP paketinden kanıtlı Fiori/UI5 tasarlar"
-  default_prompt: "$sap-fiori-tasarim ile ABAP paketini ve servis sözleşmesini analiz et; buna uygun SAP Fiori tasarımı, prototipi ve hedef sürümde UI5 kodu üret."
+  short_description: "Fiori/UI5 ekranını tasarlar, prototipler, kodlar ve inceler"
+  default_prompt: "$sap-fiori-tasarim ile gereksinimi veya ABAP paketini analiz et; SAP Fiori tasarımı, çalışan UI5 prototipi ve PNG, hedef sürümde üretim kodu üret ya da mevcut uygulamayı incele."

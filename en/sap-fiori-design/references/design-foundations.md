@@ -1,150 +1,71 @@
 # SAP Fiori visual and interaction foundations
 
-Read this reference when making a visual design, theme, token, typography, icon, responsive behavior or accessibility decision.
+Read when deciding visual design, theme, tokens, typography, icons, responsive behavior or accessibility.
 
-## Contents
-
-1. Version and evidence rule
-2. Design principles
-3. Theme and design tokens
-4. Color and semantics
-5. Typography
-6. Iconography and illustration
-7. Responsive and adaptive design
-8. Content density
-9. Accessibility
-10. UX text and localization
-11. Visual quality guardrails
+Sections: 1 version rule · 2 principles · 3 themes and tokens · 4 color · 5 typography · 6 icons and illustration · 7 responsive · 8 density · 9 accessibility · 10 UX text · 11 visual guardrails
 
 ## 1. Version and evidence rule
 
-This summary was prepared on 12 August 2026 by observing SAP Fiori for Web guideline v1.148 and SAPUI5 Demo Kit 1.151.0. These two versions do not have to be the same. For every job, verify the target runtime, then use the versioned Fiori guideline and UI5 API documentation that match that runtime.
+Prepared against SAP Fiori for Web guideline v1.148 and SAPUI5 Demo Kit 1.151.0; the dated research record is in [official-sources.md](official-sources.md) (27 August 2026). The two versions need not match. Per task: verify the target runtime, then use the versioned guideline and API documentation for that runtime ([Guideline versioning](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/versioning)).
 
-- [Guideline versioning](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/versioning)
-- [SAP Fiori for Web](https://www.sap.com/design-system/fiori-design-web)
-- [SAPUI5 Demo Kit](https://ui5.sap.com/)
-
-SAP's official `sap-fiori-guidelines` AI skill is based on v1.145 (May 2026) and is marked as experimental. Treat it as a useful index; do not substitute it for the live documentation of the target version.
-
-- [SAP AI Skill for Fiori Guidelines](https://www.sap.com/design-system/fiori-design-web/v1-145/resources/ai-skills/sap-fiori-guidelines)
-- [SAP AI Skills Library source](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines)
+SAP's `sap-fiori-guidelines` AI skill (v1.145, May 2026) is experimental: use it as an index, never as a substitute for the live target-version page ([source](https://github.com/SAP/ai-skills-library/tree/main/skills/sap-fiori-guidelines)).
 
 ## 2. Design principles
 
-Evaluate every screen against these five principles:
+Check every screen against [SAP Design Principles](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/vision-and-mission/design-principles):
 
-- **Role-based:** Support the decision and the daily task of the specific role; instead of showing all the data, bring forward the data needed for the decision.
-- **Adaptive:** Adapt to the device, input method and working conditions; do not merely shrink the desktop.
-- **Coherent:** Preserve the control, action, message and navigation behavior used across SAP.
-- **Simple:** Remove unnecessary fields, actions, decoration and steps; use progressive disclosure.
-- **Delightful:** Produce fast, predictable and trust-building feedback; do not put visual showiness ahead of task success.
+- **Role-based:** support the role's decision and daily task; show decision data, not all data.
+- **Adaptive:** adapt to device, input method and working conditions; do not merely shrink the desktop.
+- **Coherent:** keep SAP-wide control, action, message and navigation behavior.
+- **Simple:** remove unnecessary fields, actions, decoration and steps; use progressive disclosure.
+- **Delightful:** fast, predictable, trust-building feedback; task success over visual show.
 
-Source: [SAP Design Principles](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/vision-and-mission/design-principles)
+Mockup reference: the [SAP Fiori for Web UI Kit](https://www.sap.com/design-system/fiori-design-web/v1-148/resources/libraries/sap-fiori-for-web-ui-kit). Pick the UI Kit/SAPUI5 counterpart of a control instead of redrawing it.
 
-Use the SAP Fiori for Web UI Kit as the canonical mockup reference. Instead of freely redrawing a control, pick its UI Kit/SAPUI5 counterpart.
+## 3. Themes and design tokens
 
-Source: [SAP Fiori for Web UI Kit](https://www.sap.com/design-system/fiori-design-web/v1-148/resources/libraries/sap-fiori-for-web-ui-kit)
+Default: Horizon. Keep the theme the target system is pinned to. Morning Horizon (light), Evening Horizon (dark), High Contrast Black/White; Quartz Light/Dark only if the target requires it. Morning/Evening target WCAG 2.2 AA, high contrast WCAG 2.2 AAA. Never reproduce theme support with app CSS ([Theming](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/theming)).
 
-## 3. Theme and design tokens
+Tokens ([Design Tokens](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/design-tokens)):
 
-The default modern visual language is Horizon. If the target system is pinned to a different theme, keep that theme.
+1. No hard-coded colors, fonts, shadows, radii or control dimensions.
+2. Main/base tokens for quick branding; stable semantic component tokens for control implementation.
+3. Never bind a reference palette value directly to control CSS.
+4. Record the same semantic token name in the design decision and in code.
+5. Customer branding through the UI Theme Designer/token chain, not one-off CSS.
+6. Verify hover, focus, active, selected, disabled and high-contrast states together.
 
-- Morning Horizon: light theme
-- Evening Horizon: dark theme
-- High Contrast Black / High Contrast White: high contrast
-- Quartz Light / Quartz Dark: if the target system requires it
-
-Morning/Evening Horizon target WCAG 2.2 AA; the Horizon high-contrast themes target WCAG 2.2 AAA. Do not reproduce theme support with application CSS.
-
-Source: [Theming](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/theming)
-
-Token rules:
-
-1. Do not write hard-coded colors, fonts, shadows, radii or control dimensions.
-2. Use the appropriate main/base token for quick branding; use a stable semantic component token for control implementation.
-3. Do not bind a reference palette value directly to control CSS.
-4. Record the same semantic token name in the Figma/prototype decision and in the code decision.
-5. Solve customer branding through the UI Theme Designer/token chain, not through one-off CSS patches.
-6. Verify the hover, focus, active, selected, disabled and high-contrast states together.
-
-Source: [Design Tokens](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/design-tokens)
-
-If custom CSS is really needed:
-
-- First look for a standard control property, aggregation, layout data, utility class and theme parameter.
-- Keep the CSS small, scoped and free of theme dependencies.
-- Do not use private DOM/class selectors; they can break with a patch release.
-- Do not use inline styles or native HTML/SVG inside XML.
+If custom CSS is unavoidable: exhaust control properties, aggregations, layout data, utility classes and theme parameters first; keep it small, scoped and theme-independent; no private DOM/class selectors (patch releases break them); no inline styles or native HTML/SVG in XML.
 
 ## 4. Color and semantics
 
-In the Morning Horizon visual reference, the accent blue is `#0070F2`, the application background is `#F5F6F7`, the main text is `#131E29` and the secondary text is `#556B82`. Do not write these values directly into code; get them from the theme parameter.
+Morning Horizon reference values: accent `#0070F2`, app background `#F5F6F7`, main text `#131E29`, secondary text `#556B82` — read them from theme parameters, never write them into code ([Morning Horizon Colors](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/colors/morning-horizon)).
 
-Source: [Morning Horizon Colors](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/colors/morning-horizon)
-
-Semantic mapping:
-
-| Semantic | Meaning | Appropriate use |
+| Semantic | Meaning | Use |
 |---|---|---|
-| Neutral | Normal/needs no interpretation | Regular state |
-| Positive | Good/successful persistent state | Completed, suitable |
-| Critical | Attention, non-blocking risk | Approaching deadline, review required |
+| Neutral | Needs no interpretation | Regular state |
+| Positive | Good, persistent success | Completed, suitable |
+| Critical | Attention, non-blocking risk | Approaching deadline, review needed |
 | Negative/Error | Error or bad state | Blocking issue, rejected |
-| Information | Genuine information | Neutral information that needs attention |
+| Information | Genuine information | Neutral, needs attention |
 
-Do not use semantic color for decoration. Color must not carry meaning on its own; support it with text, status and/or an icon. Use an industry/indication color only if the domain has an established color convention, and do not mix it with the semantic palette inside the same control.
+No semantic color as decoration; color never carries meaning alone — add text, status or icon. Industry/indication colors only where the domain has an established convention, never mixed with the semantic palette inside one control ([Semantic and Industry-Specific Colors](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/best-practices/ui-elements/how-to-use-semantic-colors)).
 
-Source: [Using Semantic and Industry-Specific Colors](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/best-practices/ui-elements/how-to-use-semantic-colors)
-
-Contrast targets:
-
-- Normal text and text-like icons: at least 4.5:1
-- Large text, bold text-like icons and meaningful graphics: at least 3:1
-- Focus indicator and state difference: perceivable independently of color
+Contrast: normal text and text-like icons ≥ 4.5:1; large text, bold text-like icons and meaningful graphics ≥ 3:1; focus indicator and state difference perceivable without color.
 
 ## 5. Typography
 
-- Use the `72` family; if it cannot be loaded, keep the fallback order `72full`, Arial, Helvetica, sans-serif.
-- Use the control's ready-made typographic style; do not imitate a title with font size alone.
-- Keep the semantic heading hierarchy at the page → section → subsection level.
-- Do not make small text the main content; do not use a light weight on small labels.
-- Use a line height of approximately 1.5 for long/wrapping content.
-- Format numbers, dates, times, currency and units according to the user's locale.
-
-Source: [Typography – Horizon](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/typography/typography-horizon)
+[Typography – Horizon](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/typography/typography-horizon): font family `72`, fallback order `72full`, Arial, Helvetica, sans-serif · use the control's typographic style, never fake a title with font size · semantic heading hierarchy page → section → subsection · no small text as main content, no light weight on small labels · line height ≈ 1.5 for wrapping content · locale-formatted numbers, dates, times, currency and units.
 
 ## 6. Iconography and illustration
 
-First look for an existing SAP Horizon icon. For an icon:
+[Iconography – Horizon](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/iconography/iconography-horizon): use an existing SAP Horizon icon first. Icons are for functional cues, established metaphors and narrow toolbars; never a replacement for an essential text label, never ornament, never the sole carrier of a complex or culture-specific concept. Sizes: standard 16 px, minimum 12 px, maximum 48 px inside a standard component; SVG default, icon font supported. Icon-only interactions get an accessible name and tooltip; decorative icons are hidden from assistive technology; meaningful icons carry text; check LTR/RTL mirroring and cultural metaphors.
 
-- Use it for a functional cue, an established metaphor or a narrow toolbar area.
-- Do not use it in place of an essential text label.
-- Do not add it to create ornament and clutter.
-- Do not force it to carry a complex or culture-specific concept on its own.
-
-Size guide:
-
-- Standard: 16 px
-- Absolute recommended lower limit: 12 px
-- Upper limit inside a standard component: 48 px
-- SVG is the default; icon font is supported
-
-Accessibility:
-
-- Give an icon-only interaction an accessible name and a tooltip.
-- Hide a decorative icon from assistive technology.
-- Support a meaningful icon with text/a label.
-- Check LTR/RTL direction changes and cultural metaphors.
-
-Source: [Iconography – Horizon](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/iconography/iconography-horizon)
-
-Do not use a generative image model to draw an SAP control or a UI screen containing text. If a decorative illustration is needed, produce a separate asset, verify the illustration style and the accessible alternative text; render UI elements with real SAPUI5.
+Never render an SAP control or a text-bearing screen with a generative image model. A requested decorative illustration is a separate asset with verified style and alt text; the UI itself is real SAPUI5.
 
 ## 7. Responsive and adaptive design
 
-Responsive: Reflowing the same functionality and information as the space changes. Adaptive: Providing a different presentation/interaction when the device capability, the context or the task purpose changes.
-
-Breakpoints:
+Responsive = the same function reflows as space changes; adaptive = a different presentation when device capability, context or task changes ([Responsiveness and Adaptiveness](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/vision-and-mission/responsiveness-adaptiveness), [Responsive Spacing](https://www.sap.com/design-system/fiori-design-web/v1-148/page-types/page-layouts/spacing)).
 
 | Class | Width |
 |---|---:|
@@ -153,75 +74,24 @@ Breakpoints:
 | L | 1024–1439 px |
 | XL | ≥ 1440 px |
 
-Sources:
-
-- [Responsiveness and Adaptiveness](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/vision-and-mission/responsiveness-adaptiveness)
-- [Responsive Spacing](https://www.sap.com/design-system/fiori-design-web/v1-148/page-types/page-layouts/spacing)
-
-Rules:
-
-- Set the information priority mobile-first.
-- Use the 12-column responsive grid with an appropriate layout.
-- Do not build the layout with fixed width/height.
-- Accept that Grid/Analytical/Tree Table is not fully responsive on a phone; design a Responsive Table, a card/list or a separate adaptive view.
-- On a phone, keep the identity and decision fields; reduce low-importance content with pop-in/hide.
-- Test for overflow with long translations, RTL and browser zoom.
+Rules: mobile-first information priority · 12-column responsive grid with a fitting layout · no fixed width/height layout · Grid/Analytical/Tree Table are not phone-responsive: design a Responsive Table, card/list or a separate adaptive view · on a phone keep identity and decision fields, pop-in/hide the rest · test overflow with long translations, RTL and browser zoom.
 
 ## 8. Content density
 
-- Choose cozy for touch, compact for intensive mouse/keyboard use.
-- On a hybrid device, keep the user/environment choice.
-- The cozy target area is approximately 2.75 rem / 44 px.
-- Do not mix cozy and compact within the same page and navigation hierarchy.
-- Do not shrink the font to show more data; fix the information priority and the layout choice.
-
-Source: [Cozy and Compact](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/cozy-compact)
+[Cozy and Compact](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/cozy-compact): cozy for touch, compact for intensive mouse/keyboard; keep the user/environment choice on hybrid devices; cozy target ≈ 2.75 rem / 44 px; never mix cozy and compact within one page and navigation hierarchy; never shrink fonts to show more data — fix priority and layout instead.
 
 ## 9. Accessibility
 
-Framework accessibility is the starting point; the application context must still be verified.
+Framework accessibility is the starting point; the application context must still be verified ([Accessibility in SAP Fiori](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/product-standards/accessibility-in-sap-fiori), [Keyboard Support](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/interaction/keyboard-support), [UI5 ARIA Labeling](https://ui5.sap.com/#/topic/f38c21c2f71e455e8d4a959522035a1f)).
 
-In every delivery:
+Every delivery: clear persistent labels, placeholder never the label · logical initial focus, verified tab order and F6 groups · keyboard equivalent and visible focus for every action · heading, landmark, role, state and property relations intact · error messages state location, cause and fix · context-specific alt text · screen reader, keyboard-only, zoom/text resize and high-contrast checks · custom control only as last resort, then you own ARIA, keyboard, theme, zoom, RTL, security, performance and maintenance.
 
-- Use clear and persistent labels; do not make the placeholder the label.
-- Place the initial focus somewhere logical; verify the tab order and the F6 groups.
-- Give all actions a keyboard equivalent and a visible focus.
-- Preserve the heading, landmark, role, state and property relationships.
-- In an error message, explain the location, the cause and the way to fix it.
-- Produce the alternative text of an image/icon according to the context.
-- Check screen reader, keyboard-only, zoom/text resize and high-contrast.
-- Make a custom control the last resort; if you choose one, take on the responsibility for ARIA, keyboard, theme, zoom, RTL, security, performance and maintenance.
-
-Sources:
-
-- [Accessibility in SAP Fiori](https://www.sap.com/design-system/fiori-design-web/v1-148/discover/sap-design-system/product-standards/accessibility-in-sap-fiori)
-- [Keyboard Support](https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/interaction/keyboard-support)
-- [UI5 ARIA Labeling](https://ui5.sap.com/#/topic/f38c21c2f71e455e8d4a959522035a1f)
-
-Do not mix up the UI5 ARIA priorities: choose among the `labelFor`, `aria-label` and `aria-labelledby` options according to the context; do not combine them with one another haphazardly.
+Choose `labelFor`, `aria-label` or `aria-labelledby` by context; never combine them haphazardly.
 
 ## 10. UX text and localization
 
-- Keep the action text short and start it with a verb: such as Create, Save, Approve.
-- Do not show a technical error code on its own; explain the impact on the user and the way to resolve it.
-- Use status text with consistent terminology.
-- Do not hard-code translatable text in the controller/XML; move it to i18n.
-- Use the framework formatter/type for plurals, parameters, dates, times, numbers, currency and units.
-- Test the layout with long German-like text, Turkish characters and RTL.
-
-Source: [Accessible UX Writing](https://www.sap.com/design-system/fiori-design-web/v1-145/foundations/writing-and-wording/ux-writing/ux-writing-guidelines/accessibility)
+[Accessible UX Writing](https://www.sap.com/design-system/fiori-design-web/v1-145/foundations/writing-and-wording/ux-writing/ux-writing-guidelines/accessibility): action texts short and verb-first (Create, Save, Approve) · never a bare technical error code — state impact and resolution · consistent status terminology · no hard-coded translatable text in controller/XML, everything in i18n · framework formatters/types for plurals, parameters, dates, times, numbers, currency, units · test layout with long German-like text, Turkish characters and RTL.
 
 ## 11. Visual quality guardrails
 
-If any of the following is present, do not deliver the design without fixing it:
-
-- Custom HTML/CSS that imitates an SAP control
-- Hard-coded brand/semantic color or font
-- More than one emphasized primary action within the same page/dialog
-- Status conveyed by color alone
-- A placeholder standing in for the label
-- No mobile alternative for a desktop table
-- Focus not visible, or a keyboard trap
-- The empty/error/loading/no-auth state skipped
-- The PNG showing fields/actions/states that differ from the interactive prototype
-- No accessibility and theme testing for a custom control
+Do not deliver with any of: custom HTML/CSS imitating an SAP control · hard-coded brand/semantic color or font · more than one emphasized primary action per page/dialog · status by color alone · placeholder standing in for a label · desktop table without a mobile alternative · invisible focus or a keyboard trap · a skipped empty/error/loading/no-auth state · PNG fields/actions/states differing from the prototype · a custom control without accessibility and theme tests.

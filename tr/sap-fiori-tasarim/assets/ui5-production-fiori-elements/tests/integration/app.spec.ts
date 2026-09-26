@@ -8,6 +8,8 @@ test("boots the Fiori elements component", async ({ page }) => {
   page.on("pageerror", (error) => runtimeErrors.push(error.message));
   page.on("console", (message) => {
     const text = message.text();
+    // "Failed to load resource" duplicates the HTTP >= 400 check below; "S/CUBE is not yet supported" is a known
+    // Fiori elements notice about the mock metadata, not an application error. Everything else fails the test.
     if (message.type() === "error"
         && !text.startsWith("Failed to load resource:")
         && !text.includes("S/CUBE is not yet supported")) runtimeErrors.push(text);

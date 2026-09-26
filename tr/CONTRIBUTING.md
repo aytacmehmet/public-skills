@@ -6,7 +6,7 @@
 
 `tr/` altında bir klasör, `en/` altında İngilizce karşılığını oluşturun. Gerektiğinde tire içeren kısa, küçük harfli adlar kullanın. Adlar, `yordamla` ve `prompter` örneğinde olduğu gibi dile göre farklı olabilir.
 
-Her pakette `SKILL.md`, `README.md`, `CHANGELOG.md`, deponun `LICENSE` dosyasının bir kopyası, `agents/openai.yaml` ve `archived/README.md` bulunmalıdır. `references/`, `scripts/` veya `assets/` yalnız ihtiyaç varsa eklenir. Tanıtımlar, yönergeler, arayüz açıklamaları ve destek açıklamaları paketin dilinde yazılır; LICENSE'ın özgün hukuki metni korunur.
+Her pakette `SKILL.md`, `README.md`, `CHANGELOG.md`, deponun `LICENSE` dosyasının bir kopyası, `agents/openai.yaml` ve `archived/README.md` bulunmalıdır. `references/`, `scripts/` veya `assets/` yalnız ihtiyaç varsa eklenir. Tanıtımlar, değişiklik günlükleri, arayüz açıklamaları ve destek açıklamaları paketin dilinde yazılır. Yönergeler (`SKILL.md` gövdesi ve `references/`) paketin dilinde ya da, çift modele dönük dosyalarını paylaşıyorsa, İngilizce ve iki pakette bayt düzeyinde aynı yazılır (SAP Fiori Design / SAP Fiori Tasarım böyledir; model yine kullanıcının dilinde yanıt verir ve tetikleyici metin `description` içinde kalır); LICENSE'ın özgün hukuki metni korunur.
 
 `SKILL.md` başındaki metadata, skill'i ve eşleştirilmiş sürümü tanımlar:
 

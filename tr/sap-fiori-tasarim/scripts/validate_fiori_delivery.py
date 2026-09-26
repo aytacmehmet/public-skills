@@ -21,6 +21,9 @@ OUTPUTS = {"png", "interactive", "code"}
 FRAMEWORKS = {"freestyle-sapui5-prototype", "freestyle-sapui5", "fiori-elements-odata-v2", "fiori-elements-odata-v4"}
 INTERACTIVE_XML_CONTROLS = {"Button", "CheckBox", "ComboBox", "DatePicker", "Dialog", "Input", "Link", "List", "MultiComboBox", "MultiInput", "SearchField", "Select", "Switch", "Table", "TextArea", "TreeTable"}
 VISIBLE_XML_ATTRIBUTES = {"description", "label", "noDataText", "placeholder", "text", "title", "tooltip"}
+CORE_REQUIRE = "{sap.ui.core}require"
+# Test code and local mock services are not the reviewed application source.
+REVIEW_EXCLUDED = {("webapp", "test"), ("webapp", "localService")}
 
 
 def configure_stdio() -> None:
@@ -165,7 +168,8 @@ def validate_against_schema(data: object, schema_path: Path, data_path: Path, re
     validate_schema_value(data, schema, "$", report, data_path)
 
 
-PLACEHOLDER = re.compile(r"^(?:Replace\b|replace-with|ReplaceWith|pending-|verify-|YYYY-MM-DD$)")
+# Template text is a fixed vocabulary: "Replace with …", replace-with-…, ReplaceWith…, pending-…, verify-… and a bare YYYY-MM-DD.
+PLACEHOLDER = re.compile(r"^(?:Replace with\b|replace-with|ReplaceWith|pending-|verify-|YYYY-MM-DD$)")
 REQUIRED_STATES = ("initial", "populated", "empty", "error", "no-auth")
 RECOMMENDED_STATES = ("loading", "no-results")
 PNG_NAME = r"^(?P<app>[a-z0-9]+(?:-[a-z0-9]+)*?)-(?P<state>{states})-(?P<breakpoint>S|M|L|XL)-(?P<theme>[a-z0-9_]+)-(?P<density>cozy|compact)\.png$"
@@ -257,7 +261,16 @@ def unique_sorted(values: Iterable[str]) -> list[str]:
     return sorted({value for value in values if value})
 
 
-def validate_launch_and_search(contract: dict, app_root: Path, report: Report) -> None:
+def declared_search(contract: dict, backend: dict | None) -> bool | None:
+    """Search support that the supplied $metadata declares for the main entity set; None when not recorded."""
+    metadata = backend.get("service", {}).get("metadata") if isinstance(backend, dict) and isinstance(backend.get("service"), dict) else None
+    entity_set = contract.get("dataContract", {}).get("mainService", {}).get("entitySet")
+    rows = metadata.get("entitySets") if isinstance(metadata, dict) and isinstance(metadata.get("entitySets"), list) else []
+    row = next((item for item in rows if isinstance(item, dict) and item.get("name") == entity_set), None)
+    return row.get("search") if row and isinstance(row.get("search"), bool) else None
+
+
+def validate_launch_and_search(contract: dict, app_root: Path, report: Report, backend: dict | None = None) -> None:
     target = contract.get("context", {}).get("targetSystem", {})
     manifest_path = app_root / "webapp" / "manifest.json"
     if target.get("launchContext") == "flp" and manifest_path.is_file():
@@ -273,10 +286,14 @@ def validate_launch_and_search(contract: dict, app_root: Path, report: Report) -
         if not intent or not matches:
             report.add("warning", "SEMANTIC_FLP_INBOUND", "launchContext is flp but the manifest has no inbound for context.targetSystem.launchIntent", manifest_path)
     capabilities = contract.get("dataContract", {}).get("serverCapabilities", {})
+    declared = declared_search(contract, backend)
+    if capabilities.get("search") is True and declared is False:
+        report.add("error", "SEMANTIC_SEARCH_CONFLICT", "dataContract.serverCapabilities.search is true but the supplied $metadata declares the main entity set not searchable", app_root)
     if capabilities.get("search") is not True:
+        hint = "; the supplied $metadata declares search support, record it after review" if declared is True else "; verify @Search.searchable or $metadata SearchRestrictions, or filter instead"
         for source in (app_root / "webapp").rglob("*"):
             if source.suffix.lower() in {".ts", ".js"} and not is_skipped(app_root, source) and "$search" in source.read_text(encoding="utf-8", errors="replace"):
-                report.add("warning", "SEMANTIC_SEARCH_UNVERIFIED", "The app sends $search but dataContract.serverCapabilities.search is not true; verify @Search.searchable or filter instead", source)
+                report.add("warning", "SEMANTIC_SEARCH_UNVERIFIED", "The app sends $search but dataContract.serverCapabilities.search is not true" + hint, source)
                 break
 
 
@@ -350,9 +367,19 @@ def validate_contract(path: Path, schema_path: Path, report: Report) -> dict | N
 
     states = data.get("states")
     ids = {item.get("id") for item in states if isinstance(item, dict)} if isinstance(states, list) else set()
+    excepted: set[str] = set()
+    exceptions = data.get("stateExceptions", [])
+    for row in exceptions if isinstance(exceptions, list) else []:
+        state = row.get("state") if isinstance(row, dict) else None
+        if state not in REQUIRED_STATES or not isinstance(row.get("reason"), str) or not row["reason"].strip():
+            report.add("error", "CONTRACT_STATE_EXCEPTION", "stateExceptions rows need a required state and a reason", path)
+            continue
+        if state in ids:
+            report.add("error", "CONTRACT_STATE_EXCEPTION_CONFLICT", f"{state} is both designed and declared not applicable", path)
+        excepted.add(state)
     for required in REQUIRED_STATES:
-        if required not in ids:
-            report.add("error", "CONTRACT_STATE", f"Required state is missing: {required}", path)
+        if required not in ids and required not in excepted:
+            report.add("error", "CONTRACT_STATE", f"Required state is missing: {required}; design it or list it in stateExceptions with a reason", path)
     breakpoints = objects["responsive"].get("breakpoints")
     names = {item.get("name") for item in breakpoints if isinstance(item, dict)} if isinstance(breakpoints, list) else set()
     for required in ("S", "M", "L", "XL"):
@@ -371,7 +398,7 @@ def validate_contract(path: Path, schema_path: Path, report: Report) -> dict | N
             continue
         for index, row in enumerate(rows, 1):
             if not isinstance(row, dict) or any(not row.get(field) for field in required_fields):
-                report.add("warning", f"CONTRACT_{key.upper()}", f"{key} row {index} is incomplete", path)
+                report.add("warning", f"CONTRACT_{key.upper()}_ROW", f"{key} row {index} is incomplete", path)
     validate_completeness(data, outputs if isinstance(outputs, list) else [], report, path)
     return data
 
@@ -482,7 +509,9 @@ def is_fiori_elements_manifest(sap_ui5: dict) -> bool:
     return "sap.fe.templates" in json.dumps(sap_ui5.get("routing", {}))
 
 
-def validate_manifest(path: Path, report: Report, contract: dict | None, production: bool) -> dict | None:
+def validate_manifest(path: Path, report: Report, contract: dict | None, production: bool, review: bool = False) -> dict | None:
+    # A new scaffold must meet the project conventions; an existing project under --review is told, not blocked.
+    convention = "warning" if review else "error"
     data = load_json(path, report, "MANIFEST_JSON")
     if not isinstance(data, dict):
         return None
@@ -491,16 +520,16 @@ def validate_manifest(path: Path, report: Report, contract: dict | None, product
         report.add("error", "MANIFEST_REQUIRED", "sap.app and sap.ui5 must be objects", path)
         return data
     if not isinstance(sap_app.get("i18n"), dict):
-        report.add("error", "MANIFEST_I18N", "sap.app/i18n must define supportedLocales and fallbackLocale", path)
+        report.add(convention, "MANIFEST_I18N", "sap.app/i18n must define supportedLocales and fallbackLocale", path)
     else:
         for key in ("supportedLocales", "fallbackLocale"):
             if not sap_app["i18n"].get(key):
-                report.add("error", "MANIFEST_I18N", f"sap.app/i18n/{key} is missing", path)
+                report.add(convention, "MANIFEST_I18N", f"sap.app/i18n/{key} is missing", path)
     dependencies = sap_ui5.get("dependencies")
     if not isinstance(dependencies, dict) or not dependencies.get("minUI5Version"):
         report.add("error", "MANIFEST_MIN_UI5", "sap.ui5/dependencies/minUI5Version is required", path)
     elif version_tuple(dependencies["minUI5Version"]) >= (1, 136) and version_tuple(data.get("_version")) < (2, 0):
-        report.add("error", "MANIFEST_V2", "New projects targeting UI5 >=1.136 must use Manifest V2", path)
+        report.add(convention, "MANIFEST_V2", "New projects targeting UI5 >=1.136 must use Manifest V2; an existing project may keep V1 and plan the migration", path)
     if isinstance(dependencies, dict) and not isinstance(dependencies.get("libs"), dict):
         report.add("error", "MANIFEST_LIBS", "sap.ui5/dependencies/libs must be an object", path)
     if isinstance(sap_ui5.get("resources"), dict) and sap_ui5["resources"].get("js"):
@@ -517,7 +546,7 @@ def validate_manifest(path: Path, report: Report, contract: dict | None, product
     if not isinstance(sap_ui5.get("models"), dict) or "i18n" not in sap_ui5["models"]:
         report.add("error", "MANIFEST_I18N_MODEL", "Named i18n model is required", path)
     if not isinstance(sap_ui5.get("contentDensities"), dict):
-        report.add("error", "MANIFEST_DENSITY", "contentDensities must be declared", path)
+        report.add(convention, "MANIFEST_DENSITY", "contentDensities must be declared", path)
 
     if isinstance(contract, dict):
         project, architecture = contract.get("project", {}), contract.get("architecture", {})
@@ -562,7 +591,10 @@ def validate_xml(path: Path, text: str, report: Report) -> None:
     except ET.ParseError as error:
         report.add("error", "XML_PARSE", f"Invalid XML: {error}", path, error.position[0])
         return
-    for element in root.iter():
+    def walk(element: ET.Element, aliases: frozenset[str]) -> None:
+        required = element.attrib.get(CORE_REQUIRE)
+        if required:
+            aliases = aliases | set(re.findall(r"([A-Za-z_$][\w$]*)\s*:", required))
         tag = local_name(element.tag)
         if tag in INTERACTIVE_XML_CONTROLS and not element.attrib.get("id"):
             report.add("warning", "XML_STABLE_ID", f"Interactive control has no stable ID: {tag}", path)
@@ -573,8 +605,14 @@ def validate_xml(path: Path, text: str, report: Report) -> None:
             literal = any(char.isalpha() for char in stripped) and not stripped.startswith(("{", "sap-icon://"))
             if name in VISIBLE_XML_ATTRIBUTES and literal:
                 report.add("warning", "XML_HARDCODED_TEXT", f"Visible text should use i18n: {tag}.{name}", path)
-            if name in {"press", "change", "search", "selectionChange"} and stripped and not stripped.startswith(".") and not stripped.startswith("{"):
+            # Controller-relative (.x), bindings, commands and core:require aliases are explicit handlers.
+            explicit = stripped.startswith((".", "{", "cmd:")) or stripped.split(".")[0] in aliases
+            if name in {"press", "change", "search", "selectionChange"} and stripped and not explicit:
                 report.add("error", "XML_HANDLER_SCOPE", f"Event handler must use explicit controller-relative syntax: {name}=.{stripped}", path)
+        for child in element:
+            walk(child, aliases)
+
+    walk(root, frozenset())
 
 
 PATTERNS = [
@@ -595,14 +633,21 @@ COLOR_PATTERNS = {
 }
 
 
+def blank_comments(text: str) -> str:
+    """Blank script comments but keep offsets, newlines and URL schemes such as https:// intact."""
+    text = re.sub(r"/\*.*?\*/", lambda match: re.sub(r"[^\n]", " ", match.group()), text, flags=re.S)
+    return re.sub(r"(^|[^:\\])(//[^\n]*)", lambda match: match.group(1) + " " * len(match.group(2)), text, flags=re.M)
+
+
 def validate_text(path: Path, text: str, report: Report, production: bool) -> None:
     if path.suffix.lower() in {".js", ".mjs", ".ts", ".html", ".css"}:
-        for severity, code, pattern, message in PATTERNS:
-            for match in pattern.finditer(text):
-                report.add(severity, code, message, path, line_number(text, match.start()))
+        code = blank_comments(text) if path.suffix.lower() in {".js", ".mjs", ".ts"} else text
+        for severity, finding, pattern, message in PATTERNS:
+            for match in pattern.finditer(code):
+                report.add(severity, finding, message, path, line_number(code, match.start()))
         color_pattern = COLOR_PATTERNS.get(path.suffix.lower(), COLOR_PATTERNS["code"])
-        for match in color_pattern.finditer(text):
-            report.add("warning", "HARDCODED_COLOR", "Prefer UI5 theme parameters over hard-coded colors.", path, line_number(text, match.end()))
+        for match in color_pattern.finditer(code):
+            report.add("warning", "HARDCODED_COLOR", "Prefer UI5 theme parameters over hard-coded colors.", path, line_number(code, match.end()))
     if path.suffix.lower() == ".html" and "sap-ui-core.js" in text:
         if not re.search(r"data-sap-ui-async\s*=\s*[\"']true[\"']", text, re.I):
             report.add("error", "BOOTSTRAP_ASYNC", "UI5 bootstrap must be async", path)
@@ -653,14 +698,16 @@ def validate_package(app_root: Path, report: Report, framework: str) -> None:
             report.add("error", "PROJECT_UNIT_TEST", "No executable unit *.spec.ts test was found", app_root / "tests")
 
 
-def validate_artifact(root: Path, report: Report, contract: dict | None, production: bool) -> None:
+def validate_artifact(root: Path, report: Report, contract: dict | None, production: bool, review: bool = False) -> None:
     manifests = [path for path in root.rglob("manifest.json") if path.is_file() and not is_skipped(root, path)]
     if not manifests:
         report.add("error", "PROJECT_MANIFEST", "No manifest.json was found", root)
     for manifest in manifests:
-        validate_manifest(manifest, report, contract, production)
+        validate_manifest(manifest, report, contract, production, review)
     for path in iter_project_files(root):
         if path.resolve() in report.checked_files:
+            continue
+        if review and path.relative_to(root).parts[:2] in REVIEW_EXCLUDED:
             continue
         report.mark(path)
         try:
@@ -697,6 +744,19 @@ def validate_png_artifacts(root: Path, report: Report, contract: dict | None = N
                 f"Capture names a state the contract does not design: {generic.group('state')}" if generic
                 else "Name captures <app>-<screen>-<state>-<S|M|L|XL>-<theme>-<cozy|compact>.png"
             ), path)
+    # The capture report binds each reviewed PNG to its hash; a later edit or swap is visible.
+    report_path = visuals / "capture-report.json"
+    if not report_path.is_file():
+        report.add("warning", "PNG_REPORT_MISSING", "Record the reviewed captures with record_captures.py", visuals)
+        return
+    recorded = load_json(report_path, report, "PNG_REPORT_JSON")
+    rows = recorded.get("files") if isinstance(recorded, dict) and isinstance(recorded.get("files"), list) else []
+    hashes = {row.get("file"): row.get("sha256") for row in rows if isinstance(row, dict)}
+    for path in png_files:
+        if hashes.get(path.name) != hashlib.sha256(path.read_bytes()).hexdigest():
+            report.add("error", "PNG_DIGEST", "Capture is unrecorded or changed since it was recorded", path)
+    for name in sorted(set(hashes) - {path.name for path in png_files}):
+        report.add("error", "PNG_DIGEST", f"Recorded capture is missing: {name}", report_path)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -704,7 +764,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("root", type=Path, help="Delivery root")
     parser.add_argument("--contract", type=Path, help="Path to design-contract.json")
     parser.add_argument("--allow-warnings", action="store_true", help="Development-only escape hatch; errors still fail")
-    parser.add_argument("--review", action="store_true", help="Review an existing UI5 project that has no design contract; only errors fail")
+    parser.add_argument("--review", action="store_true", help="Review an existing UI5 project; contract, package and PNG checks are skipped, project conventions are warnings, only errors fail")
     parser.add_argument("--json", action="store_true", help="Print JSON report")
     return parser
 
@@ -721,11 +781,10 @@ def main() -> int:
     schema_path = root / "design-contract.schema.json"
     contract = validate_contract(contract_path, schema_path, report) if contract_path.is_file() and not args.review else None
     if args.review:
-        validate_artifact(root, report, None, production=True)
+        validate_artifact(root, report, None, production=True, review=True)
     elif contract is None and not contract_path.is_file():
         report.add("error", "CONTRACT_MISSING", f"Design contract not found: {contract_path}")
-    if isinstance(contract, dict):
-        validate_backend_evidence(root, contract, report)
+    backend = validate_backend_evidence(root, contract, report) if isinstance(contract, dict) else None
 
     outputs = contract.get("project", {}).get("outputs", []) if isinstance(contract, dict) else []
     if "png" in outputs:
@@ -744,7 +803,7 @@ def main() -> int:
             framework = contract.get("architecture", {}).get("framework", "") if isinstance(contract, dict) else ""
             validate_package(app_root, report, framework)
             validate_contract_against_tree(contract, app_root, report, metadata_driven=str(framework).startswith("fiori-elements-"))
-            validate_launch_and_search(contract, app_root, report)
+            validate_launch_and_search(contract, app_root, report, backend)
         else:
             report.add("error", "APP_MISSING", "Contract requests code output but app/ is missing", app_root)
     if not outputs and not args.review:

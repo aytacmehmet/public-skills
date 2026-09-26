@@ -35,8 +35,16 @@ class FioriPair(unittest.TestCase):
         for shared in ('scripts', 'assets', 'tests'):
             self.assertEqual(payload(EN / shared), payload(TR / shared), shared)
 
-    def test_localized_packages_carry_the_same_references(self):
-        self.assertEqual(set(payload(EN / 'references')), set(payload(TR / 'references')))
+    def test_localized_packages_share_identical_model_facing_files(self):
+        # SKILL.md body and references are English and read by the model; only the SKILL.md front matter is localized.
+        self.assertEqual(payload(EN / 'references'), payload(TR / 'references'))
+        bodies = []
+        for package in (EN, TR):
+            text = (package / 'SKILL.md').read_text(encoding='utf-8')
+            front, body = re.match(r'^---\n(.*?)\n---\n(.*)$', text, re.S).groups()
+            self.assertIn(f"name: {package.name}", front)
+            bodies.append(body)
+        self.assertEqual(bodies[0], bodies[1])
 
     def test_instructions_use_the_same_sections_in_workflow_order(self):
         for package in (EN, TR):
@@ -61,10 +69,13 @@ class FioriPair(unittest.TestCase):
 
     def test_every_validator_finding_a_designer_must_act_on_is_documented(self):
         source = (EN / 'scripts/validate_fiori_delivery.py').read_text(encoding='utf-8')
-        codes = set(re.findall(r'"((?:CONTRACT|SEMANTIC)_[A-Z0-9_]+|PNG_NAME)"', source))
-        explained = {'CONTRACT_PLACEHOLDER', 'CONTRACT_STATE_RECOMMENDED', 'SEMANTIC_STATES', 'SEMANTIC_I18N_KEY', 'SEMANTIC_ACTION_ID',
-                     'CONTRACT_A11Y_EVIDENCE', 'CONTRACT_DATA_BUDGET', 'CONTRACT_COMMANDS', 'CONTRACT_RELEASED_UNVERIFIED',
-                     'SEMANTIC_FLP_INBOUND', 'SEMANTIC_SEARCH_UNVERIFIED', 'PNG_NAME'}
+        codes = set(re.findall(r'"((?:CONTRACT|SEMANTIC)_[A-Z0-9_]+|PNG_[A-Z_]+)"', source))
+        codes |= {f'CONTRACT_{key.upper()}_ROW' for key in ('traceability', 'sources')}  # built with an f-string in the script
+        explained = {'CONTRACT_PLACEHOLDER', 'CONTRACT_STATE', 'CONTRACT_STATE_RECOMMENDED', 'SEMANTIC_STATES', 'SEMANTIC_I18N_KEY',
+                     'SEMANTIC_ACTION_ID', 'CONTRACT_A11Y_EVIDENCE', 'CONTRACT_DATA_BUDGET', 'CONTRACT_COMMANDS', 'CONTRACT_TARGET_UNKNOWN',
+                     'CONTRACT_TRACEABILITY_ROW', 'CONTRACT_SOURCES_ROW', 'CONTRACT_RELEASED_UNVERIFIED', 'SEMANTIC_MIN_UI5',
+                     'SEMANTIC_UI5_VERSION', 'SEMANTIC_FLP_INBOUND', 'SEMANTIC_SEARCH_UNVERIFIED', 'PNG_NAME',
+                     'CONTRACT_STATE_EXCEPTION', 'CONTRACT_STATE_EXCEPTION_CONFLICT', 'SEMANTIC_SEARCH_CONFLICT', 'PNG_REPORT_MISSING', 'PNG_DIGEST'}
         self.assertTrue(explained <= codes, explained - codes)
         for package in (EN, TR):
             guide = (package / 'references/delivery-and-quality.md').read_text(encoding='utf-8')
