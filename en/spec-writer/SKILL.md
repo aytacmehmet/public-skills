@@ -2,7 +2,7 @@
 name: spec-writer
 description: "Spec Writer (Belirtim Yazmanı): turns an SAP Cloud ERP development whose decisions are already made into an FS-TS (functional + technical specification). Always produces a validated JSON content file first, then asks which output to render (Word, Excel, Markdown or Obsidian vault). Use whenever the user asks to write, fill, complete, update or render an FS-TS, belirtim, functional or technical spec, or RICEF spec - for example 'FS-TS yaz', 'belirtim hazırla', 'spec dokümanı oluştur', 'bu JSON'u Word'e dök' - even if they do not name this skill. Documentation only: do NOT use it to design the process or solution, choose technology, estimate effort, or write code."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   language: "en"
   family: "fs-ts-spec-writing"
   counterpart: "tr/belirtim-yazmani"

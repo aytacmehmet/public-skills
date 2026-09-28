@@ -1,6 +1,6 @@
 # Arşivlenmiş sürümler
 
-Önceki herkese açık sürümler burada saklanır. İlk yayında bu klasörde yalnız bu açıklama bulunur. Güncel sürüm [üstteki skill klasöründe](../README.md) bulunur.
+Önceki herkese açık sürümler burada saklanır. Güncel sürüm [üstteki skill klasöründe](../README.md) bulunur.
 
 Yeni yayın hazırlanırken önceki commit'li sürüm bu klasörde `vMAJOR.MINOR.PATCH.zip` adıyla saklanır. Her ZIP'in kökünde önceki paketin tüm dosyaları ve dosya bazında SHA-256 değerlerini içeren `ARCHIVE-MANIFEST.json` bulunur. `archived/` klasörünün kendisi kopyalanmaz; böylece arşivler önceki arşivleri içermez.
 

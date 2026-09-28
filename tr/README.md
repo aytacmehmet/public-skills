@@ -13,4 +13,4 @@ Her skill klasöründe en güncel yönerge, tanıtım, arayüz bilgileri, gerekt
 
 Dil klasörünün tamamı yerine istediğiniz skill'in kendi klasörünü kurun. Kurulum adımları skill tanıtımında bulunur. Eski sürüm ZIP'leri inceleme ve geri dönüş hazırlığı içindir; aktif skill değildir.
 
-Türkçe ve İngilizce karşılıklar aynı sürümü ve davranışı paylaşır; adlar, açıklamalar ve belgeler ilgili dilde yazılır. Yönergeler de yerelleştirilir; yalnız modele dönük dosyalarını İngilizce paylaşan çiftlerde (SAP Fiori Design / SAP Fiori Tasarım) ortaktır ve bu çiftler de kullanıcının dilinde yanıt verir. Skill eklemeden veya güncelleme yayımlamadan önce [katkı ve sürüm yönetimini](CONTRIBUTING.md) okuyun.
+Türkçe ve İngilizce karşılıklar aynı sürümü ve davranışı paylaşır; adlar, açıklamalar ve belgeler ilgili dilde yazılır. Yönergeler çoğunlukla yerelleştirilir; SAP Fiori Tasarım ve Belirtim Yazmanı çiftlerinde modele dönük metin iki pakette İngilizcedir. Bu çiftler de kullanıcının dilinde yanıt verir. Skill eklemeden veya güncelleme yayımlamadan önce [katkı ve sürüm yönetimini](CONTRIBUTING.md) okuyun.

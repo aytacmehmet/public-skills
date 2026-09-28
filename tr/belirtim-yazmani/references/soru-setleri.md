@@ -1,87 +1,87 @@
-# Soru setleri (tek tur, en çok 10 soru)
+# Question sets (one round, at most 10 questions)
 
-Amaç, danışmanın yazmayı unuttuğu olguları ve **verilmiş** kararları almaktır. Bu dosya bir kontrol listesidir, senaryo değildir: girdide yanıtı olanı at, yakın soruları birleştir, bu geliştirmenin açıkça gerektirdiği soruyu (örneğin "riskli tedarikçi hangi ölçütle, hangi alandan belirleniyor?") kendin ekle. Seçenek sunma, öneri yapma: "X mi Y mi olsun?" yerine "X kararlaştırıldı mı, nedir?" diye sor. Soruları bölüm ağırlığına göre sırala (3.5, 3.4, 6.1, 2.2, 3.3, 2.1, 2.5, 5.1 önce). Yanıt gelmeyen her soru bir işaret ve 7.3'te bir OPEN satırı olur.
+The goal is to obtain the facts the consultant forgot to write and the decisions that are **already made**. This file is a checklist, not a script: drop what the inputs already answer, merge close questions, and add the question this development obviously needs (for example "by which criterion and from which field is a risky supplier identified?"). Offer no options and no recommendations: instead of "should it be X or Y?" ask "has X been decided, and what is it?". Order the questions by section weight (3.5, 3.4, 6.1, 2.2, 3.3, 2.1, 2.5, 5.1 first). Every unanswered question becomes a marker and an OPEN row in 7.3. Ask in the user's language.
 
-## Her türde
+## Every type
 
-| Soru | Beslediği bölüm |
+| Question | Feeds section |
 |---|---|
-| Bugün bu iş hangi uygulamada, kim tarafından, hangi adımlarla yapılıyor; sorun tam olarak hangi adımda? | 2.1 |
-| Sorunun ölçülebilir etkisi ve hacmi nedir (adet/gün, süre, hata sayısı)? Gerçek bir örnek belge numarası ve tarihi var mı? | 2.1 |
-| Genişletme yaklaşımı, kullanılacak SAP teknolojisi ve hedef clean core seviyesi kararlaştırıldı mı; karar nedir? | 1.1, 2.2 |
-| Kapsam sınırı nedir: hangi şirket kodları, belge türleri, kanallar içeride; bilerek dışarıda bırakılan ne? | 2.5 |
-| Hangi dış ekip ya da sisteme bağımlılık var; doğru kabul edilen varsayımlar kim tarafından, ne zaman doğrulandı? | 2.5 |
-| Bir adım başarısız olursa sistem ne yapacak, kullanıcı ne görecek, kim müdahale edecek? | 3.5, 5.1 |
-| Uygulamayı kim kullanacak; hangi organizasyon düzeyinde (şirket kodu, satınalma org. vb.) yetki kısıtı isteniyor? | 5.2, 5.3 |
-| Test için kullanılabilecek gerçek veri nedir (belge no, ana veri, şirket kodu)? | 6.1 |
-| Canlıya geçiş tarihi, taşıma sorumlusu ve her sistemde elle yapılacak adımlar belli mi? | 7.2 |
-| Üretimde sorun çıktığında neye bakılacak: hangi olaylar, nereye, ne kadar süreyle loglanacak? | 7.1 |
-| Açık kalan konuların sahibi ve hedef tarihi kim, ne zaman? | 7.3 |
-| Doğrulanmış SAP nesne listesi (CDS view, API, BAdI, App ID) ve projenin adlandırma standardı var mı? | 4.1 |
+| In which application, by whom and through which steps is this work done today; at exactly which step is the problem? | 2.1 |
+| What is the measurable effect and the volume of the problem (items/day, duration, error count)? Is there a real example document number and date? | 2.1 |
+| Have the extension approach, the SAP technology to use and the target clean core level been decided; what is the decision? | 1.1, 2.2 |
+| What is the scope boundary: which company codes, document types, channels are in; what is deliberately left out? | 2.5 |
+| Which external team or system do we depend on; who verified the assumptions taken as true, and when? | 2.5 |
+| If a step fails, what does the system do, what does the user see, who intervenes? | 3.5, 5.1 |
+| Who will use the application; at which organizational level (company code, purchasing org, …) is an authorization restriction wanted? | 5.2, 5.3 |
+| What real data can be used for testing (document number, master data, company code)? | 6.1 |
+| Are the go-live date, the transport owner and the manual steps in each system known? | 7.2 |
+| When something goes wrong in production, what is looked at: which events, logged where, for how long? | 7.1 |
+| Who owns the remaining open topics and by when? | 7.3 |
+| Is there a verified list of SAP objects (CDS view, API, BAdI, App ID) and a project naming standard? | 4.1 |
 
 ## R · Rapor
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Seçim alanları hangileri; hangileri zorunlu, varsayılanları ve değer yardımları ne? | 3.2 |
-| Çıktı kolonları, sıralama, toplam/ara toplam ve navigasyon hedefleri ne? | 3.6 |
-| Veri hacmi ve kabul edilebilir yanıt süresi ne? | 3.11 |
-| Çıktı tipi ve dışa aktarma ihtiyacı kararlaştırıldı mı? | 3.6 |
+| Which are the selection fields; which are mandatory, what are their defaults and value helps? | 3.2 |
+| What are the output columns, sorting, totals/subtotals and navigation targets? | 3.6 |
+| What are the data volume and the acceptable response time? | 3.11 |
+| Have the output type and the export need been decided? | 3.6 |
 
 ## I · Arayüz / API
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Yön, protokol, format ve kimlik doğrulama yöntemi karşı tarafla kararlaştırıldı mı; uç nokta ne? | 3.4, 3.10 |
-| Tetikleyici ne (olay, job, kullanıcı) ve sıklığı ne; hacim ve en büyük mesaj boyu ne? | 3.4 |
-| Alan eşlemesinin kaynağı var mı (karşı sistemin şeması, örnek mesaj)? | 3.4 |
-| Aynı mesaj iki kez giderse ya da gelirse ne olacak; tekilleştirme anahtarı kararlaştırıldı mı? | 3.9 |
-| Karşı sistem yanıt vermezse: zaman aşımı, tekrar sayısı ve aralığı, vazgeçme noktası kararlaştırıldı mı? | 3.9 |
-| Karşı sistemin hata kodları ve her biri için beklenen davranış ne; SLA ne? | 3.10 |
-| Hatalı mesajları kim, hangi uygulamadan izleyecek ve yeniden işleyecek? | 3.9, 7.1 |
+| Have direction, protocol, format and authentication method been agreed with the counterpart; what is the endpoint? | 3.4, 3.10 |
+| What is the trigger (event, job, user) and its frequency; what are the volume and the largest message size? | 3.4 |
+| Is there a source for the field mapping (counterpart schema, sample message)? | 3.4 |
+| What happens if the same message is sent or received twice; has the deduplication key been decided? | 3.9 |
+| If the counterpart does not answer: have timeout, retry count and interval, and the give-up point been decided? | 3.9 |
+| What are the counterpart's error codes and the expected behaviour for each; what is the SLA? | 3.10 |
+| Who monitors and reprocesses failed messages, from which application? | 3.9, 7.1 |
 
 ## C · Dönüşüm
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Kaynak sistem, dosya biçimi, kayıt sayısı ve yükleme penceresi ne? | 3.4, 3.11 |
-| Dönüşüm ve temizleme kuralları kimden onaylı; eşleme tablosu var mı? | 3.4 |
-| Hatalı kayıt ne olacak: atlanır mı, yük durur mu; hata raporu kime gider? | 5.1 |
-| Yükleme yeniden çalıştırılırsa çift kayıt nasıl önlenecek? | 3.9 |
-| Yükleme sonrası mutabakat nasıl yapılacak (adet, tutar kontrolü)? | 6.1 |
+| What are the source system, file format, record count and load window? | 3.4, 3.11 |
+| Who approved the transformation and cleansing rules; is there a mapping table? | 3.4 |
+| What happens to a faulty record: skipped, or does the load stop; who receives the error report? | 5.1 |
+| If the load is rerun, how are duplicate records prevented? | 3.9 |
+| How is the reconciliation done after the load (count, amount check)? | 6.1 |
 
 ## E · Genişletme
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Hangi genişletme noktası kullanılacak; released olduğu doğrulandı mı? | 4.3 |
-| Mantık hangi anda, hangi belge türü ve koşullarda çalışacak; hangi durumda standart davranış korunacak? | 3.5 |
-| Standart alanları mı değiştirecek, özel alan mı dolduracak; özel alanlar tanımlı mı? | 4.2, 4.3 |
-| Kaydetme süresine etkisi için bir sınır var mı? | 3.5 (profil `tam` ise 3.11) |
+| Which extension point will be used; has it been verified as released? | 4.3 |
+| At which moment, for which document types and conditions does the logic run; in which cases is standard behaviour kept? | 3.5 |
+| Does it change standard fields or fill custom fields; are the custom fields defined? | 4.2, 4.3 |
+| Is there a limit on the impact on save time? | 3.5 (3.11 when the profile is `tam`) |
 
 ## F · Form
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Form teknolojisi, çıktı kanalları (yazdırma, e-posta) ve diller kararlaştırıldı mı? | 4.4 |
-| Hangi koşulda basılacak; çıktı belirleme kuralı ne? | 4.4 |
-| Onaylı bir örnek çıktı ya da alan listesi var mı; logo, imza, yasal metin gereksinimi ne? | 4.4 |
+| Have the form technology, output channels (print, e-mail) and languages been decided? | 4.4 |
+| Under which condition is it printed; what is the output determination rule? | 4.4 |
+| Is there an approved sample output or field list; what are the logo, signature and legal text requirements? | 4.4 |
 
 ## W · İş akışı
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Adımlar ve her adımda onaycı nasıl belirleniyor (rol, tutar eşiği, organizasyon)? | 2.3, 3.5 |
-| Ret, geri gönderme, vekâlet ve süre aşımı durumlarında ne olacak? | 2.3, 3.8 |
-| Onay sırasında hangi alanlar değişebilir; değişiklik akışı yeniden başlatır mı? | 3.5 |
-| Kime, ne zaman, hangi bildirim gidecek? | 5.1, 7.1 |
+| What are the steps and how is the approver determined at each step (role, amount threshold, organization)? | 2.3, 3.5 |
+| What happens on rejection, send-back, delegation and timeout? | 2.3, 3.8 |
+| Which fields may change during approval; does a change restart the flow? | 3.5 |
+| Who receives which notification, and when? | 5.1, 7.1 |
 
 ## U · Fiori / UI5 uygulaması
 
-| Soru | Bölüm |
+| Question | Section |
 |---|---|
-| Floorplan ve UI yaklaşımı (Fiori elements, freestyle) kararlaştırıldı mı; OData versiyonu ve draft kullanımı ne? | 1.2, 3.3 |
-| Ekranlar, filtreler, kolonlar ve alanlar hangileri; hangileri düzenlenebilir, zorunlu, koşullu görünür? | 3.3, 3.7 |
-| Aksiyonlar hangileri; hangi durumda etkin, yetkisi olmayan kullanıcı ne görecek? | 3.3, 5.3 |
-| Kaydın durumları ve izinli geçişleri ne? | 3.8 |
-| Launchpad yerleşimi, cihazlar ve diller ne? | 3.3 |
+| Have the floorplan and the UI approach (Fiori elements, freestyle) been decided; what are the OData version and the use of draft? | 1.2, 3.3 |
+| Which screens, filters, columns and fields; which are editable, mandatory, conditionally visible? | 3.3, 3.7 |
+| Which actions; when are they enabled, what does a user without authorization see? | 3.3, 5.3 |
+| What are the record's states and allowed transitions? | 3.8 |
+| What are the launchpad placement, devices and languages? | 3.3 |

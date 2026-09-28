@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 — 2026-09-28
+
+- Model-facing text is English in both language packages: the `SKILL.md` body of `tr/belirtim-yazmani` is now the same English instruction set as `en/spec-writer` (only name, description triggers and the default user language differ); the guidance prose in `assets/tanim.json` (purpose, rule, hints, good practice, rule titles, readiness categories, profiles), the generated references, `soru-setleri.md` and `sap-sozluk.md`, and the messages, help texts and comments of `bv.py`, `derle.py` and `oz_test.py` are English.
+- The document content model stays Turkish by design: section titles, field labels, column names, option values, markers (`KARAR BEKLİYOR`, `BİLGİ BEKLİYOR`, `[DOĞRULANACAK]`), EARS patterns, good/bad example cells and the rendered documents are unchanged. The validation appendix inside a rendered document now carries English validator messages.
+- Behavior unchanged; self-test 14/14 in both packages. Archived 1.0.0.
+
 ## 1.0.0 — 2026-09-20
 
 - First public release. For an SAP Cloud ERP development whose decisions are made, it first produces a validated JSON content file and then renders the requested output: Word, Excel, a single Markdown file, or an Obsidian vault.

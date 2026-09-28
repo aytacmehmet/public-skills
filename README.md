@@ -37,7 +37,7 @@ en/
     scripts/
     assets/
     references/
-    archived/          ← first public release: guide only
+    archived/          ← previous releases as versioned ZIPs
 tr/
   README.md
   CONTRIBUTING.md
@@ -61,11 +61,11 @@ tr/
     tests/
     archived/          ← ilk herkese açık yayın: yalnız rehber
   belirtim-yazmani/
-    SKILL.md           ← Türkçe yönergeler; Türkçe FS-TS içerik modeli
+    SKILL.md           ← İngilizce yönergeler; Türkçe FS-TS içerik modeli
     scripts/
     assets/
     references/
-    archived/          ← ilk herkese açık yayın: yalnız rehber
+    archived/          ← önceki sürümlerin sürümlü ZIP'leri
 ```
 
 The latest release always lives directly in its skill folder. Older releases are stored inside that skill's `archived/` folder. Shared repository checks live in `.github/`.

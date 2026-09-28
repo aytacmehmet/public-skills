@@ -6,7 +6,7 @@ Writes the FS-TS (functional + technical specification) for an SAP Cloud ERP dev
 
 ## Languages and installation
 
-The instructions and this introduction are in English. The [Turkish counterpart](../../tr/belirtim-yazmani/README.md) offers the same behavior with Turkish instructions. Scripts, the definition file, examples and references are byte-identical in both packages. The content model of the generated document (section titles, column names, markers, script commands and messages) is intentionally Turkish; SAP terms stay in English. Use this package when you want English instructions for a Turkish FS-TS.
+The instructions (`SKILL.md`), references, script messages and this introduction are in English. The [Turkish counterpart](../../tr/belirtim-yazmani/README.md) carries the same English instructions and a Turkish introduction; the skill talks to the user in the user's language. Scripts, the definition file, examples and references are byte-identical in both packages. The content model of the generated document (section titles, column names, option values, markers, script command names) is intentionally Turkish; SAP terms stay in English.
 
 If Skill Installer is available:
 

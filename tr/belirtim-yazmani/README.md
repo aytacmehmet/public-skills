@@ -6,7 +6,7 @@ Kararları verilmiş bir SAP Cloud ERP geliştirmesinin FS-TS'sini (fonksiyonel 
 
 ## Diller ve kurulum
 
-Bu paketin yönergesi ve tanıtımı Türkçedir. [İngilizce karşılığı](../../en/spec-writer/README.md) aynı davranışı İngilizce yönergeyle sunar. Betikler, tanım dosyası, örnekler ve başvuru dosyaları iki pakette bayt düzeyinde aynıdır. Üretilen belgenin içerik modeli (bölüm başlıkları, sütun adları, işaretler, betik komutları ve mesajları) bilinçli olarak Türkçedir; SAP terimleri İngilizce kalır.
+Bu tanıtım Türkçedir; yönerge (`SKILL.md`), başvuru dosyaları ve betik mesajları modele dönük olduğu için İngilizcedir ve [İngilizce paketle](../../en/spec-writer/README.md) aynıdır. Skill sizinle sizin dilinizde konuşur; Türkçe isteklerde sorular, rapor ve FS-TS içeriği Türkçedir. Betikler, tanım dosyası, örnekler ve başvuru dosyaları iki pakette bayt düzeyinde aynıdır. Üretilen belgenin içerik modeli (bölüm başlıkları, sütun adları, seçenek değerleri, işaretler, betik komut adları) bilinçli olarak Türkçedir; SAP terimleri İngilizce kalır. Dökülen belgenin sonundaki denetim eki İngilizce denetim mesajları taşır.
 
 Skill Installer kullanılabiliyorsa:
 

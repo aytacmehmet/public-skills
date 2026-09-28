@@ -1,5 +1,11 @@
 # Değişiklik geçmişi
 
+## 1.1.0 — 2026-09-28
+
+- Modele dönük metin iki dil paketinde de İngilizce: `tr/belirtim-yazmani` paketinin `SKILL.md` gövdesi artık `en/spec-writer` ile aynı İngilizce yönerge kümesi (yalnız ad, açıklamadaki tetikleyiciler ve varsayılan kullanıcı dili farklı); `assets/tanim.json` içindeki rehber düzyazısı (amaç, kural, ipucu, iyi pratik, kural başlıkları, hazırlık kategorileri, profiller), üretilen referanslar, `soru-setleri.md` ve `sap-sozluk.md`, `bv.py`, `derle.py` ve `oz_test.py` mesaj, yardım ve yorumları İngilizce.
+- Belge içerik modeli bilinçli olarak Türkçe kalır: bölüm başlıkları, alan etiketleri, sütun adları, seçenek değerleri, işaretler (`KARAR BEKLİYOR`, `BİLGİ BEKLİYOR`, `[DOĞRULANACAK]`), EARS kalıpları, iyi/kötü örnek hücreleri ve dökülen belgeler değişmedi. Dökülen belgenin denetim ekinde artık İngilizce denetim mesajları bulunur.
+- Davranış değişmedi; öz test iki pakette 14/14. 1.0.0 arşivlendi.
+
 ## 1.0.0 — 2026-09-20
 
 - İlk herkese açık yayın. Kararları verilmiş bir SAP Cloud ERP geliştirmesi için önce denetlenmiş JSON içerik dosyası üretir, sonra istenen çıktıya döker: Word, Excel, tek Markdown dosyası ya da Obsidian vault.

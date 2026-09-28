@@ -1,6 +1,6 @@
 # Archived releases
 
-Previous public releases are stored here. For a first release, this folder contains only this guide. The current release lives in the [parent skill folder](../README.md).
+Previous public releases are stored here. The current release lives in the [parent skill folder](../README.md).
 
 When preparing an update, save the preceding committed version here as `vMAJOR.MINOR.PATCH.zip`. Each ZIP contains the complete previous package at its root and an `ARCHIVE-MANIFEST.json` file with per-file SHA-256 hashes. Snapshots exclude the `archived/` folder itself, so archives never contain earlier archives.
 

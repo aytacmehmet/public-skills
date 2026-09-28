@@ -1,79 +1,79 @@
-# Mekanik denetim ve gösterge
+# Mechanical validation and indicator
 
-Üretilmiş dosyadır (kaynak: assets/tanim.json). Kod çalıştırılabiliyorsa `scripts/bv.py denetle` yetkilidir; çalıştırılamıyorsa aşağıdaki liste elle uygulanır.
+Generated file (source: assets/tanim.json). When code can run, `scripts/bv.py denetle` is authoritative; otherwise the list below is applied by hand.
 
-## Puanlama motorunun kuralları (mekanik karşılıkları)
+## Scoring engine rules (mechanical counterparts)
 
-| Kural | Ne ister | Ağırlık | Şiddet | Bölüm |
+| Rule | Requires | Weight | Severity | Section |
 |---|---|---|---|---|
-| GEN_001 | Şablon placeholder metni kalmamalı | 3 | warning | tümü |
-| GEN_002 | Bölüm yeterince doldurulmuş olmalı | 3 | warning | tümü |
-| SCOPE_000 | En az bir kapsam boyutu belirtilmeli | 3 | warning | 2.5 |
-| SCOPE_001 | Kapsam sınırı çizilmiş olmalı | 4 | warning | 2.5 |
-| SCOPE_002 | Üç boyutun tamamı belirtilmiş | 2 | info | 2.5 |
-| ERR_001 | Mesajın türü anlaşılmalı | 4 | warning | 5.1 |
-| ERR_002 | Birden fazla hata durumu ele alınmalı | 3 | warning | 5.1 |
-| ERR_003 | Mesaj listesi tablo halinde olmalı | 2 | info | 5.1, 5.4 |
-| ALGO_001 | Algoritma somut SAP nesnesi içermeli | 8 | error | 3.5 |
-| ALGO_002 | İşlem mantığı adımlara ayrılmalı | 4 | warning | 3.5 |
-| ALGO_003 | Yuvarlak ifade barındırmamalı | 3 | warning | 3.5 |
-| MAP_001 | Alan eşleşmesi somut olmalı | 6 | warning | 3.4 |
-| TEST_001 | Test verisi somut olmalı | 4 | warning | 6.1 |
-| TEST_002 | Hata / negatif senaryo bulunmalı | 3 | warning | 6.1 |
-| PROC_001 | Hedef süreç yuvarlak ifadeye kaçmamalı | 3 | warning | 2.2 |
-| PROC_002 | Mevcut süreç somut sorun tanımlamalı | 3 | warning | 2.1 |
-| AUTH_001 | Yetki kontrolü somut olmalı | 3 | warning | 5.2, 5.3 |
-| OBJ_001 | Nesne adları verilmeli | 2 | info | 4.1 |
-| SAP_001 | Kullanılan nesneler katalogda tanımlı olmalı | 4 | warning | 4.1 |
-| SAP_002 | Katalogdaki nesneler dokümanda kullanılmalı | 2 | info | 4.1 |
-| SAP_003 | Nesne adları SAP tipine çözülebilmeli | 3 | warning | 4.1, 4.2, 4.3 |
-| SAP_004 | Adlandırma ve uzunluk kurallarına uyulmalı | 2 | warning | 4.1, 4.2, 4.3 |
-| OPEN_001 | Açık noktalar netleştirilmeli | 2 | info | 7.3 |
+| GEN_001 | No template placeholder text left | 3 | warning | all |
+| GEN_002 | Section sufficiently filled | 3 | warning | all |
+| SCOPE_000 | At least one scope dimension stated | 3 | warning | 2.5 |
+| SCOPE_001 | Scope boundary drawn | 4 | warning | 2.5 |
+| SCOPE_002 | All three scope dimensions stated | 2 | info | 2.5 |
+| ERR_001 | Message type is clear | 4 | warning | 5.1 |
+| ERR_002 | More than one error situation handled | 3 | warning | 5.1 |
+| ERR_003 | Message list is a table | 2 | info | 5.1, 5.4 |
+| ALGO_001 | Algorithm names concrete SAP objects | 8 | error | 3.5 |
+| ALGO_002 | Processing logic split into steps | 4 | warning | 3.5 |
+| ALGO_003 | No vague phrases | 3 | warning | 3.5 |
+| MAP_001 | Field mapping is concrete | 6 | warning | 3.4 |
+| TEST_001 | Test data is concrete | 4 | warning | 6.1 |
+| TEST_002 | Error / negative scenario present | 3 | warning | 6.1 |
+| PROC_001 | Target process free of vague phrases | 3 | warning | 2.2 |
+| PROC_002 | Current process states a concrete problem | 3 | warning | 2.1 |
+| AUTH_001 | Authorization check is concrete | 3 | warning | 5.2, 5.3 |
+| OBJ_001 | Object names given | 2 | info | 4.1 |
+| SAP_001 | Used objects are defined in the catalog | 4 | warning | 4.1 |
+| SAP_002 | Catalog objects are used in the document | 2 | info | 4.1 |
+| SAP_003 | Object names resolve to an SAP type | 3 | warning | 4.1, 4.2, 4.3 |
+| SAP_004 | Naming and length rules followed | 2 | warning | 4.1, 4.2, 4.3 |
+| OPEN_001 | Open points clarified | 2 | info | 7.3 |
 
-Eski motor kuralları (ayrıca raporlanır, göstergeye girmez): META_001 Geliştirme türü seçilmiş olmalı (1.1) · META_002 Fiori için OData versiyonu (1.2) · FILL_001 Bölüm minimum doluluk (Tümü) · FILL_002 Zorunlu bölüm boş bırakılmış (Tümü) · COND_001 Fiori için 3.3 (3.3) · COND_002 API/Arayüz için 3.4 (3.4) · COND_003 Rapor için 3.2 (3.2) · COND_004 Rapor için ALV çıktı (3.6) · COND_005 Form için 4.4 (4.4) · CONT_001 Algoritma en az 3 madde (3.5) · CONT_002 En az 2 test senaryosu (6.1) · CONT_003 Açık noktalar netleştirilmeli (7.3) · CONT_004 Kapsam dışı belirtilmeli (2.5) · QUAL_001 Algoritma somut SAP nesnesi (3.5) · QUAL_002 Veri haritalama tablosu (3.4) · QUAL_003 As-Is/To-Be yuvarlak ifade (2.1, 2.2) · QUAL_004 Test somut veri (6.1) · QUAL_005 En az bir hata/edge case (6.1) · QUAL_006 Hata mesaj tipi (E/W/I) (5.1) · QUAL_007 Bağımlılık/Varsayım/Kapsam Dışı üçü de (2.5).
+Legacy engine rules (reported separately, not part of the indicator): META_001 Development type selected (1.1) · META_002 OData version for Fiori (1.2) · FILL_001 Section minimum fill (Tümü) · FILL_002 Mandatory section left empty (Tümü) · COND_001 3.3 for Fiori (3.3) · COND_002 3.4 for API/interface (3.4) · COND_003 3.2 for report (3.2) · COND_004 ALV output for report (3.6) · COND_005 4.4 for form (4.4) · CONT_001 Algorithm has at least 3 items (3.5) · CONT_002 At least 2 test scenarios (6.1) · CONT_003 Open points clarified (7.3) · CONT_004 Out of scope stated (2.5) · QUAL_001 Algorithm names concrete SAP object (3.5) · QUAL_002 Data mapping table (3.4) · QUAL_003 As-Is/To-Be vague phrase (2.1, 2.2) · QUAL_004 Test with concrete data (6.1) · QUAL_005 At least one error/edge case (6.1) · QUAL_006 Error message type (E/W/I) (5.1) · QUAL_007 Dependency/Assumption/Out of scope, all three (2.5).
 
-## Skill'in kendi denetimleri
+## The skill's own checks
 
-| Kural | Önem | Ne denetler |
+| Rule | Severity | What it checks |
 |---|---|---|
-| YAPI_001–009 | hata / uyarı | Şema sürümü, tür ve profil, tanımsız bölüm ya da alan, satır uzunluğu, seçenek değerleri, kimlik biçimi, yinelenen kimlik |
-| KRITIK_001 | hata | Kritik bölüm elle geçersiz kılınamaz |
-| ZINCIR_001 | hata | Anılan her kimlik tanımlı olmalı |
-| ZINCIR_002 | uyarı | Her REQ'in en az bir SC, STEP ve TC'si olmalı |
-| UYD_001 | hata | SAP standart nesne adı girdide ya da proje kataloğunda olmalı ya da `[DOĞRULANACAK]` ile işaretlenmeli |
-| UYD_002 | uyarı | Doğrulanacak nesneler için 7.3'te açık nokta olmalı |
-| KARAR_001 | uyarı | BEKLİYOR işareti bir OPEN-nn taşımalı |
-| KARAR_002 | uyarı | KARAR işaretinin andığı açık noktanın hazırlık kategorisi olmalı |
-| OPEN_001 | uyarı / bilgi | Açık noktanın sahibi olmalı (ad ya da rol; kusur). Hedef tarihi olmayan satırlar girdi bekleyen olarak sayılır |
-| OPEN_002 | uyarı | 7.3 'Etkilediği bölüm' bu belgede geçerli bölüm numaraları içermeli |
-| ZINCIR_003 | bilgi | E ve A tipindeki her mesajın bir test senaryosu olmalı |
-| YAPI_010 | uyarı | meta, surum_gecmisi ve onaylar hücreleri dolu olmalı (yoksa —) |
+| YAPI_001–009 | error / warning | Schema version, type and profile, undefined section or field, row length, option values, id format, duplicate id |
+| KRITIK_001 | error | A critical section cannot be switched off |
+| ZINCIR_001 | error | Every cited id must be defined |
+| ZINCIR_002 | warning | Every REQ needs at least one SC, STEP and TC |
+| UYD_001 | error | An SAP standard object name must appear in the inputs or the project catalog, or be marked `[DOĞRULANACAK]` |
+| UYD_002 | warning | Objects to verify need an open point in 7.3 |
+| KARAR_001 | warning | A BEKLİYOR marker must carry an OPEN-nn |
+| KARAR_002 | warning | An open point cited by a KARAR marker needs a readiness category |
+| OPEN_001 | warning / info | An open point needs an owner (name or role; a defect). Rows without a target date count as waiting for input |
+| OPEN_002 | warning | 7.3 'Etkilediği bölüm' must contain section numbers valid in this document |
+| ZINCIR_003 | info | Every message of type E or A needs a test case |
+| YAPI_010 | warning | meta, surum_gecmisi and onaylar cells must be filled (— when none) |
 
-## Kusur ve girdi bekleyen
+## Defects and waiting for input
 
-`denetle` iki tür sonuç verir. **Kusur**: yazımdan doğan, düzeltilmesi gereken bulgu. **Girdi bekleyen**: kural yalnız bir hücre karar ya da bilgi beklediği için kalır; gösterge bunu sayar ama düzeltilecek bir şey yoktur, içerik uydurulmaz. Çıkış kodu yalnız kusur düzeyindeki hatada 1 olur.
+`denetle` returns two kinds of result. **Defect**: a finding caused by the writing, to be fixed. **Waiting for input**: the rule fails only because a cell waits for a decision or a fact; the indicator counts it, but there is nothing to fix and no content is invented. The exit code is 1 only for defect-level errors.
 
-## Elle kontrol listesi (kod çalıştırılamıyorsa)
+## Manual checklist (when code cannot run)
 
-1. `«…»`, TBD, TODO, boş hücre yok; yoksa `—`.
-2. 2.5'te Bağımlılık, Varsayım, Kapsam dışı üçü de var; kapsam sınırı yazılı.
-3. 2.1'de 'Evet' işaretli sorunlu adım ve sayısal etkisi var.
-4. 2.2 ve 3.5'te yuvarlak ifade yok.
-5. 3.5 en az 3 adım; adımların çoğu SAP nesnesi adı içeriyor; hata → MSG ve commit/rollback yazılı.
-6. 3.4'te her satırda kaynak, hedef, tip, örnek değer dolu.
-7. 5.1 en az 2 satır; tip E/W/I/S/A.
-8. 6.1 en az 2 senaryo; en az biri Negatif ya da Sınır; test verisinde gerçek biçimli numara var.
-9. 5.2 / 5.3 satırlarında nesne, alan-değer, aktivite, katalog adları dolu.
-10. Başka bölümlerde geçen her nesne adı 4.1'de; 4.1'deki her ad başka bir bölümde geçiyor; tip listeden; Z adları kurala uygun.
-11. Anılan her kimlik tanımlı; her REQ'in SC, STEP ve TC'si var.
-12. Her BEKLİYOR işareti ve her `[DOĞRULANACAK]` bir 7.3 satırına bağlı; açık satırların sahibi (ad ya da rol) ve etkilediği bölüm numaraları var.
+1. No `«…»`, TBD, TODO or empty cell; `—` when none.
+2. 2.5 has Bağımlılık, Varsayım and Kapsam dışı; the scope boundary is written.
+3. 2.1 has a problem step marked 'Evet' with a numeric effect.
+4. No vague phrases in 2.2 and 3.5.
+5. 3.5 has at least 3 steps; most steps name an SAP object; error → MSG and commit/rollback are written.
+6. Every 3.4 row has source, target, type and example value.
+7. 5.1 has at least 2 rows; type E/W/I/S/A.
+8. 6.1 has at least 2 cases; at least one Negatif or Sınır; the test data contains real-format numbers.
+9. 5.2 / 5.3 rows have object, field-value, activity and catalog names.
+10. Every object named in other sections is in 4.1; every 4.1 name appears in another section; the type is from the list; Z names follow the rule.
+11. Every cited id is defined; every REQ has SC, STEP and TC.
+12. Every BEKLİYOR marker and every `[DOĞRULANACAK]` maps to a 7.3 row; open rows have an owner (name or role) and affected section numbers.
 
-## Gösterge
+## Indicator
 
-Yalnız mekanik kurallardan hesaplanır; kalite (LLM) puanını gerçek motor ölçer. Hedef değil, yan üründür.
+Computed from mechanical rules only; the real engine scores quality (LLM part). A by-product, not a target.
 
-- Bölüm kural puanı = 100 × (1 − kalan kural ağırlığı / değerlendirilen kural ağırlığı); `info` kuralı × 0.5; `error` kuralı kaldıysa en çok 40.
-- Ortalama = ağırlıklı ortalama; geçerli taban bölümler ve yazılmış bonus bölümler.
-- Cezalar: puanı 40'ın altındaki her kritik bölüm −5; en düşük 2 taban bölüm ortalamanın 30+ altındaysa −5, 45+ altındaysa −7.5 (en çok −15); 7.3'te kategorili her açık nokta −2 (kalem başına en çok −5, toplam en çok −20).
-- Bantlar: ≥ 85 Geliştirmeye hazır · 70–84 Koşullu · < 70 Revizyon.
-- Eşik ve katsayılar puanlama motorunun kodu görülmeden belirlenmiş varsayımlardır; gösterge içindir, hedef değildir.
+- Section rule score = 100 × (1 − remaining rule weight / evaluated rule weight); `info` rule × 0.5; at most 40 when an `error` rule remains.
+- Average = weighted average over applicable base sections and written bonus sections.
+- Penalties: every critical section below 40 −5; if the 2 lowest base sections are 30+ below the average −5, 45+ below −7.5 (at most −15); every categorised open point in 7.3 −2 (at most −5 per item, −20 in total).
+- Bands: ≥ 85 Geliştirmeye hazır · 70–84 Koşullu · < 70 Revizyon.
+- Thresholds and coefficients are assumptions made without seeing the scoring engine's code; they exist for the indicator, not as a target.

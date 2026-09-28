@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Belirtim Yazmanı (Spec Writer) çekirdek aracı. Yalnız standart kütüphane kullanır.
+"""Spec Writer (Belirtim Yazmanı) core tool. Standard library only.
 
-Komutlar: bilgi · iskelet · eksik · denetle · yama · ozet · dok
-Kullanım: python scripts/bv.py <komut> --help
+Commands: bilgi · iskelet · eksik · denetle · yama · ozet · dok
+Usage: python scripts/bv.py <command> --help
 """
 import argparse
 import datetime
@@ -12,7 +12,7 @@ import os
 import re
 import sys
 
-for _akis in (sys.stdout, sys.stderr):  # Windows konsolu varsayılan kod sayfasında Türkçe karakterlerde çöküyor
+for _akis in (sys.stdout, sys.stderr):  # the Windows console crashes on Turkish characters in its default code page
     if hasattr(_akis, "reconfigure"):
         _akis.reconfigure(encoding="utf-8", errors="replace")
 
@@ -38,12 +38,12 @@ def kucuk(s):
     return s.replace("İ", "i").replace("I", "ı").lower()
 
 
-# Kısa kalıplar tam sözcük olarak, uzun kalıplar Türkçe ek alabilecek biçimde aranır ("gerekli kontrol" → "gerekli kontroller").
+# Short patterns match whole words; long patterns may take Turkish suffixes ("gerekli kontrol" → "gerekli kontroller").
 YUVARLAK_RE = [(f, re.compile(r"(?<!\w)" + re.escape(kucuk(f.strip())) + (r"(?!\w)" if len(f.strip()) <= 4 else "")))
                for f in T["yuvarlak_ifadeler"]]
 
 
-# ----------------------------------------------------------------------------- temel
+# ----------------------------------------------------------------------------- basics
 def yukle(yol):
     with open(yol, encoding="utf-8") as f:
         return json.load(f)
@@ -69,7 +69,7 @@ def bolum_durumu(b, turler, profil):
 
 
 def tur_metni(b):
-    return "tüm türler" if b["turler"] == ["*"] else "yalnız " + ", ".join(TUR_AD[t] for t in b["turler"])
+    return "all types" if b["turler"] == ["*"] else "only " + ", ".join(TUR_AD[t] for t in b["turler"])
 
 
 def isaretli(metin):
@@ -77,7 +77,7 @@ def isaretli(metin):
 
 
 def hucreler(belge):
-    """(bolum_no, json_yolu, metin) üretir."""
+    """Yields (section_no, json_path, text)."""
     for no, ic in belge.get("bolumler", {}).items():
         if not isinstance(ic, dict) or ic.get("gecerli") is False:
             continue
@@ -93,8 +93,8 @@ YOKSAY = set(NK["haric"])
 
 
 def nesneler(metin, genis=False):
-    """(özel, standart, uygulama) nesne adı kümeleri. 'NESNE.alan' biçimindeki alan adları nesne sayılmaz.
-    genis=True: BAdI gibi büyük harfli, alt çizgili adlar da aranır; yalnız nesne adı taşıyan sütunlarda kullanılır."""
+    """Sets of (custom, standard, app) object names. Field names written as 'OBJECT.field' do not count as objects.
+    genis=True: upper-case underscored names such as BAdIs are matched too; used only in columns that carry object names."""
     ozel, std, app = set(), set(), set()
     bul_ = lambda r: [m.group(0) for m in r.finditer(metin) if m.start() == 0 or metin[m.start() - 1] != "."]
     for r in OZEL_RE:
@@ -107,7 +107,7 @@ def nesneler(metin, genis=False):
 
 
 def kimlik_tablosu(belge):
-    """kimlik -> (bolum_no, satir_index); ayrıca yinelenenler."""
+    """id -> (section_no, row_index); plus duplicates."""
     tablo, yinelenen = {}, []
     for no, ic in belge.get("bolumler", {}).items():
         b = BOLUM.get(no)
@@ -122,7 +122,7 @@ def kimlik_tablosu(belge):
 
 
 def komsuluk(belge):
-    """Kimlikler arası yönsüz atıf grafiği."""
+    """Undirected reference graph between ids."""
     tablo, _ = kimlik_tablosu(belge)
     g = {k: set() for k in tablo}
     for no, ic in belge.get("bolumler", {}).items():
@@ -139,7 +139,7 @@ def komsuluk(belge):
                     if a in g:
                         g[satir[0]].add(a)
                         g[a].add(satir[0])
-            elif not kendi:  # kimliği olmayan satır (3.7, 4.2, 5.4, 7.2): andıklarını birbirine bağlar
+            elif not kendi:  # a row without its own id (3.7, 4.2, 5.4, 7.2) links the ids it cites to each other
                 for a in anilan:
                     for c in anilan:
                         if a != c and a in g and c in g:
@@ -148,7 +148,7 @@ def komsuluk(belge):
 
 
 def turet_62(belge):
-    """6.2 İzlenebilirlik matrisi: REQ başına tek satır."""
+    """6.2 traceability matrix: one row per REQ."""
     g = komsuluk(belge)
     sirala = lambda ks: ", ".join(sorted(ks)) or YOK
     on = lambda ks, p: {k for k in ks if k.rsplit("-", 1)[0] == p}
@@ -175,10 +175,10 @@ def birlestir_54(belge):
     return adlar, satirlar
 
 
-# ----------------------------------------------------------------------------- denetim
+# ----------------------------------------------------------------------------- validation
 def denetle(belge, proje=None, girdi_metni=""):
-    """Bulgu listesi, motor kurallarının bölüm bazında sonucu ve sayılan bölümler.
-    'acik' bulgular bir karar/bilgi bekleyen hücreden doğar: gösterge için kural kalır ama düzeltilecek kusur değildir."""
+    """Findings, per-section result of the engine rules, and the sections counted.
+    'acik' findings stem from a cell waiting for a decision or fact: the rule stays failed for the indicator, but there is no defect to fix."""
     proje = proje or {}
     YOKSAY.clear(); YOKSAY.update(NK["haric"]); YOKSAY.update(belge.get("nesne_degil") or [])
     bulgular, kural_sonuc = [], {}
@@ -192,39 +192,39 @@ def denetle(belge, proje=None, girdi_metni=""):
         kural_sonuc.setdefault(no, {})[kural] = False
 
     def hal(h):
-        """'dolu' | 'isaret' | 'bos'"""
+        """'dolu' (filled) | 'isaret' (marker) | 'bos' (empty)"""
         if not isinstance(h, str) or not h.strip() or h.strip() == YOK:
             return "bos"
         return "isaret" if isaretli(h) else "dolu"
 
     def eksik_kural(no, kural, sev, yol, hucre_listesi, mesaj):
-        """Hücrelerden biri dolu değilse kuralı düşürür; neden yalnız işaretse bulgu 'açık' olur."""
+        """Fails the rule when a cell is not filled; the finding is 'open' when the only reason is a marker."""
         haller = [hal(h) for h in hucre_listesi]
         if all(x == "dolu" for x in haller):
             return
         kal(no, kural)
         bul(sev, kural, yol, mesaj, no, acik="bos" not in haller)
 
-    # --- üst yapı
+    # --- top-level structure
     if belge.get("sema") != T["sema"]:
-        bul("UYARI", "YAPI_001", "/sema", f"Şema sürümü {T['sema']} bekleniyor, bulunan: {belge.get('sema')}")
+        bul("UYARI", "YAPI_001", "/sema", f"Schema version {T['sema']} expected, found: {belge.get('sema')}")
     if not turler or any(t not in TUR_AD for t in turler):
-        bul("HATA", "META_001", "/turler", "En az bir geçerli RICEF türü gerekli: " + ", ".join(TUR_AD))
+        bul("HATA", "META_001", "/turler", "At least one valid RICEF type is required: " + ", ".join(TUR_AD))
     if profil not in T["profiller"]:
-        bul("HATA", "YAPI_001", "/profil", "Profil hafif, standart ya da tam olmalı")
+        bul("HATA", "YAPI_001", "/profil", "Profile must be hafif, standart or tam")
     meta = belge.get("meta") or {}
     bos_meta = [k for k in ("surum", "tarih", "hazirlayan", "durum") if not str(meta.get(k) or "").strip()]
     if bos_meta:
-        bul("UYARI", "YAPI_010", "/meta", "Boş meta alanları: " + ", ".join(bos_meta) + f" (bilinmiyorsa {YOK})")
+        bul("UYARI", "YAPI_010", "/meta", "Empty meta fields: " + ", ".join(bos_meta) + f" (use {YOK} when unknown)")
     for ad, n in (("surum_gecmisi", 4), ("onaylar", 3)):
         for i, s in enumerate(belge.get(ad) or []):
             if not isinstance(s, list) or len(s) != n or not all(isinstance(h, str) and h.strip() for h in s):
-                bul("UYARI", "YAPI_010", f"/{ad}/{i}", f"Satır {n} dolu hücreli dizi olmalı (yoksa {YOK})")
+                bul("UYARI", "YAPI_010", f"/{ad}/{i}", f"Row must be an array of {n} filled cells (use {YOK} when none)")
     for no in icerik:
         if no not in BOLUM:
-            bul("HATA", "YAPI_001", f"/bolumler/{no}", "Tanımsız bölüm numarası")
+            bul("HATA", "YAPI_001", f"/bolumler/{no}", "Undefined section number")
     if "6.2" in icerik:
-        bul("UYARI", "YAPI_007", "/bolumler/6.2", "6.2 türetilir; JSON'a yazmayın")
+        bul("UYARI", "YAPI_007", "/bolumler/6.2", "6.2 is derived; do not write it into the JSON")
 
     sayilan = {}  # no -> 'taban' | 'bonus'
     for b in T["bolumler"]:
@@ -237,23 +237,23 @@ def denetle(belge, proje=None, girdi_metni=""):
             continue
         if durum == "tur_disi":
             if isinstance(ic, dict) and (ic.get("satirlar") or ic.get("alanlar")):
-                bul("UYARI", "YAPI_008", f"/bolumler/{no}", f"Bölüm seçili türlerde geçerli değil ({tur_metni(b)}); içerik yok sayılır", no)
+                bul("UYARI", "YAPI_008", f"/bolumler/{no}", f"Section does not apply to the selected types ({tur_metni(b)}); content ignored", no)
             continue
         if durum == "profil_disi" and not ic:
             continue
         if ic is None and b["sinif"] == "Bonus":
-            bul("BİLGİ", "GEN_002", f"/bolumler/{no}", f"Profilde açık bonus bölüm yazılmamış: {no} {b['baslik']}", no)
+            bul("BİLGİ", "GEN_002", f"/bolumler/{no}", f"Bonus section open in this profile but not written: {no} {b['baslik']}", no)
             continue
         if ic is None:
-            bul("HATA" if b["sinif"] == "Kritik" else "UYARI", "GEN_002", f"/bolumler/{no}", f"{no} {b['baslik']} eksik", no)
+            bul("HATA" if b["sinif"] == "Kritik" else "UYARI", "GEN_002", f"/bolumler/{no}", f"{no} {b['baslik']} missing", no)
             sayilan[no] = "taban"
             kural_sonuc[no] = {k: False for k in b["kurallar"]}
             continue
         if ic.get("gecerli") is False:
             if b["sinif"] == "Kritik":
-                bul("HATA", "KRITIK_001", f"/bolumler/{no}", "Kritik bölüm elle geçersiz kılınamaz", no)
+                bul("HATA", "KRITIK_001", f"/bolumler/{no}", "A critical section cannot be switched off", no)
             elif not str(ic.get("gerekce") or "").strip():
-                bul("UYARI", "YAPI_009", f"/bolumler/{no}/gerekce", "Geçersiz kılınan bölüm gerekçe ister", no)
+                bul("UYARI", "YAPI_009", f"/bolumler/{no}/gerekce", "A switched-off section needs a reason (gerekce)", no)
             continue
         sayilan[no] = "bonus" if b["sinif"] == "Bonus" else "taban"
         kural_sonuc[no] = {k: True for k in b["kurallar"]}
@@ -262,81 +262,81 @@ def denetle(belge, proje=None, girdi_metni=""):
         for a in b["alanlar"]:
             v = alanlar.get(a["anahtar"])
             if not isinstance(v, str) or not v.strip():
-                bul("UYARI", "GEN_002", f"/bolumler/{no}/alanlar/{a['anahtar']}", f"'{a['etiket']}' boş", no)
+                bul("UYARI", "GEN_002", f"/bolumler/{no}/alanlar/{a['anahtar']}", f"'{a['etiket']}' is empty", no)
                 kal(no, "GEN_002")
             elif a.get("secenekler") and v not in a["secenekler"] and v.strip() != YOK and not isaretli(v):
-                bul("BİLGİ", "YAPI_003", f"/bolumler/{no}/alanlar/{a['anahtar']}", "Tercih edilen ifade: " + " | ".join(a["secenekler"])
-                    + " (hiçbiri uymuyorsa verilen kararı kendi sözleriyle bırakın)", no)
+                bul("BİLGİ", "YAPI_003", f"/bolumler/{no}/alanlar/{a['anahtar']}", "Preferred wording: " + " | ".join(a["secenekler"])
+                    + " (when none fits, keep the stated decision in its own words)", no)
         for k in alanlar:
             if k not in tanimli:
-                bul("UYARI", "YAPI_002", f"/bolumler/{no}/alanlar/{k}", "Tanımsız alan anahtarı", no)
+                bul("UYARI", "YAPI_002", f"/bolumler/{no}/alanlar/{k}", "Undefined field key", no)
         n = len(b["sutunlar"])
         if n and len(satirlar) < b["en_az_satir"]:
-            bul("UYARI", "GEN_002", f"/bolumler/{no}/satirlar", f"En az {b['en_az_satir']} satır gerekli, bulunan {len(satirlar)}", no)
+            bul("UYARI", "GEN_002", f"/bolumler/{no}/satirlar", f"At least {b['en_az_satir']} rows required, found {len(satirlar)}", no)
             kal(no, "GEN_002")
         for i, s in enumerate(satirlar):
             yol = f"/bolumler/{no}/satirlar/{i}"
             if not isinstance(s, list) or len(s) != n:
-                bul("HATA", "YAPI_002", yol, f"Satır {n} hücreli dizi olmalı", no)
+                bul("HATA", "YAPI_002", yol, f"Row must be an array of {n} cells", no)
                 continue
             for j, (h, c) in enumerate(zip(s, b["sutunlar"])):
                 if not isinstance(h, str) or not h.strip():
-                    bul("UYARI", "GEN_002", f"{yol}/{j}", f"Boş hücre ('{c['ad']}'); yoksa {YOK} yazın", no)
+                    bul("UYARI", "GEN_002", f"{yol}/{j}", f"Empty cell ('{c['ad']}'); write {YOK} when none", no)
                     kal(no, "GEN_002")
                 elif c.get("secenekler") and h not in c["secenekler"] and not isaretli(h):
-                    bul("UYARI", "YAPI_003", f"{yol}/{j}", f"'{c['ad']}' şunlardan biri ya da bir BEKLİYOR işareti olmalı: " + " | ".join(c["secenekler"]), no)
+                    bul("UYARI", "YAPI_003", f"{yol}/{j}", f"'{c['ad']}' must be one of these or a BEKLİYOR marker: " + " | ".join(c["secenekler"]), no)
                 elif j == 0 and c.get("kimlik") and not re.fullmatch("(" + "|".join(c["kimlik"]) + r")-\d{2,3}", h):
-                    bul("HATA", "YAPI_005", f"{yol}/0", f"Kimlik {c['kimlik'][0]}-nn biçiminde olmalı", no)
+                    bul("HATA", "YAPI_005", f"{yol}/0", f"Id must have the form {c['kimlik'][0]}-nn", no)
 
-    # --- yer tutucu, açık hücre, yuvarlak ifade
+    # --- placeholders, open cells, vague phrases
     toplam, acik_say = {}, {}
     for no, yol, m in hucreler(belge):
         if no not in sayilan:
             continue
         toplam[no] = toplam.get(no, 0) + 1
         if any(r.search(m) for r in YER_TUTUCU_RE):
-            bul("UYARI", "GEN_001", yol, "Yer tutucu metin kalmış", no)
+            bul("UYARI", "GEN_001", yol, "Placeholder text left", no)
             kal(no, "GEN_001")
         if isaretli(m):
             acik_say[no] = acik_say.get(no, 0) + 1
             if not re.search(r"OPEN-\d{2,3}", m):
-                bul("UYARI", "KARAR_001", yol, "BEKLİYOR işareti bir OPEN-nn kimliği taşımalı", no)
+                bul("UYARI", "KARAR_001", yol, "A BEKLİYOR marker must carry an OPEN-nn id", no)
         if no in ("2.1", "2.2", "3.5"):
             km = kucuk(m)
             for f, r in YUVARLAK_RE:
                 if r.search(km):
-                    bul("UYARI", {"2.1": "QUAL_003", "2.2": "PROC_001", "3.5": "ALGO_003"}[no], yol, f"Yuvarlak ifade: '{f.strip()}'", no)
+                    bul("UYARI", {"2.1": "QUAL_003", "2.2": "PROC_001", "3.5": "ALGO_003"}[no], yol, f"Vague phrase: '{f.strip()}'", no)
                     if no != "2.1":
                         kal(no, {"2.2": "PROC_001", "3.5": "ALGO_003"}[no])
     for no, a in acik_say.items():
         if a / max(1, toplam[no]) > 0.3:
-            bul("UYARI", "GEN_002", f"/bolumler/{no}", f"Hücrelerin %{round(100 * a / toplam[no])}'i karar/bilgi bekliyor", no, acik=True)
+            bul("UYARI", "GEN_002", f"/bolumler/{no}", f"{round(100 * a / toplam[no])}% of the cells wait for a decision or fact", no, acik=True)
             kal(no, "GEN_002")
 
     def satir(no):
         ic = icerik.get(no) or {}
         return [s for s in (ic.get("satirlar") or []) if isinstance(s, list) and len(s) == len(BOLUM[no]["sutunlar"])]
 
-    # --- bölüme özgü motor kuralları
+    # --- section-specific engine rules
     if "2.5" in sayilan:
         tur25 = {s[1] for s in satir("2.5")}
         if not tur25:
             kal("2.5", "SCOPE_000")
         if "Kapsam dışı" not in tur25:
-            kal("2.5", "SCOPE_001"); bul("UYARI", "SCOPE_001", "/bolumler/2.5/satirlar", "Kapsam dışı (OOS) satırı yok", "2.5")
+            kal("2.5", "SCOPE_001"); bul("UYARI", "SCOPE_001", "/bolumler/2.5/satirlar", "No Kapsam dışı (OOS) row", "2.5")
         eksik_kural("2.5", "SCOPE_001", "UYARI", "/bolumler/2.5/alanlar/kapsam_siniri", [(icerik["2.5"].get("alanlar") or {}).get("kapsam_siniri")],
-                    "Kapsam sınırı yazılı değil")
+                    "Scope boundary (kapsam_siniri) not written")
         if len(tur25 & {"Bağımlılık", "Varsayım", "Kapsam dışı"}) < 3:
-            kal("2.5", "SCOPE_002"); bul("BİLGİ", "SCOPE_002", "/bolumler/2.5/satirlar", "Bağımlılık, Varsayım ve Kapsam dışı üçü de bulunmalı", "2.5")
+            kal("2.5", "SCOPE_002"); bul("BİLGİ", "SCOPE_002", "/bolumler/2.5/satirlar", "Bağımlılık, Varsayım and Kapsam dışı must all be present", "2.5")
     if "2.1" in sayilan:
         sorunlu = [s for s in satir("2.1") if s[4] == "Evet"]
         if not any(hal(s[5]) == "dolu" and re.search(r"\d", s[5]) for s in sorunlu):
             kal("2.1", "PROC_002")
-            bul("UYARI", "PROC_002", "/bolumler/2.1/satirlar", "Sorunlu adım ('Evet') ve sayısal etkisi gerekli", "2.1",
+            bul("UYARI", "PROC_002", "/bolumler/2.1/satirlar", "A problem step ('Evet') with a numeric effect is required", "2.1",
                 acik=bool(sorunlu) and all(hal(s[5]) == "isaret" for s in sorunlu))
     if "3.4" in sayilan:
         for i, s in enumerate(satir("3.4")):
-            eksik_kural("3.4", "MAP_001", "UYARI", f"/bolumler/3.4/satirlar/{i}", [s[j] for j in (1, 2, 3, 4, 5, 8)], "Kaynak, hedef, tip ve örnek değer somut olmalı")
+            eksik_kural("3.4", "MAP_001", "UYARI", f"/bolumler/3.4/satirlar/{i}", [s[j] for j in (1, 2, 3, 4, 5, 8)], "Source, target, type and example value must be concrete")
     if "3.5" in sayilan:
         ss = satir("3.5")
         nesneli = [bool(sum(map(len, nesneler(s[4], True)))) for s in ss]
@@ -344,12 +344,12 @@ def denetle(belge, proje=None, girdi_metni=""):
             if not var and s[4].strip() != YOK:
                 kal("3.5", "ALGO_001")
                 if isaretli(s[4]):
-                    bul("UYARI", "ALGO_001", f"/bolumler/3.5/satirlar/{i}/4", "SAP nesnesi karar/bilgi bekliyor; ad girdiyle gelmeli, uydurmayın", "3.5", acik=True)
+                    bul("UYARI", "ALGO_001", f"/bolumler/3.5/satirlar/{i}/4", "SAP object waits for a decision or fact; the name must come from the inputs, do not invent it", "3.5", acik=True)
                 else:
-                    bul("HATA", "ALGO_001", f"/bolumler/3.5/satirlar/{i}/4", f"Somut SAP nesnesi adı yok (adım nesne gerektirmiyorsa {YOK}, bilinmiyorsa işaret)", "3.5")
+                    bul("HATA", "ALGO_001", f"/bolumler/3.5/satirlar/{i}/4", f"No concrete SAP object name ({YOK} if the step needs none, a marker if unknown)", "3.5")
         if ss and sum(nesneli) * 2 < len(ss):
             kal("3.5", "ALGO_001")
-            bul("UYARI", "ALGO_001", "/bolumler/3.5/satirlar", "Adımların yarısından azı somut SAP nesnesi içeriyor", "3.5", acik=any(isaretli(s[4]) for s in ss))
+            bul("UYARI", "ALGO_001", "/bolumler/3.5/satirlar", "Fewer than half of the steps name a concrete SAP object", "3.5", acik=any(isaretli(s[4]) for s in ss))
         if len(ss) < 3:
             kal("3.5", "ALGO_002")
     if "5.1" in sayilan:
@@ -365,40 +365,40 @@ def denetle(belge, proje=None, girdi_metni=""):
         somut = [hal(s[3]) == "dolu" and bool(re.search(r"\d{3,}", s[3])) for s in ss]
         if not ss or sum(somut) * 2 < len(ss):
             kal("6.1", "TEST_001")
-            bul("UYARI", "TEST_001", "/bolumler/6.1/satirlar", "Test verisi gerçek biçimli değer içermeli (belge no, ana veri)", "6.1",
+            bul("UYARI", "TEST_001", "/bolumler/6.1/satirlar", "Test data must contain real-format values (document number, master data)", "6.1",
                 acik=bool(ss) and all(hal(s[3]) == "isaret" for s, ok in zip(ss, somut) if not ok))
         if not any(s[1] in ("Negatif", "Sınır") for s in ss):
-            kal("6.1", "TEST_002"); bul("UYARI", "TEST_002", "/bolumler/6.1/satirlar", "En az bir Negatif ya da Sınır senaryosu gerekli", "6.1")
+            kal("6.1", "TEST_002"); bul("UYARI", "TEST_002", "/bolumler/6.1/satirlar", "At least one Negatif or Sınır case is required", "6.1")
     for no, idx in (("5.2", (1, 2, 3, 4)), ("5.3", (1, 2))):
         if no in sayilan:
             for i, s in enumerate(satir(no)):
-                eksik_kural(no, "AUTH_001", "UYARI", f"/bolumler/{no}/satirlar/{i}", [s[j] for j in idx], "Yetki satırı somut ad ve değer içermeli")
+                eksik_kural(no, "AUTH_001", "UYARI", f"/bolumler/{no}/satirlar/{i}", [s[j] for j in idx], "Authorization row must contain concrete names and values")
     if "7.3" in sayilan:
         aciklar = [s for s in satir("7.3") if s[5] == "Açık"]
         sahipsiz = [s[0] for s in aciklar if hal(s[3]) != "dolu"]
         tarihsiz = [s[0] for s in aciklar if hal(s[3]) == "dolu" and hal(s[4]) != "dolu"]
         if sahipsiz:
             kal("7.3", "OPEN_001")
-            bul("UYARI", "OPEN_001", "/bolumler/7.3/satirlar", "Sahibi olmayan açık noktalar: " + ", ".join(sahipsiz)
-                + ". Ad bilinmiyorsa rol yazın (SAP danışmanı, ABAP geliştirici, karşı sistem ekibi).", "7.3")
+            bul("UYARI", "OPEN_001", "/bolumler/7.3/satirlar", "Open points without an owner: " + ", ".join(sahipsiz)
+                + ". Write a role when the name is unknown (SAP danışmanı, ABAP geliştirici, karşı sistem ekibi).", "7.3")
         if tarihsiz:
             kal("7.3", "OPEN_001")
-            bul("BİLGİ", "OPEN_001", "/bolumler/7.3/satirlar", f"Hedef tarihi verilmemiş açık nokta: {len(tarihsiz)}. Tarih girdiden gelir; uydurulmaz, {YOK} kalır.",
+            bul("BİLGİ", "OPEN_001", "/bolumler/7.3/satirlar", f"Open points without a target date: {len(tarihsiz)}. The date comes from the inputs; it is not invented, {YOK} stays.",
                 "7.3", acik=True)
         gecerli_no = {b["no"] for b in T["bolumler"] if bolum_durumu(b, turler, profil) != "tur_disi"}
         for i, s in enumerate(satir("7.3")):
             nolar = re.findall(r"(?<![\d.])\d\.\d{1,2}(?![\d])", s[2])
             yanlis = [n for n in nolar if n not in gecerli_no]
             if s[5] == "Açık" and (not nolar or yanlis):
-                bul("UYARI", "OPEN_002", f"/bolumler/7.3/satirlar/{i}/2", "'Etkilediği bölüm' bu belgede yazılan bölüm numaralarını içermeli (örn. 3.4, 3.5)"
-                    + (": geçersiz " + ", ".join(yanlis) if yanlis else ""), "7.3")
+                bul("UYARI", "OPEN_002", f"/bolumler/7.3/satirlar/{i}/2", "'Etkilediği bölüm' must contain section numbers written in this document (e.g. 3.4, 3.5)"
+                    + (": invalid " + ", ".join(yanlis) if yanlis else ""), "7.3")
         karar_refs = {m for _, _, h in hucreler(belge) if ISARET["karar"] in h for m in re.findall(r"OPEN-\d{2,3}", h)}
         kategorisiz = [s[0] for s in satir("7.3") if s[0] in karar_refs and s[5] == "Açık" and s[7] == YOK]
         if kategorisiz:
-            bul("UYARI", "KARAR_002", "/bolumler/7.3/satirlar", "KARAR BEKLİYOR ile anılan açık noktanın kategorisi 'Karar bekleyen konu' ya da uygun kalem olmalı: "
+            bul("UYARI", "KARAR_002", "/bolumler/7.3/satirlar", "An open point cited by KARAR BEKLİYOR needs the category 'Karar bekleyen konu' or a fitting item: "
                 + ", ".join(kategorisiz), "7.3")
 
-    # --- nesne kataloğu (4.1) ve uydurma denetimi
+    # --- object catalog (4.1) and invented-name check
     nesne_sutun = T["nesne_sutunlari"]
     temiz = lambda ad: ad.replace(ISARET["dogrula"], "").strip()
     katalog, dogrulanacak = {}, set()
@@ -422,65 +422,65 @@ def denetle(belge, proje=None, girdi_metni=""):
     if "4.1" in sayilan:
         eksik = sorted((kullanilan_ozel | kullanilan_std) - set(katalog))
         if eksik:
-            kal("4.1", "SAP_001"); bul("UYARI", "SAP_001", "/bolumler/4.1/satirlar", "Katalogda olmayan nesneler: " + ", ".join(eksik), "4.1")
+            kal("4.1", "SAP_001"); bul("UYARI", "SAP_001", "/bolumler/4.1/satirlar", "Objects missing from the catalog: " + ", ".join(eksik), "4.1")
         hepsi = "\n".join(disaridaki_metin)
         kullanilmayan = [ad for ad in katalog if ad and ad not in hepsi]
         if kullanilmayan:
-            kal("4.1", "SAP_002"); bul("BİLGİ", "SAP_002", "/bolumler/4.1/satirlar", "Belgede kullanılmayan katalog nesneleri: " + ", ".join(kullanilmayan), "4.1")
+            kal("4.1", "SAP_002"); bul("BİLGİ", "SAP_002", "/bolumler/4.1/satirlar", "Catalog objects not used in the document: " + ", ".join(kullanilmayan), "4.1")
         ad_kurali = proje.get("adlandirma") or {}
         tipler = {kucuk(t): t for t in T["sap_tipleri"]}
         for i, s in enumerate(satir("4.1")):
-            eksik_kural("4.1", "OBJ_001", "BİLGİ", f"/bolumler/4.1/satirlar/{i}/1", [s[1]], "Nesne adı yok")
+            eksik_kural("4.1", "OBJ_001", "BİLGİ", f"/bolumler/4.1/satirlar/{i}/1", [s[1]], "No object name")
             tip = kucuk(re.split(r"\s*[(/]", s[2].strip())[0].strip())
             if hal(s[2]) != "dolu":
-                eksik_kural("4.1", "SAP_003", "UYARI", f"/bolumler/4.1/satirlar/{i}/2", [s[2]], "SAP tipi yok")
+                eksik_kural("4.1", "SAP_003", "UYARI", f"/bolumler/4.1/satirlar/{i}/2", [s[2]], "No SAP type")
             elif tip not in tipler:
-                kal("4.1", "SAP_003"); bul("UYARI", "SAP_003", f"/bolumler/4.1/satirlar/{i}/2", f"Bilinmeyen SAP tipi '{s[2]}' (liste: references/sap-sozluk.md)", "4.1")
+                kal("4.1", "SAP_003"); bul("UYARI", "SAP_003", f"/bolumler/4.1/satirlar/{i}/2", f"Unknown SAP type '{s[2]}' (list: references/sap-sozluk.md)", "4.1")
             if s[3] == "Z" and hal(s[1]) == "dolu":
                 ad = temiz(s[1])
                 onekler = tuple(ad_kurali.get("on_ekler") or ("Z", "Y", "/"))
                 azami = (ad_kurali.get("azami_uzunluk") or {}).get(tipler.get(tip, ""))
                 if not ad.startswith(onekler) or (azami and len(ad) > azami):
                     kal("4.1", "SAP_004"); bul("UYARI", "SAP_004", f"/bolumler/4.1/satirlar/{i}/1",
-                                               "Adlandırma kuralı: ön ek " + ", ".join(onekler) + (f"; en çok {azami} karakter" if azami else ""), "4.1")
+                                               "Naming rule: prefix " + ", ".join(onekler) + (f"; at most {azami} characters" if azami else ""), "4.1")
     dogrulanmis = {(k["ad"] if isinstance(k, dict) else k) for k in proje.get("katalog") or []}
     dogrulanmis |= set().union(*nesneler(girdi_metni, True))
     supheli = sorted((kullanilan_std | kullanilan_app | {k for k in katalog if nesneler(k, True)[1]}) - dogrulanmis - dogrulanacak)
     if supheli:
         bul("HATA", "UYD_001", ilk_yer.get(supheli[0], "/bolumler/4.1/satirlar"),
-            "Girdide ve proje kataloğunda olmayan SAP nesneleri: " + ", ".join(supheli)
-            + f". Kullanıcıyla doğrulayın, ya da 4.1'de adın sonuna '{ISARET['dogrula']}' ekleyip 7.3'te tek bir açık nokta açın."
-            + " SAP nesnesi değilse üst düzey 'nesne_degil' dizisine ekleyin.")
+            "SAP objects found neither in the inputs nor in the project catalog: " + ", ".join(supheli)
+            + f". Verify with the user, or append '{ISARET['dogrula']}' to the name in 4.1 and open one open point in 7.3."
+            + " If it is not an SAP object, add it to the top-level 'nesne_degil' array.")
     if dogrulanacak:
         metin73 = " ".join(" ".join(s) for s in satir("7.3"))
         if not ("DOĞRULANACAK" in metin73 or "doğrula" in kucuk(metin73) or any(d in metin73 for d in dogrulanacak)):
-            bul("UYARI", "UYD_002", "/bolumler/7.3/satirlar", "Doğrulanacak nesneler için 7.3'te tek bir açık nokta açın ('DOĞRULANACAK nesneler: …'): "
+            bul("UYARI", "UYD_002", "/bolumler/7.3/satirlar", "Open one open point in 7.3 for the objects to verify ('DOĞRULANACAK nesneler: …'): "
                 + ", ".join(sorted(dogrulanacak)))
 
-    # --- kimlik zinciri
+    # --- id chain
     tablo, yinelenen = kimlik_tablosu(belge)
     for k, no, i in yinelenen:
-        bul("HATA", "YAPI_006", f"/bolumler/{no}/satirlar/{i}/0", f"Yinelenen kimlik {k}", no)
+        bul("HATA", "YAPI_006", f"/bolumler/{no}/satirlar/{i}/0", f"Duplicate id {k}", no)
     tanimsiz = {}
     for no, yol, m in hucreler(belge):
         for mm in KIMLIK_RE.finditer(m):
             if mm.group(0) not in tablo:
                 tanimsiz.setdefault(mm.group(0), []).append(yol)
     for k, yollar in sorted(tanimsiz.items()):
-        bul("HATA", "ZINCIR_001", yollar[0], f"Tanımsız kimlik {k}" + (f" ({len(yollar)} yerde)" if len(yollar) > 1 else ""))
+        bul("HATA", "ZINCIR_001", yollar[0], f"Undefined id {k}" + (f" (in {len(yollar)} places)" if len(yollar) > 1 else ""))
     for s in turet_62(belge):
         if s[7] != "Tam":
-            bul("UYARI", "ZINCIR_002", "/bolumler/2.2/satirlar", f"{s[0]} zinciri {s[7].lower()}: SC [{s[1]}] · STEP [{s[2]}] · TC [{s[6]}]", "2.2")
+            bul("UYARI", "ZINCIR_002", "/bolumler/2.2/satirlar", f"{s[0]} chain {s[7].lower()}: SC [{s[1]}] · STEP [{s[2]}] · TC [{s[6]}]", "2.2")
     g = komsuluk(belge)
     testsiz = sorted(s[0] for s in satir("5.1") if s[3] in ("E", "A") and not any(k.startswith("TC-") for k in g.get(s[0], ())))
     if testsiz and "6.1" in sayilan:
-        bul("BİLGİ", "ZINCIR_003", "/bolumler/6.1/satirlar", "Test senaryosu olmayan hata mesajları: " + ", ".join(testsiz), "6.1")
+        bul("BİLGİ", "ZINCIR_003", "/bolumler/6.1/satirlar", "Error messages without a test case: " + ", ".join(testsiz), "6.1")
 
     return bulgular, kural_sonuc, sayilan
 
 
 def gosterge(belge, kural_sonuc, sayilan):
-    """Yalnız mekanik kurallardan hesaplanan puan göstergesi (kalite/LLM kısmı içermez)."""
+    """Score indicator computed from mechanical rules only (no quality/LLM part)."""
     agirlik = {k["id"]: k["agirlik"] * (PAR["info_factor"] if k["siddet"] == "info" else 1) for k in T["kurallar"]}
     siddet = {k["id"]: k["siddet"] for k in T["kurallar"]}
     puan = {}
@@ -530,7 +530,7 @@ def tam_denetim(belge, proje_yolu=None, girdi_yollari=None):
     return bulgular, gosterge(belge, ks, sayilan), sayilan
 
 
-# ----------------------------------------------------------------------------- görünüm modeli (döküm betikleri kullanır)
+# ----------------------------------------------------------------------------- view model (used by the renderers)
 def gorunum(belge):
     turler, profil = belge.get("turler") or [], belge.get("profil") or "standart"
     icerik = belge.get("bolumler") or {}
@@ -584,28 +584,28 @@ def bos_yol(yol):
     return f"{kok}-{i}{uz}"
 
 
-# ----------------------------------------------------------------------------- komutlar
+# ----------------------------------------------------------------------------- commands
 def bilgi_metni(b, ornek=False):
-    ek = f" · en az {b['en_az_satir']} satır" if b["en_az_satir"] > 1 else ""
-    out = [f"## {b['no']} {b['baslik']}  [ağırlık {b['agirlik']} · {b['sinif']} · {tur_metni(b)}{ek}]"]
+    ek = f" · at least {b['en_az_satir']} rows" if b["en_az_satir"] > 1 else ""
+    out = [f"## {b['no']} {b['baslik']}  [weight {b['agirlik']} · {b['sinif']} · {tur_metni(b)}{ek}]"]
     if b.get("not"):
-        out.append("Not: " + b["not"])
-    out += ["Amaç: " + b["amac"], "Kural: " + b["kural"]]
+        out.append("Note: " + b["not"])
+    out += ["Purpose: " + b["amac"], "Rule: " + b["kural"]]
     if b["alanlar"]:
-        out.append("Alanlar: " + " ; ".join(f"{x['anahtar']} = {x['etiket']}" + (f" — {x['ipucu']}" if x["ipucu"] else "")
+        out.append("Fields: " + " ; ".join(f"{x['anahtar']} = {x['etiket']}" + (f" — {x['ipucu']}" if x["ipucu"] else "")
                                             + (f" [{' | '.join(x['secenekler'])}]" if x.get("secenekler") else "")
                                             + (" (KARAR)" if x.get("karar") else "") for x in b["alanlar"]))
     if b["sutunlar"] and not b.get("turetilmis"):
-        out.append("Sütunlar: " + " ; ".join(f"{i} {c['ad']}" + (f" {{{'/'.join(c['kimlik'])}-nn}}" if c.get("kimlik") else "")
+        out.append("Columns: " + " ; ".join(f"{i} {c['ad']}" + (f" {{{'/'.join(c['kimlik'])}-nn}}" if c.get("kimlik") else "")
                                              + (f" [{' | '.join(c['secenekler'])}]" if c.get("secenekler") else "")
                                              + (f" — {c['ipucu']}" if c["ipucu"] else "") + (" (KARAR)" if c.get("karar") else "")
                                              for i, c in enumerate(b["sutunlar"])))
-    out.append("İyi: " + b["iyi"])
+    out.append("Good: " + b["iyi"])
     if b["sinif"] == "Kritik":
-        out.append("Kötü: " + b["kotu"])
+        out.append("Bad: " + b["kotu"])
     if ornek and b.get("ornek_satir"):
-        out.append("Örnek satır: " + json.dumps(b["ornek_satir"], ensure_ascii=False))
-    out.append("Denetim: " + ", ".join(b["kurallar"] + b["eski_kurallar"]))
+        out.append("Example row: " + json.dumps(b["ornek_satir"], ensure_ascii=False))
+    out.append("Checks: " + ", ".join(b["kurallar"] + b["eski_kurallar"]))
     return "\n".join(out)
 
 
@@ -625,7 +625,7 @@ def k_iskelet(a):
     turler = [t for t in a.tur.split(",") if t]
     gecersiz = [t for t in turler if t not in TUR_AD]
     if gecersiz or not turler:
-        sys.exit("Geçersiz tür. Seçenekler: " + ", ".join(f"{k}={v}" for k, v in TUR_AD.items()))
+        sys.exit("Invalid type. Options: " + ", ".join(f"{k}={v}" for k, v in TUR_AD.items()))
     bolumler = {}
     for no in T["yazim_sirasi"]:
         b = BOLUM[no]
@@ -641,10 +641,10 @@ def k_iskelet(a):
         bolumler["1.1"]["alanlar"]["gel_id"] = a.id
     belge = {"sema": T["sema"], "meta": {"surum": "0.1", "tarih": datetime.date.today().isoformat(), "hazirlayan": YOK, "durum": "Taslak", "musteri": YOK},
              "turler": turler, "profil": a.profil, "bolumler": bolumler,
-             "surum_gecmisi": [["0.1", datetime.date.today().isoformat(), YOK, "İlk taslak"]], "onaylar": []}
+             "surum_gecmisi": [["0.1", datetime.date.today().isoformat(), YOK, "İlk taslak"]], "onaylar": []}  # document content stays Turkish
     kaydet(belge, a.cikti)
-    print(f"İskelet yazıldı: {a.cikti} · {len(bolumler)} bölüm · türler {','.join(turler)} · profil {a.profil}")
-    print("Yazım sırası:", " → ".join(bolumler), "(6.2 türetilir; grup sırası " + ", ".join(T["grup_sirasi"]) + ")")
+    print(f"Skeleton written: {a.cikti} · {len(bolumler)} sections · types {','.join(turler)} · profile {a.profil}")
+    print("Writing order:", " → ".join(bolumler), "(6.2 is derived; group order " + ", ".join(T["grup_sirasi"]) + ")")
 
 
 def k_eksik(a):
@@ -662,15 +662,15 @@ def k_eksik(a):
         bekleyen = sum(1 for no, _, m in hucreler({"bolumler": {b["no"]: ic}}) if isaretli(m))
         n = len(ic.get("satirlar") or [])
         if bos or bekleyen or (b["sutunlar"] and n < b["en_az_satir"]):
-            satirlar.append(f"{b['no']} {b['baslik']} [ağırlık {b['agirlik']}{', KRİTİK' if b['sinif'] == 'Kritik' else ''}]: "
-                            + "; ".join(x for x in [f"boş alanlar: {', '.join(bos)}" if bos else "",
-                                                     f"satır {n}/{b['en_az_satir']}" if b["sutunlar"] and n < b["en_az_satir"] else "",
-                                                     f"{bekleyen} hücre karar/bilgi bekliyor" if bekleyen else ""] if x))
-    print("\n".join(satirlar) if satirlar else "Eksik yok.")
+            satirlar.append(f"{b['no']} {b['baslik']} [weight {b['agirlik']}{', CRITICAL' if b['sinif'] == 'Kritik' else ''}]: "
+                            + "; ".join(x for x in [f"empty fields: {', '.join(bos)}" if bos else "",
+                                                     f"rows {n}/{b['en_az_satir']}" if b["sutunlar"] and n < b["en_az_satir"] else "",
+                                                     f"{bekleyen} cells wait for a decision or fact" if bekleyen else ""] if x))
+    print("\n".join(satirlar) if satirlar else "Nothing missing.")
 
 
 def acik_ozeti(bulgular):
-    """Karar/bilgi bekleyen hücrelerden doğan bulguların tek satırlık özeti."""
+    """One-line summary of the findings that stem from cells waiting for a decision or fact."""
     grup = {}
     for b in bulgular:
         if b.get("acik"):
@@ -681,14 +681,14 @@ def acik_ozeti(bulgular):
 def yazdir_denetim(bulgular, g, azami):
     kusur = [b for b in bulgular if not b.get("acik")]
     say = {s: sum(1 for b in kusur if b["sev"] == s) for s in SEV_SIRA}
-    print(f"DENETİM  kusur: hata {say['HATA']} · uyarı {say['UYARI']} · bilgi {say['BİLGİ']}  |  girdi bekleyen: {len(bulgular) - len(kusur)}  |  "
-          f"mekanik gösterge {str(g['sonuc']).replace('.', ',')} ({g['bant']}) — yalnız kural kısmı; kalite puanını gerçek motor ölçer")
+    print(f"VALIDATION  defects: error {say['HATA']} · warning {say['UYARI']} · info {say['BİLGİ']}  |  waiting for input: {len(bulgular) - len(kusur)}  |  "
+          f"mechanical indicator {str(g['sonuc']).replace('.', ',')} ({g['bant']}) — rule part only; the real engine scores quality")
     for b in kusur[:azami]:
         print(f"{b['sev']:5} {b['kural']:10} {b['yol']}  {b['mesaj']}")
     if len(kusur) > azami:
-        print(f"… {len(kusur) - azami} kusur daha (--azami ile artırın)")
+        print(f"… {len(kusur) - azami} more defects (raise --azami)")
     if len(kusur) < len(bulgular):
-        print("GİRDİ BEKLEYEN (düzeltilecek kusur değil; karar ya da bilgi gelince kapanır, içerik uydurmayın): " + acik_ozeti(bulgular))
+        print("WAITING FOR INPUT (not a defect to fix; closes when the decision or fact arrives, do not invent content): " + acik_ozeti(bulgular))
 
 
 def k_denetle(a):
@@ -724,9 +724,9 @@ def k_yama(a):
         elif tur == "sil":
             del hedef[son]
         else:
-            sys.exit(f"Bilinmeyen işlem: {tur} (ayarla | ekle | sil)")
+            sys.exit(f"Unknown operation: {tur} (ayarla | ekle | sil)")
     kaydet(belge, a.dosya)
-    print(f"{len(islemler) if isinstance(islemler, list) else 1} işlem uygulandı: {a.dosya}")
+    print(f"{len(islemler) if isinstance(islemler, list) else 1} operation(s) applied: {a.dosya}")
 
 
 def ozet_satirlari(belge, bulgular, g, sayilan):
@@ -742,25 +742,25 @@ def ozet_satirlari(belge, bulgular, g, sayilan):
     c = g["cezalar"]
     yazilan = [n for n in sayilan if not BOLUM[n].get("turetilmis")]
     kimlik = a.get("gel_id") or "—"
-    out = [f"{'kimlik bekleniyor' if isaretli(kimlik) else kimlik} · {a.get('baslik') or '—'} · türler {', '.join(TUR_AD.get(t, t) for t in turler)} · profil {profil}",
-           f"Bölümler: {len(yazilan)} yazıldı{' + 6.2 türetildi' if '6.2' in sayilan else ''} · {durumlar.count('tur_disi')} tür dışı · {durumlar.count('profil_disi')} profil dışı"
-           + (f" · elle geçersiz: {', '.join(elle)}" if elle else ""),
-           f"Açık noktalar: {len(acik)} · karar/bilgi bekleyen hücre: {bekleyen} · doğrulanacak SAP nesnesi: {len(dogrula)}"
+    out = [f"{'id pending' if isaretli(kimlik) else kimlik} · {a.get('baslik') or '—'} · types {', '.join(TUR_AD.get(t, t) for t in turler)} · profile {profil}",
+           f"Sections: {len(yazilan)} written{' + 6.2 derived' if '6.2' in sayilan else ''} · {durumlar.count('tur_disi')} outside type · {durumlar.count('profil_disi')} outside profile"
+           + (f" · switched off: {', '.join(elle)}" if elle else ""),
+           f"Open points: {len(acik)} · cells waiting for a decision or fact: {bekleyen} · SAP objects to verify: {len(dogrula)}"
            + (f" ({', '.join(dogrula[:6])}{'…' if len(dogrula) > 6 else ''})" if dogrula else "")]
     def agirlik(s):
         w = [BOLUM[n]["agirlik"] for n in re.findall(r"(?<![\d.])\d\.\d{1,2}(?![\d])", s[2]) if n in BOLUM]
         return (-max(w), -sum(w)) if w else (0, 0)
-    acik = sorted(acik, key=agirlik)  # en ağır bölümü tıkayan önce; eşitlikte kimlik sırası korunur
+    acik = sorted(acik, key=agirlik)  # the one blocking the heaviest section first; ties keep id order
     out += [f"  {s[0]} [{s[2]}] {s[1][:110]}{'…' if len(s[1]) > 110 else ''} — {s[3]}, {s[4]}" for s in acik[:5]]
     if len(acik) > 5:
-        out.append(f"  … +{len(acik) - 5} açık nokta daha (7.3)")
-    out.append(f"Denetim: kusur hata {say['HATA']} · uyarı {say['UYARI']} · bilgi {say['BİLGİ']}"
-               + (f" · girdi bekleyen: {acik_ozeti(bulgular)}" if len(kusur) < len(bulgular) else ""))
-    out.append(f"Mekanik gösterge: {str(g['sonuc']).replace('.', ',')} ({g['bant']}) = ortalama {str(g['ortalama']).replace('.', ',')}"
-               f" − kritik {c.get('kritik', 0)} − zayıf bölüm {c.get('zayif', 0)} − hazırlık {c.get('hazirlik', 0)}."
-               " Yalnız mekanik kurallar; kalite (LLM) puanını gerçek motor ölçer.")
+        out.append(f"  … +{len(acik) - 5} more open points (7.3)")
+    out.append(f"Validation: defects error {say['HATA']} · warning {say['UYARI']} · info {say['BİLGİ']}"
+               + (f" · waiting for input: {acik_ozeti(bulgular)}" if len(kusur) < len(bulgular) else ""))
+    out.append(f"Mechanical indicator: {str(g['sonuc']).replace('.', ',')} ({g['bant']}) = average {str(g['ortalama']).replace('.', ',')}"
+               f" − critical {c.get('kritik', 0)} − weak sections {c.get('zayif', 0)} − readiness {c.get('hazirlik', 0)}."
+               " Mechanical rules only; the real engine scores quality (LLM part).")
     if [n for n in g.get("en_dusuk", []) if g["bolum"][n] < 100]:
-        out.append("En düşük iki bölüm: " + ", ".join(f"{n} ({str(g['bolum'][n]).replace('.', ',')})" for n in g["en_dusuk"]))
+        out.append("Two lowest sections: " + ", ".join(f"{n} ({str(g['bolum'][n]).replace('.', ',')})" for n in g["en_dusuk"]))
     return out
 
 
@@ -776,7 +776,7 @@ def k_dok(a):
     yapisal = [b for b in bulgular if b["sev"] == "HATA" and not b.get("acik") and b["kural"].startswith(("YAPI", "META"))]
     if yapisal:
         yazdir_denetim(yapisal, g, 20)
-        sys.exit("Yapısal hata varken döküm yapılmaz; önce düzeltin.")
+        sys.exit("No rendering while structural errors exist; fix them first.")
     os.makedirs(a.cikti, exist_ok=True)
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     ctx = {"T": T, "gorunum": gorunum(belge), "bulgular": bulgular, "gosterge": g, "ozet": ozet_satirlari(belge, bulgular, g, sayilan),
@@ -793,48 +793,48 @@ def k_dok(a):
             import dok_md as m
             hedef = bos_yol(os.path.join(a.cikti, dosya_adi(belge) + (".md" if bicim == "md" else "_vault")))
         else:
-            sys.exit(f"Bilinmeyen biçim '{bicim}'. Seçenekler: docx, xlsx, md, vault")
+            sys.exit(f"Unknown format '{bicim}'. Options: docx, xlsx, md, vault")
         try:
             m.uret(belge, ctx, hedef, bicim)
         except ImportError as e:
-            sys.exit(f"{bicim} için gerekli kütüphane yok ({e.name}). Kurun: pip install " + {"docx": "python-docx", "xlsx": "openpyxl"}.get(bicim, e.name))
-        print("Üretildi:", hedef)
+            sys.exit(f"Library required for {bicim} is missing ({e.name}). Install: pip install " + {"docx": "python-docx", "xlsx": "openpyxl"}.get(bicim, e.name))
+        print("Rendered:", hedef)
 
 
 def main():
     try:
         import signal
-        signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # çıktı `head` gibi bir araca bağlandığında sessizce bit
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # exit quietly when the output is piped into a tool such as `head`
     except (ImportError, AttributeError, ValueError):
         pass
-    p = argparse.ArgumentParser(description="Belirtim Yazmanı · FS-TS içerik aracı")
+    p = argparse.ArgumentParser(description="Spec Writer · FS-TS content tool")
     alt = p.add_subparsers(dest="komut", required=True)
-    q = alt.add_parser("bilgi", help="Geçerli bölümlerin yazım bilgisi (türe ve profile göre süzülmüş)")
+    q = alt.add_parser("bilgi", help="Writing guidance for the applicable sections (filtered by type and profile)")
     q.add_argument("--tur", default=""); q.add_argument("--profil", default="standart"); q.add_argument("--grup"); q.add_argument("--bolum")
     q.add_argument("--ornek", action="store_true"); q.set_defaults(f=k_bilgi)
-    q = alt.add_parser("iskelet", help="Boş içerik JSON'u üret")
-    q.add_argument("--tur", required=True, help="Virgüllü tür kodları: " + ", ".join(f"{k}={v}" for k, v in TUR_AD.items()))
+    q = alt.add_parser("iskelet", help="Create an empty content JSON")
+    q.add_argument("--tur", required=True, help="Comma-separated type codes: " + ", ".join(f"{k}={v}" for k, v in TUR_AD.items()))
     q.add_argument("--profil", default="standart", choices=list(T["profiller"])); q.add_argument("--id"); q.add_argument("--cikti", required=True)
     q.set_defaults(f=k_iskelet)
-    for ad, f, yardim in (("eksik", k_eksik, "Boş alanları ve bekleyen hücreleri ağırlık sırasıyla listele"),
-                          ("denetle", k_denetle, "Mekanik denetim ve gösterge"), ("ozet", k_ozet, "Teslim raporu satırları"),
-                          ("dok", k_dok, "JSON'u belgeye dök")):
+    for ad, f, yardim in (("eksik", k_eksik, "List empty fields and waiting cells by weight"),
+                          ("denetle", k_denetle, "Mechanical validation and indicator"), ("ozet", k_ozet, "Delivery report lines"),
+                          ("dok", k_dok, "Render the JSON as a document")):
         q = alt.add_parser(ad, help=yardim)
         q.add_argument("dosya")
         if ad != "eksik":
-            q.add_argument("--proje", help="Proje profili JSON'u (adlandırma, doğrulanmış katalog)")
-            q.add_argument("--girdi", nargs="*", help="Girdi metin dosyaları; içlerindeki SAP adları doğrulanmış sayılır")
+            q.add_argument("--proje", help="Project profile JSON (naming rules, verified catalog)")
+            q.add_argument("--girdi", nargs="*", help="Input text files; SAP names inside them count as verified")
         if ad == "denetle":
             q.add_argument("--json", action="store_true"); q.add_argument("--azami", type=int, default=40)
         if ad == "dok":
-            q.add_argument("--bicim", required=True, help="docx, xlsx, md, vault (virgülle birden çok)"); q.add_argument("--cikti", default=".")
-            q.add_argument("--logo", help="Kapak ve üst bilgi logosu (PNG); verilmezse assets/logo.png varsa o kullanılır")
+            q.add_argument("--bicim", required=True, help="docx, xlsx, md, vault (comma-separated for several)"); q.add_argument("--cikti", default=".")
+            q.add_argument("--logo", help="Cover and header logo (PNG); defaults to assets/logo.png when present")
         q.set_defaults(f=f)
-    q = alt.add_parser("yama", help="JSON'a hedefli değişiklik uygula")
+    q = alt.add_parser("yama", help="Apply targeted edits to the JSON")
     q.add_argument("dosya")
-    q.add_argument("--op", help='JSON işlem listesi. ayarla: {"islem":"ayarla","yol":"/bolumler/3.5/satirlar/0/4","deger":"…"} · '
-                                'satır ekle: {"islem":"ekle","yol":"/bolumler/3.5/satirlar","deger":["STEP-04","4",…]} · '
-                                'sil: {"islem":"sil","yol":"/bolumler/3.5/satirlar/2"}. Satır ve sütun numaraları 0\'dan başlar.')
+    q.add_argument("--op", help='JSON operation list. set: {"islem":"ayarla","yol":"/bolumler/3.5/satirlar/0/4","deger":"…"} · '
+                                'append a row: {"islem":"ekle","yol":"/bolumler/3.5/satirlar","deger":["STEP-04","4",…]} · '
+                                'delete: {"islem":"sil","yol":"/bolumler/3.5/satirlar/2"}. Row and column numbers start at 0.')
     q.add_argument("--yama-dosyasi"); q.set_defaults(f=k_yama)
     a = p.parse_args()
     a.f(a)
