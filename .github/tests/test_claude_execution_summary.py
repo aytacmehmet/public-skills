@@ -27,6 +27,14 @@ class ExecutionSummaryTests(unittest.TestCase):
         result = summary.summarize([{"type": "result", "subtype": "success", "is_error": False, "result": "AUTH_CHECK_OK", "num_turns": 1}], "fixture", "AUTH_CHECK_OK")
         self.assertEqual("PASS", result["status"])
 
+    def test_synthetic_assistant_error_is_classified_without_disclosure(self):
+        result = summary.summarize([
+            {"type": "assistant", "error": "authentication_failed", "message": {"content": [{"type": "text", "text": "API Error: 401 TOKEN_MUST_STAY_HIDDEN"}]}},
+            {"type": "result", "subtype": "success", "is_error": True, "num_turns": 1}], "fixture")
+        self.assertEqual("authentication_failed", result["category"])
+        self.assertEqual(401, result["http_status"])
+        self.assertNotIn("TOKEN_MUST_STAY_HIDDEN", json.dumps(result))
+
     def test_provider_errors_stay_distinct(self):
         for text, category in (("API Error: 429 usage limit", "usage_limit"), ("API Error: 404 model not found", "model_unavailable"),
                                ("Unknown skill: code-review:code-review", "command_not_found"), ("API Error: 403", "permission_denied"),

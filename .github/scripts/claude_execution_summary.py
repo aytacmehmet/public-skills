@@ -16,11 +16,21 @@ def summarize(messages, requested_model, expect=None):
     if isinstance(errors, list):
         text = str(text) + " " + " ".join(item for item in errors if isinstance(item, str))
     failed = result.get("is_error") is not False or result.get("subtype") != "success"
+    # Claude can put the API error in a synthetic assistant turn and leave result.result empty.
+    if failed:
+        for message in messages:
+            if not isinstance(message, dict) or message.get("type") != "assistant" or not message.get("error"):
+                continue
+            text += " " + str(message.get("error"))
+            for block in message.get("message", {}).get("content", []):
+                if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str):
+                    text += " " + block["text"]
     category = "completed"
     if failed:
         category = "execution_error"
         for pattern, label in (
             (r"OAuth.*(?:invalid|expired)|invalid.*OAuth|authentication_failed|Failed to authenticate|API Error:\s*401", "authentication_failed"),
+            (r"only authorized for use with Claude Code|credential.*scope", "credential_scope"),
             (r"usage limit|rate.limit|API Error:\s*429", "usage_limit"),
             (r"model.*(?:not found|not available|does not exist|not supported)|API Error:\s*404", "model_unavailable"),
             (r"Unknown (?:skill|command)|skill.*not found", "command_not_found"),
@@ -30,12 +40,16 @@ def summarize(messages, requested_model, expect=None):
             if re.search(pattern, text, re.I):
                 category = label
                 break
-    elif expect is not None and result.get("result", "").strip() != expect:
+    elif expect is not None and (not isinstance(result.get("result"), str) or result["result"].strip() != expect):
         failed, category = True, "unexpected_response"
     status = next((int(value) for value in re.findall(r"API Error:\s*([1-5]\d\d)", text)), None)
     return {"status": "FAIL" if failed else "PASS", "category": category, "requested_model": requested_model,
             "http_status": status, "is_error": result.get("is_error") is not False,
-            "num_turns": result.get("num_turns") if type(result.get("num_turns")) is int else None}
+            "num_turns": result.get("num_turns") if type(result.get("num_turns")) is int else None,
+            "result_fields": sorted(key for key in result if re.fullmatch(r"[a-zA-Z_]{1,40}", key)),
+            "assistant_error_codes": sorted({message["error"] for message in messages if isinstance(message, dict)
+                and message.get("type") == "assistant" and message.get("error") in
+                {"authentication_failed", "billing_error", "rate_limit", "invalid_request", "server_error", "unknown"}})}
 
 
 def main():
@@ -51,6 +65,8 @@ def main():
             data = json.loads(raw)
         except ValueError:
             data = [json.loads(line) for line in raw.splitlines() if line.strip()]
+        if isinstance(data, dict):
+            data = [data]
         if not isinstance(data, list):
             raise ValueError("Execution envelope must be an array")
         summary = summarize(data, args.model, args.expect)
