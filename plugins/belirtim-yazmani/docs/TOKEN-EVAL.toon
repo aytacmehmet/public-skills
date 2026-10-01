@@ -1,0 +1,45 @@
+audit_id: tca-20260930-002
+date: 2026-10-01
+scope: codex
+status: PASS
+comparison_run: x8
+baseline_screening_run: x7
+source_version: 2.0.0
+source_commit: 7f4420a6d52877e8a063eed51668bdfdf785b33e
+evaluated_candidate_version: 2.0.0
+release_version: 2.0.1
+release_binding: evaluated description applied verbatim; version and publication records updated afterward
+cases: 20
+task_cases: 10
+trigger_cases: 10
+repeats_per_variant: 3
+paired_runs: 120
+configured_model: default
+configured_effort: default
+served_model: unknown
+runner: codex-cli 0.153.4
+codec: official TOON 4.1.1 strict
+description_sha256: 6491efeeda7cba11163a3b9e8787bed7d5c46a4a8024678f85afd621d36fa61a
+source_skill_sha256: bb3ce8df022406de8c6546f843e07a52ac0b79898203cfad8b0b68f04a593432
+candidate_skill_sha256: 3f074eb97fb8ad8656fb2d6d2092a234791fa6542bd89ee4acf402a53e6aa15d
+adapter_engine_sha256: 602e248f4f667f5d54e7ef0827f6d9c79eb3b7eb306a3c8f8481b6f0dc518ad1
+metrics[7]{name,baseline,candidate,evidence}:
+  task_quality,1,1,measured
+  invocation_accuracy,0.7,1,measured
+  weighted_token_cost_per_success,24013.9,19491.3,measured
+  tool_calls_per_success,4.73,4.03,measured
+  failed_calls_per_success,1.8,1.2,measured
+  retries_per_success,1.8,1.07,measured
+  turns_per_success,1,1,measured
+cost_delta_pct: -18.8
+cost_per_case_mean_log_ratio: -0.2
+cost_per_case_ci95_lower: -0.363
+cost_per_case_ci95_upper: -0.036
+cost_unit: relative weighted-token index; not money, billing or literal total tokens
+limits:
+  remaining_path_failures: true
+  claude_model_execution: NOT_RUN
+  controlled_latency: NOT_RUN
+  toon_json_format_benchmark: NOT_RUN
+  full_handoff_reader_visual_release_qualification: NOT_RUN
+  sap_tenant_activation_atc_runtime_uat: NOT_RUN

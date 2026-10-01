@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Writer"
+  short_description: "SAP TOON FS-TS and complete developer handoffs"
+  default_prompt: "$belirtim-yazmani documents the stated decisions and prepares one complete TOON FS-TS handoff; respond in my language."

@@ -1,0 +1,3447 @@
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0"
+    },
+    "development": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "edition": {
+          "enum": [
+            "S/4HANA Cloud Public Edition",
+            "S/4HANA Cloud Private Edition",
+            "UNKNOWN"
+          ]
+        },
+        "release": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "illustrative": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "slug",
+        "name",
+        "edition",
+        "release",
+        "illustrative"
+      ],
+      "additionalProperties": false
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-z0-9.-]+)?$"
+        },
+        "mode": {
+          "enum": [
+            "NEW",
+            "UPDATE"
+          ]
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "mockupCodeException": {
+          "type": "object",
+          "properties": {
+            "authorized": {
+              "type": "boolean"
+            },
+            "receipt": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "authorized",
+            "receipt"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "version",
+        "mode",
+        "language",
+        "mockupCodeException"
+      ],
+      "additionalProperties": false
+    },
+    "content": {
+      "$ref": "#/$defs/legacy"
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "namingRules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "catalog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "objectType": {
+                "type": "string"
+              },
+              "edition": {
+                "type": "string"
+              },
+              "release": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "contract": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "visibility": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "UNKNOWN",
+                  "VERIFIED",
+                  "NOT_APPLICABLE",
+                  "NOT_RUN",
+                  "FAILED"
+                ]
+              },
+              "evidenceRefs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "name",
+              "objectType",
+              "edition",
+              "release",
+              "contract",
+              "visibility",
+              "status",
+              "evidenceRefs"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "namingRules",
+        "catalog"
+      ],
+      "additionalProperties": false
+    },
+    "baseline": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "NEW",
+            "SYSTEM",
+            "APPROVED_HANDOFF",
+            "UNKNOWN"
+          ]
+        },
+        "systemState": {
+          "enum": [
+            "ABSENT_VERIFIED",
+            "PRESENT_VERIFIED",
+            "UNKNOWN",
+            "NOT_CHECKED"
+          ]
+        },
+        "reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "payloadSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verifiedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "systemState",
+        "reference",
+        "payloadSha256",
+        "verifiedAt",
+        "evidenceRefs"
+      ],
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "DRAFT",
+            "APPROVED_SNAPSHOT"
+          ]
+        },
+        "payloadSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "receipt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "payloadSha256",
+        "by",
+        "date",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "UNKNOWN",
+                "VERIFIED",
+                "NOT_APPLICABLE",
+                "NOT_RUN",
+                "FAILED"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "evidenceRefs"
+          ],
+          "additionalProperties": false
+        },
+        "objects": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "UNKNOWN",
+                "VERIFIED",
+                "NOT_APPLICABLE",
+                "NOT_RUN",
+                "FAILED"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "evidenceRefs"
+          ],
+          "additionalProperties": false
+        },
+        "authorization": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "UNKNOWN",
+                "VERIFIED",
+                "NOT_APPLICABLE",
+                "NOT_RUN",
+                "FAILED"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "evidenceRefs"
+          ],
+          "additionalProperties": false
+        },
+        "runtime": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "UNKNOWN",
+                "VERIFIED",
+                "NOT_APPLICABLE",
+                "NOT_RUN",
+                "FAILED"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "evidenceRefs"
+          ],
+          "additionalProperties": false
+        },
+        "uat": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "UNKNOWN",
+                "VERIFIED",
+                "NOT_APPLICABLE",
+                "NOT_RUN",
+                "FAILED"
+              ]
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "evidenceRefs"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "release",
+        "objects",
+        "authorization",
+        "runtime",
+        "uat"
+      ],
+      "additionalProperties": false
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "developmentId": {
+            "type": "string"
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contract": {
+            "type": "string"
+          },
+          "operation": {
+            "const": "REFERENCE"
+          },
+          "status": {
+            "enum": [
+              "UNKNOWN",
+              "VERIFIED",
+              "NOT_APPLICABLE",
+              "NOT_RUN",
+              "FAILED"
+            ]
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "developmentId",
+          "version",
+          "contract",
+          "operation",
+          "status",
+          "evidenceRefs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category": {
+            "enum": [
+              "design",
+              "contracts",
+              "evidence",
+              "mockup"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "path",
+          "category",
+          "description",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "mockup": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "enum": [
+            "NOT_CREATED",
+            "REFERENCED",
+            "SUPPLIED"
+          ]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "url",
+        "version",
+        "status",
+        "evidenceRefs"
+      ],
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "development",
+    "handoff",
+    "content",
+    "project",
+    "baseline",
+    "approval",
+    "verification",
+    "dependencies",
+    "extensions",
+    "assets",
+    "mockup",
+    "delivery"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Single-development FS-TS TOON decoded data",
+  "$comment": "Validate after strict TOON decoding. Schema is not approval or SAP evidence.",
+  "$defs": {
+    "legacy": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Belirtim Yazmanı FS-TS içeriği",
+      "type": "object",
+      "required": [
+        "sema",
+        "meta",
+        "turler",
+        "profil",
+        "bolumler"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sema": {
+          "const": "1.0"
+        },
+        "meta": {
+          "type": "object",
+          "required": [
+            "surum",
+            "tarih",
+            "hazirlayan",
+            "durum"
+          ],
+          "properties": {
+            "surum": {
+              "type": "string"
+            },
+            "tarih": {
+              "type": "string"
+            },
+            "hazirlayan": {
+              "type": "string"
+            },
+            "durum": {
+              "type": "string"
+            },
+            "musteri": {
+              "type": "string"
+            }
+          }
+        },
+        "turler": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "R",
+              "I",
+              "C",
+              "E",
+              "F",
+              "W",
+              "U"
+            ]
+          }
+        },
+        "profil": {
+          "enum": [
+            "hafif",
+            "standart",
+            "tam"
+          ]
+        },
+        "bolumler": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "1.1": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "alanlar": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gel_id",
+                    "baslik",
+                    "modul",
+                    "sistem",
+                    "yaklasim",
+                    "clean_core",
+                    "cc_gerekce",
+                    "oncelik",
+                    "karmasiklik",
+                    "danisman",
+                    "abap",
+                    "ui5"
+                  ],
+                  "properties": {
+                    "gel_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "baslik": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "modul": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sistem": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "yaklasim": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "clean_core": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "cc_gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "oncelik": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "karmasiklik": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "danisman": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "abap": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ui5": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              "required": [
+                "alanlar"
+              ]
+            },
+            "1.2": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "alanlar": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "odata_versiyon",
+                        "backend_modeli",
+                        "draft",
+                        "ui_yaklasimi",
+                        "binding_tipi"
+                      ],
+                      "properties": {
+                        "odata_versiyon": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "backend_modeli": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "draft": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "ui_yaklasimi": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "binding_tipi": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 6,
+                        "maxItems": 6,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(SRV)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Z",
+                                  "SAP",
+                                  "Dış"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "C0",
+                                  "C1",
+                                  "C2",
+                                  "—"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "alanlar",
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "2.1": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "alanlar": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ozet",
+                    "sorun",
+                    "etki",
+                    "ornek",
+                    "hacim"
+                  ],
+                  "properties": {
+                    "ozet": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "sorun": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "etki": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "ornek": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "hacim": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "array",
+                    "minItems": 6,
+                    "maxItems": 6,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(ASIS)-[0-9]{2,3}$"
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Evet",
+                              "Hayır"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "alanlar",
+                "satirlar"
+              ]
+            },
+            "2.2": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "alanlar": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "cozum_ozeti",
+                    "teknoloji",
+                    "cozdugu_sorun"
+                  ],
+                  "properties": {
+                    "cozum_ozeti": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "teknoloji": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "cozdugu_sorun": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "array",
+                    "minItems": 6,
+                    "maxItems": 6,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(REQ)-[0-9]{2,3}$"
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Her zaman",
+                              "Durum",
+                              "Olay",
+                              "Opsiyon",
+                              "İstenmeyen",
+                              "Bileşik"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Must",
+                              "Should",
+                              "Could"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "alanlar",
+                "satirlar"
+              ]
+            },
+            "2.3": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(SC)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "2.4": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 5,
+                        "maxItems": 5,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(D)-[0-9]{2,3}$"
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Akış",
+                                  "BPMN",
+                                  "Sekans",
+                                  "Durum"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "2.5": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "alanlar": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kapsam_ici",
+                    "kapsam_siniri"
+                  ],
+                  "properties": {
+                    "kapsam_ici": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kapsam_siniri": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 3,
+                  "items": {
+                    "type": "array",
+                    "minItems": 7,
+                    "maxItems": 7,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(DEP|ASM|OOS)-[0-9]{2,3}$"
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Bağımlılık",
+                              "Varsayım",
+                              "Kapsam dışı"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Açık",
+                              "Doğrulandı",
+                              "Geçersiz"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "alanlar",
+                "satirlar"
+              ]
+            },
+            "3.1": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 6,
+                        "maxItems": 6,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(PRE)-[0-9]{2,3}$"
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Ana veri",
+                                  "Uyarlama",
+                                  "Kapsam öğesi",
+                                  "İletişim düzenlemesi",
+                                  "Yetki"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.2": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 9,
+                        "maxItems": 9,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(SEL)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Tek",
+                                  "Çoklu",
+                                  "Aralık"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.3": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "alanlar": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "floorplan",
+                    "floorplan_gerekce",
+                    "semantic_object",
+                    "launchpad",
+                    "cihaz_dil",
+                    "anahtar_kullanici"
+                  ],
+                  "properties": {
+                    "floorplan": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "floorplan_gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "semantic_object": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "launchpad": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "cihaz_dil": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "anahtar_kullanici": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "array",
+                    "minItems": 8,
+                    "maxItems": 8,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(UI)-[0-9]{2,3}$"
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Filtre",
+                              "Kolon",
+                              "Alan",
+                              "Aksiyon",
+                              "Sekme"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "alanlar",
+                "satirlar"
+              ]
+            },
+            "3.4": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "alanlar": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "yon",
+                    "protokol",
+                    "tetikleyici",
+                    "hacim",
+                    "comm_scenario"
+                  ],
+                  "properties": {
+                    "yon": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "protokol": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "tetikleyici": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "hacim": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "comm_scenario": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "array",
+                    "minItems": 9,
+                    "maxItems": 9,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(MAP)-[0-9]{2,3}$"
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Evet",
+                              "Hayır"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "alanlar",
+                "satirlar"
+              ]
+            },
+            "3.5": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 3,
+                  "items": {
+                    "type": "array",
+                    "minItems": 9,
+                    "maxItems": 9,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(STEP)-[0-9]{2,3}$"
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "satirlar"
+              ]
+            },
+            "3.6": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "alanlar": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "cikti_tipi",
+                        "disa_aktarma",
+                        "varyant"
+                      ],
+                      "properties": {
+                        "cikti_tipi": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "disa_aktarma": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "varyant": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 9,
+                        "maxItems": 9,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(COL)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "alanlar",
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.7": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 8,
+                        "maxItems": 8,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.8": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(ST)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.9": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 5,
+                        "maxItems": 5,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(IDM)-[0-9]{2,3}$"
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "İdempotency anahtarı",
+                                  "Yinelenen istek",
+                                  "Tekrar politikası",
+                                  "Zaman aşımı",
+                                  "Kısmi başarı",
+                                  "Yeniden işleme",
+                                  "Kilitleme"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.10": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 10,
+                        "maxItems": 10,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(INT)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Giden",
+                                  "Gelen"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "3.11": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 6,
+                        "maxItems": 6,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(PERF)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "4.1": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 9,
+                        "maxItems": 9,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(OBJ)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Z",
+                                  "SAP"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Yeni",
+                                  "Değişen",
+                                  "Kullanılan"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "4.2": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 8,
+                        "maxItems": 8,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "4.3": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(EXT)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Evet",
+                                  "Hayır"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "4.4": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "alanlar": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "form_teknolojisi",
+                        "cikti_kanal",
+                        "dil_kagit",
+                        "tetikleme"
+                      ],
+                      "properties": {
+                        "form_teknolojisi": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "cikti_kanal": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "dil_kagit": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "tetikleme": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 6,
+                        "maxItems": 6,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(FRM)-[0-9]{2,3}$"
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Başlık",
+                                  "Kalem",
+                                  "Alt bilgi"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "alanlar",
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "5.1": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "type": "array",
+                    "minItems": 8,
+                    "maxItems": 8,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(MSG)-[0-9]{2,3}$"
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "E",
+                              "W",
+                              "I",
+                              "S",
+                              "A"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "satirlar"
+              ]
+            },
+            "5.2": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(AUTH)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "5.3": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(AUTH)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "5.4": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Var",
+                                  "Yok"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "6.1": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mermaid": {
+                  "type": "string"
+                },
+                "satirlar": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "type": "array",
+                    "minItems": 9,
+                    "maxItems": 9,
+                    "prefixItems": [
+                      {
+                        "type": "string",
+                        "pattern": "^(TC)-[0-9]{2,3}$"
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Mutlu yol",
+                              "Negatif",
+                              "Sınır"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "ABAP Unit",
+                              "Entegrasyon",
+                              "UI (OPA5)",
+                              "UAT"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      },
+                      {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "Planlandı",
+                              "Geçti",
+                              "Kaldı"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "BEKLİYOR"
+                          }
+                        ]
+                      }
+                    ],
+                    "items": true
+                  }
+                }
+              },
+              "required": [
+                "satirlar"
+              ]
+            },
+            "6.3": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(QA)-[0-9]{2,3}$"
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "ATC",
+                                  "ABAP Unit",
+                                  "CVA / güvenlik",
+                                  "UI5 lint",
+                                  "OPA5-QUnit",
+                                  "Kod incelemesi",
+                                  "İstisna kaydı"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "7.1": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 7,
+                        "maxItems": 7,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(LOG)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Info",
+                                  "Warning",
+                                  "Error"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "7.2": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "alanlar": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "bilesen_paket",
+                        "transportlar",
+                        "software_collection",
+                        "canli_tarihi"
+                      ],
+                      "properties": {
+                        "bilesen_paket": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "transportlar": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "software_collection": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "canli_tarihi": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 6,
+                        "maxItems": 6,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "alanlar",
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "7.3": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mermaid": {
+                      "type": "string"
+                    },
+                    "satirlar": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "array",
+                        "minItems": 8,
+                        "maxItems": 8,
+                        "prefixItems": [
+                          {
+                            "type": "string",
+                            "pattern": "^(OPEN)-[0-9]{2,3}$"
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Açık",
+                                  "Kararlaştırıldı",
+                                  "Kapandı"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          {
+                            "anyOf": [
+                              {
+                                "enum": [
+                                  "Yayına alınmamış nesne",
+                                  "Açık ATC/CVA bulgusu",
+                                  "Tasarım/sözleşme açığı",
+                                  "Geçici çözüm / hardcode",
+                                  "Karar bekleyen konu",
+                                  "İstisna kaydı yapılmamış bulgu",
+                                  "—"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "BEKLİYOR"
+                              }
+                            ]
+                          }
+                        ],
+                        "items": true
+                      }
+                    }
+                  },
+                  "required": [
+                    "satirlar"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "gecerli",
+                    "gerekce"
+                  ],
+                  "properties": {
+                    "gecerli": {
+                      "const": false
+                    },
+                    "gerekce": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "surum_gecmisi": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "onaylar": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          }
+        },
+        "nesne_degil": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
