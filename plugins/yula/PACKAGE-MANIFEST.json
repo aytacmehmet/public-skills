@@ -18,12 +18,32 @@
       "bytes": 249
     },
     "CHANGELOG.md": {
-      "sha256": "d999414f6d32323c6980d216e6d3c09678839649f570bc78e2bd5bb6d11cdb0d",
-      "bytes": 1030
+      "sha256": "e087057b3417bf48472e258d96f522982314181e2032df74ad6d57dd93f3c937",
+      "bytes": 1200
     },
     "CHANGELOG.tr.md": {
-      "sha256": "9bc334ceca87ece74692f303b82461d8c9c5f6cfe44cdc1102ab830375b34ff2",
-      "bytes": 1086
+      "sha256": "dab93878d58b3a79e340a68aadab5da9c04aa6c8a9b489e8bc3886822f7a117c",
+      "bytes": 1275
+    },
+    "LICENSE": {
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    "LICENSES/SAP-Cloudification-Repository.txt": {
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    "PUBLICATION.json": {
+      "sha256": "e0a06fa58886aa43d51bdd8ef228ffa5608a7f28d026b1ea93b83a5759933767",
+      "bytes": 10789
+    },
+    "README.md": {
+      "sha256": "3d851b2300bb2e4fa374f1eceb4169bd49ef3fb4f3e2845ea0ce015748b0806c",
+      "bytes": 7236
+    },
+    "README.tr.md": {
+      "sha256": "c35db1c596f6dab32c613173ed6c03adaf8e8aec2153e2202fb9dcd45aa21107",
+      "bytes": 8027
     },
     "config/sources.example.json": {
       "sha256": "76e69d9d53132e030eabd061e97c31759fe4af6058cbec1d11e638f0ce950902",
@@ -52,26 +72,6 @@
     "data/yula.sqlite.zip": {
       "sha256": "17278c44b4c1177d000c56e8a29fbe1ea163f9ec198855cf9b86107e0d3f769a",
       "bytes": 78681985
-    },
-    "LICENSE": {
-      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
-      "bytes": 35149
-    },
-    "LICENSES/SAP-Cloudification-Repository.txt": {
-      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
-      "bytes": 11357
-    },
-    "PUBLICATION.json": {
-      "sha256": "a125ed9f56f26f777f9f204120af72b69b65d82273bda454e014fbb118243dc8",
-      "bytes": 10755
-    },
-    "README.md": {
-      "sha256": "3d851b2300bb2e4fa374f1eceb4169bd49ef3fb4f3e2845ea0ce015748b0806c",
-      "bytes": 7236
-    },
-    "README.tr.md": {
-      "sha256": "c35db1c596f6dab32c613173ed6c03adaf8e8aec2153e2202fb9dcd45aa21107",
-      "bytes": 8027
     },
     "references/configuration-workflows.md": {
       "sha256": "5d03bf749cbcc932f656ae29ed2ae8f9eae7eea11f09de4b5914c4651b8397bb",
@@ -166,8 +166,8 @@
       "bytes": 37036
     },
     "scripts/build_package.py": {
-      "sha256": "2abb1a1bacca62b5f355df5fed822ab5297f992316ee9ba62fcec61d07876707",
-      "bytes": 4007
+      "sha256": "19ae5948d3d2edb66f35a06bbb85b6f248ffb6ec12c83e438ef1c0e18bfcb537",
+      "bytes": 4145
     },
     "scripts/check_package.py": {
       "sha256": "2a10a7c85eba17e9f9db7ac4b6a8feedcb3434ed5c6172f1565fd496d27e9092",
@@ -181,10 +181,6 @@
       "sha256": "7b3f7c06a9337704f341ba47ca34c3a100f57256868d00692667ba245de8e973",
       "bytes": 334
     },
-    "skills/sap-configuration-architect/agents/openai.yaml": {
-      "sha256": "1d2afaadddb4954a2b1f85676f3ac3ea90883ec5c860886c390c4ebbd60dfc6b",
-      "bytes": 408
-    },
     "skills/sap-configuration-architect/README.md": {
       "sha256": "f49aba30ec43ae40cdd6a3ac09ec8060d10112987e84d6d6844087b224406ba1",
       "bytes": 933
@@ -197,9 +193,9 @@
       "sha256": "e6a876b9de3df3e0d68ba0586a82e51e8d4cb5a9d75d691cdf4d330b4eb8fb68",
       "bytes": 1940
     },
-    "skills/sap-released-object-advisor/agents/openai.yaml": {
-      "sha256": "39f50f981dfab99dc72fcf2324e9389a4eb1f6d2e5d8e6ac98d468e39c4b61b7",
-      "bytes": 406
+    "skills/sap-configuration-architect/agents/openai.yaml": {
+      "sha256": "1d2afaadddb4954a2b1f85676f3ac3ea90883ec5c860886c390c4ebbd60dfc6b",
+      "bytes": 408
     },
     "skills/sap-released-object-advisor/README.md": {
       "sha256": "b55e46cd1a69d79ec4adaee66e5e8e7411d2f4a24f7464d2560cff3b6342163c",
@@ -213,8 +209,8 @@
       "sha256": "bf5590828b476ff5915b25274b9fc923414e3c17d6ef25a9031fe0e188d5b967",
       "bytes": 1474
     },
-    "skills/sap-released-object-developer/agents/openai.yaml": {
-      "sha256": "ee81a5958c838313475b143396858d37ff5d9d1e28619cd1dd6e8775020b9ba6",
+    "skills/sap-released-object-advisor/agents/openai.yaml": {
+      "sha256": "39f50f981dfab99dc72fcf2324e9389a4eb1f6d2e5d8e6ac98d468e39c4b61b7",
       "bytes": 406
     },
     "skills/sap-released-object-developer/README.md": {
@@ -228,6 +224,10 @@
     "skills/sap-released-object-developer/SKILL.md": {
       "sha256": "9efbc1c2ae6883d23c2ff11d02499c4b78817f09fdde1d71ae854f6948e3537b",
       "bytes": 1539
+    },
+    "skills/sap-released-object-developer/agents/openai.yaml": {
+      "sha256": "ee81a5958c838313475b143396858d37ff5d9d1e28619cd1dd6e8775020b9ba6",
+      "bytes": 406
     },
     "tests/host-compatibility.json": {
       "sha256": "aac0cbf06fe881ae53aee5b4e5787fdf61dc244ef6edfe45f204b63cb62c98dd",
@@ -246,8 +246,8 @@
       "bytes": 14293
     },
     "tests/test_distribution.py": {
-      "sha256": "51b30a7ff67f823e159dc38ae736d5f7fb4f74ef1232ce4c34060fdbb3cf2afd",
-      "bytes": 5303
+      "sha256": "5d74d78e082335ec77f49628f48787dfa82417770bdaee40013098be2cd517ce",
+      "bytes": 6303
     },
     "tests/test_payload_bounds.py": {
       "sha256": "6aa4cd4d2f4fcd7f440cbbb4fbe45ddd4e42be20b3235fb23a3be142beb5f39e",

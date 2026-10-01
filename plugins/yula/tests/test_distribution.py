@@ -118,6 +118,20 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual("DATA_ROOT_REQUIRED", json.loads(result.stdout)["error"])
         self.assertFalse((self.base / "current.json").exists())
 
+    def test_delivery_manifest_and_zip_use_case_sensitive_posix_order(self):
+        output = self.base / "delivery"
+        result = subprocess.run([sys.executable, "-B", str(ROOT / "scripts/build_package.py"),
+                                 "--output-dir", str(output)], cwd=self.base, capture_output=True, timeout=30)
+        self.assertEqual(0, result.returncode, result.stderr.decode("utf-8", errors="replace"))
+        manifest = json.loads((output / "PACKAGE-MANIFEST.json").read_text(encoding="utf-8"))
+        names = list(manifest["files"])
+        self.assertEqual(sorted(names), names)
+        report = json.loads(result.stdout)
+        with zipfile.ZipFile(output / report["zip"]) as bundle:
+            payload = [name.removeprefix("yula-marketplace/plugins/yula/") for name in bundle.namelist()[3:]]
+            self.assertEqual(names, payload)
+            self.assertEqual("aytacmehmet-public", json.loads(bundle.read("yula-marketplace/.agents/plugins/marketplace.json"))["name"])
+
 
 if __name__ == "__main__":
     unittest.main()

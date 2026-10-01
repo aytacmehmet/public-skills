@@ -27,7 +27,8 @@
     "skills/sap-released-object-advisor/SKILL.md",
     "skills/sap-released-object-developer/README.md",
     "skills/sap-released-object-developer/README.tr.md",
-    "skills/sap-released-object-developer/SKILL.md"
+    "skills/sap-released-object-developer/SKILL.md",
+    "tests/test_distribution.py"
   ],
   "upstreamFiles": {
     ".claude-plugin/plugin.json": {

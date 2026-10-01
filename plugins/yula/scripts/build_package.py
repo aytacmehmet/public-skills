@@ -25,7 +25,8 @@ def main():
     output = data_root(args.output_dir)
     output.mkdir(parents=True, exist_ok=True)
     plugin = load_json(ROOT / ".claude-plugin/plugin.json")
-    paths = sorted(ROOT.rglob("*"))
+    # WindowsPath ordering ignores case; sort canonical relative names on every host.
+    paths = sorted(ROOT.rglob("*"), key=lambda path: path.relative_to(ROOT).as_posix())
     if any(path.is_symlink() for path in paths):
         raise ValueError("Package source cannot contain symlinks")
     files = {p.relative_to(ROOT).as_posix(): p for p in paths if p.is_file() and
