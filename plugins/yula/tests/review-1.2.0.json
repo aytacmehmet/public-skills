@@ -1,0 +1,991 @@
+{
+  "version": "1.2.0",
+  "baselineVersion": "1.1.0",
+  "status": "LOCAL_PASS",
+  "reviewedAt": "2026-09-23T02:52:08.408050+00:00",
+  "findings": [
+    {
+      "id": "F01",
+      "priority": "P2",
+      "title": "Kesin nesne kimliği ve FTS sorgu planı",
+      "evidence": {
+        "file": "runtime/yula/query.py",
+        "line": 101,
+        "baselineObservation": "CL_ABAP_CONTEXT_INFO aramasında kesin eşleşme üçüncü sıradaydı. delete print queue örneği 29.969 ms sürdü."
+      },
+      "impact": "Yanlış adayları inceleme ve uzun araç bekleme/tekrar riski.",
+      "recommendation": "Kesin kimliği FTS önüne al; typed key üzerinden mevcut birleşik indeksi kullan.",
+      "implemented": "Kesin eşleşme yolu, indeksli type/name birleşimi ve kararlı sıralama eklendi; tam tabloyu tekrar tekrar tarayan birleştirme kaldırıldı.",
+      "verification": "S01",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F02",
+      "priority": "P1",
+      "title": "Arama niyeti ile kanıt etiketinin karışması",
+      "evidence": {
+        "file": "runtime/yula/query.py",
+        "line": 78,
+        "baselineObservation": "Silme niyeti, nesnenin create/list eşlemeleri bulunduğu için curated_mapping etiketleniyordu; silmeye ait küratörlü eşleme yoktu."
+      },
+      "impact": "Bir nesnede herhangi bir yetenek bulunması, istenen yeteneğin kanıtı gibi görünebiliyordu.",
+      "recommendation": "Küratörlü etiketi yalnız eşleşen alias/işlem için ver; diğer adayları sözlüksel aday olarak tut.",
+      "implemented": "Alias sınırları, EN/TR normalizasyonu, isteğe bağlı işlem alanı ve lexical_candidate ayrımı uygulandı.",
+      "verification": "S02",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F03",
+      "priority": "P1",
+      "title": "Filtrelerin sessizce yok sayılması",
+      "evidence": {
+        "file": "runtime/yula/query.py",
+        "line": 90,
+        "baselineObservation": "Object get çağrısında release=1909 sonuç üzerinde etkisizdi; lessons aramasında release filtresi uygulanmıyordu."
+      },
+      "impact": "İstenen bağlamdan farklı veri doğruymuş gibi dönebiliyordu.",
+      "recommendation": "Her parametreyi desteklenen domain/kind ile bağla; desteklenmeyeni açık hata ile reddet.",
+      "implemented": "Filtre geçerlilik kapısı, lesson release filtresi, topic/record release eşleşmesi ve açık kaynak satırı seçimi eklendi.",
+      "verification": "S03",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F04",
+      "priority": "P2",
+      "title": "Üye yanıtında eksik kanıt ve tekrarlı çağrı akışı",
+      "evidence": {
+        "file": "runtime/yula/query.py",
+        "line": 219,
+        "baselineObservation": "Doğrudan members yanıtı imza içeriyordu fakat release/availability/provenance taşımıyordu; developer akışı check + summary + members istiyordu."
+      },
+      "impact": "Kanıtı tamamlamak için aynı nesne tekrar okunuyor; imza tek başına tüketilebiliyordu.",
+      "recommendation": "Bilinen üyeyi tek çağrıda imza, katalog durumu, kaynak ve kullanım koşullarıyla döndür.",
+      "implemented": "Üye/declaration yanıtları kanıt taşır; purpose summary hafifletildi; bilinen üye için tek çağrı yönlendirmesi eklendi.",
+      "verification": "S04",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F05",
+      "priority": "P1",
+      "title": "Ülke uygulanabilirliği ve çoklu aktivite bağlamı",
+      "evidence": {
+        "file": "runtime/yula/query.py",
+        "line": 326,
+        "baselineObservation": "Global/XX aktivite 100274, country=TR ile bulunmuyordu. Aynı ID için iki bağlam olduğunda ilk satır sessizce seçiliyordu."
+      },
+      "impact": "Geçerli aday kaçırılabiliyor veya başka kapsamın dossier bilgisi uygulanabiliyordu.",
+      "recommendation": "Global uygulanabilirliği aday olarak koru; belirsiz ID için açık varyant seçimi iste.",
+      "implemented": "Global/XX eşleşmesi, sourceRow, AMBIGUOUS_ACTIVITY ve seçili varyanta bağlanmamış dossier için VARIANT_DOSSIER_UNVERIFIED eklendi.",
+      "verification": "S05",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F06",
+      "priority": "P1",
+      "title": "İlgisiz kaynakların aktivite kanıtına eklenmesi",
+      "evidence": {
+        "file": "runtime/yula/query.py",
+        "line": 295,
+        "baselineObservation": "100274 sources yanıtı tüm release registry kayıtlarını getiriyordu; src-copying-rules-private-2025 dahil 14 ilgisiz ID bulunuyordu."
+      },
+      "impact": "Kaynak otoritesi ve edition bağlamı karışıyor; modele gereksiz içerik yükleniyordu.",
+      "recommendation": "Kaynakları seçili profile/ilişkili kayıtlarla bağla; çelişen alternatifleri ve kayıp referansları görünür tut.",
+      "implemented": "Aktiviteye bağlı, gömülü veya açıkça referans verilen kaynaklar çözülüyor; aynı kaynak kopyaları ayrıştırılıyor; eksik referanslar işaretleniyor.",
+      "verification": "S06",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F07",
+      "priority": "P1",
+      "title": "Snapshot bağı olmayan sayfalama",
+      "evidence": {
+        "file": "runtime/yula/mcp.py",
+        "line": 69,
+        "baselineObservation": "Her çağrı güncel pointerı açıyordu; bir metnin ardışık sayfaları arasında snapshot değişebilirdi."
+      },
+      "impact": "Farklı sözleşme veya release anlarına ait parçalar birleştirilebilirdi.",
+      "recommendation": "İlgili çağrıları ve sayfaları değişmez snapshot kimliğiyle bağla.",
+      "implemented": "Yanıtlara snapshot ve okuma çağrılarına isteğe bağlı snapshot parametresi eklendi; eski snapshot üzerinden devam doğrulandı.",
+      "verification": "S07",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F08",
+      "priority": "P1",
+      "title": "Doküman metni, dil ve edition tutarlılığı",
+      "evidence": {
+        "file": "runtime/yula/adapters.py",
+        "line": 340,
+        "baselineObservation": "Yeni indirilen 6002 karakterlik metin iki parça arasına ek satır sonları konarak değişiyordu. Dil değişikliği eski konuların metadata etiketini değiştirebiliyordu."
+      },
+      "impact": "Kaynak metni ve kaynak bağlamı korunmuyordu; private scope yalnız sürümdeki pce ifadesiyle süzülüyordu.",
+      "recommendation": "Parçalama yöntemini ve kaynak bağını konu düzeyinde sakla; sürüm/dil bölümlerini ayır.",
+      "implemented": "doc_topic_evidence, kaynak metni için kayıpsız birleştirme, version/language ayrımı, topic hash denetimi ve açık private scope/URL süzmesi eklendi.",
+      "verification": "S08",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F09",
+      "priority": "P1",
+      "title": "Doğrulama kayıtlarında tip ve zaman kapıları",
+      "evidence": {
+        "file": "runtime/yula/records.py",
+        "line": 16,
+        "baselineObservation": "verification=[123], successfulCases=\"x\" ve gelecekteki checkedAt değerleri kabul edilebiliyordu."
+      },
+      "impact": "Biçimsel olarak hatalı kanıt verified/validated durumuna taşınabiliyordu.",
+      "recommendation": "Kanıt alanlarını tipli ve zaman açısından geçerli kıl; birincil kaynağı topluluk içeriğinden ayır.",
+      "implemented": "Sınırlı string listeleri, timezone-aware tarih, en fazla beş dakikalık saat kayması, primary-source ve confirmed dependency tutarlılığı kontrolleri eklendi.",
+      "verification": "S09",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F10",
+      "priority": "P1",
+      "title": "Geri çekilen bilgi ve kaynak bağlarının yaşam döngüsü",
+      "evidence": {
+        "file": "runtime/yula/adapters.py",
+        "line": 376,
+        "baselineObservation": "Tam configuration-root kaynağından kaldırılan profile/source dosyaları eski SQLite izdüşümünde kalıyordu."
+      },
+      "impact": "Geri çekilmiş bilgi yeni kaynakta hâlâ varmış gibi yanıtlanabiliyordu.",
+      "recommendation": "Kaynak snapshotını kapsadığı release içinde uzlaştır; yerel immutable kayıtları ayrı koru.",
+      "implemented": "Profile/source izdüşümü uzlaştırılıyor; yerel revision kayıtları tekrar yansıtılıyor; research revision kaynak bağları yenileniyor.",
+      "verification": "S10",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F11",
+      "priority": "P2",
+      "title": "Fiziksel SQLite bütünlüğü ile mantıksal kapsamın karışması",
+      "evidence": {
+        "file": "runtime/yula/common.py",
+        "line": 228,
+        "baselineObservation": "Bir nesnenin FTS kaydı silinen test kopyası eski veritabanı doğrulamasından geçiyordu."
+      },
+      "impact": "Sağlam SQLite dosyası eksiksiz ve tekil retrieval eşlemesi anlamına gelmiyordu.",
+      "recommendation": "Kaynak/index kimliklerini, katalog sayaçlarını ve izdüşüm tekilliğini doğrula.",
+      "implemented": "Object/FTS ve configuration/FTS kapsama kontrolleri, katalog sayımları, tekil projection indeksleri ve topic provenance ilişkileri eklendi.",
+      "verification": "S11",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F12",
+      "priority": "P2",
+      "title": "Idempotent apply tekrarında atlanan aktif hash kontrolü",
+      "evidence": {
+        "file": "runtime/yula/snapshots.py",
+        "line": 96,
+        "baselineObservation": "Plan daha önce uygulanmışsa, sonradan bozulan aktif dosya hash kontrolüne ulaşmadan already_applied dönebiliyordu."
+      },
+      "impact": "Bakım yanıtı bozulmuş aktif snapshot kimliğini doğrulamadan başarılı görünüyordu.",
+      "recommendation": "İdempotent kısa devreden önce aktif hash bütünlüğünü kontrol et.",
+      "implemented": "Hash denetimi öne alındı; normal başarılı replay idempotent kaldı.",
+      "verification": "S12",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F13",
+      "priority": "P1",
+      "title": "Teknik imza sabitlerinin redaksiyonla değiştirilmesi",
+      "evidence": {
+        "file": "runtime/yula/adapters.py",
+        "line": 318,
+        "baselineObservation": "Genel sanitize işlemi public_api/signature içindeki dış URL sabitlerini de sap-system://redacted biçimine çevirebiliyordu."
+      },
+      "impact": "Alınan public sözleşme, saklanan teknik imzayla aynı olmayabiliyordu.",
+      "recommendation": "Teknik sözleşme alanlarını aynen koru; operasyonel kimlik metadata alanlarını ayrı maskele.",
+      "implemented": "public_api ve signature genel metin redaksiyonundan ayrıldı; URI içeren imzanın byte içerik korunumu test edildi.",
+      "verification": "regression",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F14",
+      "priority": "P2",
+      "title": "Skill, sunucu talimatı ve araç açıklaması arasındaki yönlendirme çelişkisi",
+      "evidence": {
+        "file": "runtime/yula/mcp.py",
+        "line": 16,
+        "baselineObservation": "Sunucu genel olarak search then get, araç açıklaması Start summary derken bilinen nesne/üye için doğrudan erişim mümkündü."
+      },
+      "impact": "Model aynı kanıtı tekrar çağırmaya yönlendirilebiliyordu.",
+      "recommendation": "Bilinen kimlik/üye, bilinmeyen ihtiyaç ve ek dependency akışlarını aynı sözleşmeye bağla.",
+      "implemented": "Üç skill, ortak sözleşme, MCP instructions ve araç açıklamaları aynı koşullu sıraya getirildi; yanıt dili kullanıcı dili olarak tanımlandı.",
+      "verification": "static-and-workflow",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    },
+    {
+      "id": "F15",
+      "priority": "P2",
+      "title": "Bozuk opsiyonel kontrol kaydının sağlam corpus okumasını kesmesi",
+      "evidence": {
+        "file": "runtime/yula/common.py",
+        "line": 177,
+        "baselineObservation": "Geçersiz checks JSON dosyası normal get/status çağrısında ayrıştırma hatası üretebiliyordu."
+      },
+      "impact": "Geçerli veriye erişim gereksiz bakım/tekrar döngüsüne giriyordu.",
+      "recommendation": "Opsiyonel freshness receipt hatasını corpus bozulmasıyla eşitleme.",
+      "implemented": "Bozuk/geçersiz receipt yok sayılıyor; doğrulanmış eski corpus tarihi kullanılıyor, yeni bir güncellik iddiası üretilmiyor.",
+      "verification": "regression",
+      "status": "FIXED_LOCAL_PASS",
+      "boundary": "Local deterministic evidence; no model-driven or live SAP verification."
+    }
+  ],
+  "scenarioEvidence": {
+    "before": {
+      "pluginVersion": "1.1.0",
+      "scenarioCount": 12,
+      "passed": 0,
+      "scenarios": [
+        {
+          "id": "S01",
+          "task": "Resolve an exact technical identity",
+          "oracle": "objects.object_name exact equality; no semantic inference required",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "CL_ABAP_CONTEXT_INFO"
+              },
+              "outputBytes": 595,
+              "elapsedMs": 105.87,
+              "reusedBaselineObservation": true
+            }
+          ],
+          "status": "FAIL",
+          "observed": "Exact identity is not ranked first.",
+          "responseBytes": 595
+        },
+        {
+          "id": "S02",
+          "task": "Find an EN/TR capability without inventing delete semantics",
+          "oracle": "capabilities and capability_aliases: print create/list; no delete mapping",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "send PDF to print queue"
+              },
+              "outputBytes": 1259,
+              "elapsedMs": 9799.55,
+              "reusedBaselineObservation": true
+            },
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "PDF yazdırmak"
+              },
+              "outputBytes": 1288,
+              "elapsedMs": 1606.22,
+              "reusedBaselineObservation": true
+            },
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "delete print queue"
+              },
+              "outputBytes": 1267,
+              "elapsedMs": 29969.05,
+              "reusedBaselineObservation": true
+            }
+          ],
+          "status": "FAIL",
+          "observed": "Delete intent incorrectly labelled as a curated capability match; stored mappings cover create/list only.",
+          "responseBytes": 3814
+        },
+        {
+          "id": "S03",
+          "task": "Respect release context and reject unsupported filters",
+          "oracle": "Only latest Public Edition object catalog is stored; no release 9999 lesson exists",
+          "calls": [
+            {
+              "tool": "yula_get",
+              "arguments": {
+                "kind": "object",
+                "objectType": "CLAS",
+                "key": "CL_PRINT_QUEUE_UTILS",
+                "release": "1909"
+              },
+              "outputBytes": 3106,
+              "elapsedMs": 4.692,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "FAIL",
+          "observed": "Object release filter silently ignored.",
+          "responseBytes": 3106
+        },
+        {
+          "id": "S04",
+          "task": "Retrieve an exact call contract with its evidence",
+          "oracle": "Public member signature; missing target contract/scope/runtime evidence",
+          "calls": [
+            {
+              "tool": "yula_get",
+              "arguments": {
+                "kind": "object",
+                "objectType": "CLAS",
+                "key": "CL_PRINT_QUEUE_UTILS",
+                "section": "members",
+                "member": "CREATE_QUEUE_ITEM_BY_DATA"
+              },
+              "outputBytes": 623,
+              "elapsedMs": 3.419,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "FAIL",
+          "observed": "Direct member response drops availability/provenance.",
+          "responseBytes": 623
+        },
+        {
+          "id": "S05",
+          "task": "Resolve global/local configuration and contextual ambiguity",
+          "oracle": "SSCUI 100274 is Global/XX; duplicate-ID fixture requires explicit variant selection",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "configuration",
+                "query": "100274",
+                "release": "2608",
+                "country": "TR"
+              },
+              "outputBytes": 162,
+              "elapsedMs": 21.305,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "FAIL",
+          "observed": "Global activity (Global/XX) excluded by country applicability filter.",
+          "responseBytes": 162
+        },
+        {
+          "id": "S06",
+          "task": "Retrieve only evidence linked to the selected activity",
+          "oracle": "100274 profile and local source records link exactly three source IDs",
+          "calls": [
+            {
+              "tool": "yula_get",
+              "arguments": {
+                "kind": "activity",
+                "key": "100274",
+                "release": "2608",
+                "section": "sources",
+                "limit": 20
+              },
+              "outputBytes": 12896,
+              "elapsedMs": 21.567,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "FAIL",
+          "observed": "Unrelated release-registry sources are presented as activity evidence: src-bsuom-maint-2608,src-copying-rules-private-2025,src-help-2608-depreciation-options,src-help-2608-depreciation-profiles,src-sap-learning-product-master-20260810,src-sap-product-master-config-20260810,src-sap-product-types-20260810,src-sscui-2608-104329,src-sscui-2608-bsuom,src-two-uom-factor-2608,src-wn-2608-107293,src-wn-2608-107381,src-wn-2608-uom-refactor,src-wn-change-history-2608-20260813",
+          "responseBytes": 12896
+        },
+        {
+          "id": "S07",
+          "task": "Continue a paged contract while the active corpus changes",
+          "oracle": "Immutable content-addressed snapshots must bind all pages of one response",
+          "calls": [],
+          "status": "FAIL",
+          "observed": "No snapshot reference is returned for continuation.",
+          "responseBytes": 0
+        },
+        {
+          "id": "S08",
+          "task": "Preserve documentation text and edition/language partitions",
+          "oracle": "A 6002-character source must reassemble exactly; original language metadata stays immutable",
+          "calls": [],
+          "status": "FAIL",
+          "observed": "Inserted separators corrupt a newly fetched non-overlapping topic.",
+          "responseBytes": 0
+        },
+        {
+          "id": "S09",
+          "task": "Keep malformed/future evidence out of verified knowledge",
+          "oracle": "Typed verification/case IDs and non-future checked timestamps are required evidence invariants",
+          "calls": [],
+          "status": "FAIL",
+          "observed": "Numeric verification and string-valued cases promoted to validated.",
+          "responseBytes": 0
+        },
+        {
+          "id": "S10",
+          "task": "Withdraw an old dossier while preserving immutable history",
+          "oracle": "A complete configuration-root import no longer contains the old profile/source files",
+          "calls": [],
+          "status": "FAIL",
+          "observed": "Withdrawn canonical dossiers survive the replacement snapshot.",
+          "responseBytes": 0
+        },
+        {
+          "id": "S11",
+          "task": "Detect a logically incomplete retrieval index",
+          "oracle": "SQLite structural integrity alone does not prove one-to-one object/FTS coverage",
+          "calls": [],
+          "status": "FAIL",
+          "observed": "Logical object/FTS mismatch passes database validation.",
+          "responseBytes": 0
+        },
+        {
+          "id": "S12",
+          "task": "Reject corruption on an idempotent apply replay",
+          "oracle": "The active file must match its content-addressed hash even for an already-applied plan",
+          "calls": [],
+          "status": "FAIL",
+          "observed": "Successful-plan replay skips the active snapshot hash check.",
+          "responseBytes": 0
+        }
+      ],
+      "measurement": "UTF-8 serialized response bytes; single-run diagnostic latency, not a benchmark",
+      "modelExecution": "not run",
+      "tokens": "not measured: no verified model-specific tokenizer/counter available"
+    },
+    "after": {
+      "pluginVersion": "1.2.0",
+      "scenarioCount": 12,
+      "passed": 12,
+      "scenarios": [
+        {
+          "id": "S01",
+          "task": "Resolve an exact technical identity",
+          "oracle": "objects.object_name exact equality; no semantic inference required",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "CL_ABAP_CONTEXT_INFO"
+              },
+              "outputBytes": 304,
+              "elapsedMs": 8.405,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "PASS",
+          "responseBytes": 304
+        },
+        {
+          "id": "S02",
+          "task": "Find an EN/TR capability without inventing delete semantics",
+          "oracle": "capabilities and capability_aliases: print create/list; no delete mapping",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "send PDF to print queue"
+              },
+              "outputBytes": 1192,
+              "elapsedMs": 1147.059,
+              "reusedBaselineObservation": false
+            },
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "PDF yazdırmak"
+              },
+              "outputBytes": 1221,
+              "elapsedMs": 220.033,
+              "reusedBaselineObservation": false
+            },
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "objects",
+                "query": "delete print queue"
+              },
+              "outputBytes": 1347,
+              "elapsedMs": 3232.374,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "PASS",
+          "responseBytes": 3760
+        },
+        {
+          "id": "S03",
+          "task": "Respect release context and reject unsupported filters",
+          "oracle": "Only latest Public Edition object catalog is stored; no release 9999 lesson exists",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "lessons",
+                "query": "Activity ID",
+                "release": "9999"
+              },
+              "outputBytes": 229,
+              "elapsedMs": 14.122,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "PASS",
+          "responseBytes": 229
+        },
+        {
+          "id": "S04",
+          "task": "Retrieve an exact call contract with its evidence",
+          "oracle": "Public member signature; missing target contract/scope/runtime evidence",
+          "calls": [
+            {
+              "tool": "yula_get",
+              "arguments": {
+                "kind": "object",
+                "objectType": "CLAS",
+                "key": "CL_PRINT_QUEUE_UTILS",
+                "section": "members",
+                "member": "CREATE_QUEUE_ITEM_BY_DATA"
+              },
+              "outputBytes": 1782,
+              "elapsedMs": 2.654,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "PASS",
+          "responseBytes": 1782
+        },
+        {
+          "id": "S05",
+          "task": "Resolve global/local configuration and contextual ambiguity",
+          "oracle": "SSCUI 100274 is Global/XX; duplicate-ID fixture requires explicit variant selection",
+          "calls": [
+            {
+              "tool": "yula_search",
+              "arguments": {
+                "domain": "configuration",
+                "query": "100274",
+                "release": "2608",
+                "country": "TR"
+              },
+              "outputBytes": 446,
+              "elapsedMs": 21.013,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "PASS",
+          "responseBytes": 446
+        },
+        {
+          "id": "S06",
+          "task": "Retrieve only evidence linked to the selected activity",
+          "oracle": "100274 profile and local source records link exactly three source IDs",
+          "calls": [
+            {
+              "tool": "yula_get",
+              "arguments": {
+                "kind": "activity",
+                "key": "100274",
+                "release": "2608",
+                "section": "sources",
+                "limit": 20
+              },
+              "outputBytes": 2254,
+              "elapsedMs": 22.99,
+              "reusedBaselineObservation": false
+            }
+          ],
+          "status": "PASS",
+          "responseBytes": 2254
+        },
+        {
+          "id": "S07",
+          "task": "Continue a paged contract while the active corpus changes",
+          "oracle": "Immutable content-addressed snapshots must bind all pages of one response",
+          "calls": [],
+          "status": "PASS",
+          "responseBytes": 0
+        },
+        {
+          "id": "S08",
+          "task": "Preserve documentation text and edition/language partitions",
+          "oracle": "A 6002-character source must reassemble exactly; original language metadata stays immutable",
+          "calls": [],
+          "status": "PASS",
+          "responseBytes": 0
+        },
+        {
+          "id": "S09",
+          "task": "Keep malformed/future evidence out of verified knowledge",
+          "oracle": "Typed verification/case IDs and non-future checked timestamps are required evidence invariants",
+          "calls": [],
+          "status": "PASS",
+          "responseBytes": 0
+        },
+        {
+          "id": "S10",
+          "task": "Withdraw an old dossier while preserving immutable history",
+          "oracle": "A complete configuration-root import no longer contains the old profile/source files",
+          "calls": [],
+          "status": "PASS",
+          "responseBytes": 0
+        },
+        {
+          "id": "S11",
+          "task": "Detect a logically incomplete retrieval index",
+          "oracle": "SQLite structural integrity alone does not prove one-to-one object/FTS coverage",
+          "calls": [],
+          "status": "PASS",
+          "responseBytes": 0
+        },
+        {
+          "id": "S12",
+          "task": "Reject corruption on an idempotent apply replay",
+          "oracle": "The active file must match its content-addressed hash even for an already-applied plan",
+          "calls": [],
+          "status": "PASS",
+          "responseBytes": 0
+        }
+      ],
+      "measurement": "UTF-8 serialized response bytes; single-run diagnostic latency, not a benchmark",
+      "modelExecution": "not run",
+      "tokens": "not measured: no verified model-specific tokenizer/counter available"
+    },
+    "interpretation": "12 targeted defect-reproduction scenarios, not an overall model accuracy score or a representative success-rate estimate."
+  },
+  "regressionTests": {
+    "run": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "workflowByteMeasurements": {
+    "object_purpose": {
+      "before": {
+        "calls": 1,
+        "requestBytes": 98,
+        "responseBytes": 3106,
+        "trace": [
+          {
+            "tool": "yula_get",
+            "requestBytes": 98,
+            "responseBytes": 3106,
+            "ms": 3.537
+          }
+        ]
+      },
+      "after": {
+        "calls": 1,
+        "requestBytes": 98,
+        "responseBytes": 1150,
+        "trace": [
+          {
+            "tool": "yula_get",
+            "requestBytes": 98,
+            "responseBytes": 1150,
+            "ms": 2.351
+          }
+        ]
+      },
+      "responseChangePercent": -63.0
+    },
+    "known_member_contract": {
+      "before": {
+        "calls": 3,
+        "requestBytes": 358,
+        "responseBytes": 4208,
+        "trace": [
+          {
+            "tool": "yula_check",
+            "requestBytes": 105,
+            "responseBytes": 479,
+            "ms": 1.522
+          },
+          {
+            "tool": "yula_get",
+            "requestBytes": 98,
+            "responseBytes": 3106,
+            "ms": 1.895
+          },
+          {
+            "tool": "yula_get",
+            "requestBytes": 155,
+            "responseBytes": 623,
+            "ms": 1.567
+          }
+        ]
+      },
+      "after": {
+        "calls": 1,
+        "requestBytes": 155,
+        "responseBytes": 1782,
+        "trace": [
+          {
+            "tool": "yula_get",
+            "requestBytes": 155,
+            "responseBytes": 1782,
+            "ms": 1.999
+          }
+        ]
+      },
+      "responseChangePercent": -57.7
+    },
+    "activity_and_linked_sources": {
+      "before": {
+        "calls": 2,
+        "requestBytes": 197,
+        "responseBytes": 13833,
+        "trace": [
+          {
+            "tool": "yula_get",
+            "requestBytes": 83,
+            "responseBytes": 937,
+            "ms": 14.959
+          },
+          {
+            "tool": "yula_get",
+            "requestBytes": 114,
+            "responseBytes": 12896,
+            "ms": 15.532
+          }
+        ]
+      },
+      "after": {
+        "calls": 2,
+        "requestBytes": 274,
+        "responseBytes": 3269,
+        "trace": [
+          {
+            "tool": "yula_get",
+            "requestBytes": 83,
+            "responseBytes": 1015,
+            "ms": 14.946
+          },
+          {
+            "tool": "yula_get",
+            "requestBytes": 191,
+            "responseBytes": 2254,
+            "ms": 15.329
+          }
+        ]
+      },
+      "responseChangePercent": -76.4
+    }
+  },
+  "instructionByteMeasurements": {
+    "sap-released-object-advisor": {
+      "before": 3984,
+      "after": 3558,
+      "changePercent": -10.7
+    },
+    "sap-released-object-developer": {
+      "before": 4521,
+      "after": 3617,
+      "changePercent": -20.0
+    },
+    "sap-configuration-architect": {
+      "before": 4867,
+      "after": 3948,
+      "changePercent": -18.9
+    }
+  },
+  "toolSchemaBytes": {
+    "before": 2969,
+    "after": 3610,
+    "delta": 641
+  },
+  "tokenUsage": {
+    "actualTokens": null,
+    "modelExecution": false,
+    "reason": "No verified model-specific tokenizer/counter; no model/API run.",
+    "totalLifecycleSavings": "not measured",
+    "claudeCliProjection": {
+      "before": 174,
+      "after": 131,
+      "scope": "Estimated always-on skill metadata only; MCP schemas/reference files excluded; not actual usage."
+    }
+  },
+  "migration": {
+    "baseSchemaAbi": 1,
+    "baseSha256": "56e80893bb4c5dc17a678752e7d622d18bcb7469e99774bbbe20da8cc345daed",
+    "counts": {
+      "cfg_activities": 4328,
+      "doc_chunks": 4403,
+      "doc_documents": 14,
+      "members": 244715,
+      "objects": 33307,
+      "released_catalog": 37030
+    },
+    "newSha256": "bf16b36d56dd4382dea07a3c5cd63250095e9ba3500b8a607f37b5228996b620",
+    "noop": "PASS",
+    "reapply": "PASS",
+    "rollback": "PASS",
+    "status": "PASS",
+    "storageRevision": 2,
+    "topicProvenance": [
+      {
+        "count": 3206,
+        "representation": "legacy_chunks"
+      },
+      {
+        "count": 1,
+        "representation": "source_text"
+      }
+    ]
+  },
+  "baseDataParity": {
+    "status": "PASS",
+    "tables": {
+      "capabilities": {
+        "rows": 2,
+        "sha256": "31c92b559115a6e25195efc0e96962b37989d6cfbfb2b1c0184d7faa7f2da159"
+      },
+      "capability_aliases": {
+        "rows": 7,
+        "sha256": "12c98a3e9595046f1fa36d07ec340e622081af0b893aa16ebf803c9f6f588a5b"
+      },
+      "cfg_access_map": {
+        "rows": 8577,
+        "sha256": "80b8e6eccedbff98015375eceb957182ad78206857ddabb5028ef88cb6326353"
+      },
+      "cfg_activities": {
+        "rows": 4328,
+        "sha256": "9007715cfd8e0a11149d453c8ecac60d76a5a86b1aa2832bd6d3f6de39671506"
+      },
+      "cfg_changes": {
+        "rows": 6,
+        "sha256": "1a7d299cba66f70f7562743c09eb60db34381505f30c892ae7460e8c4ae33f3a"
+      },
+      "cfg_dependencies": {
+        "rows": 17,
+        "sha256": "346a034c0e058bccfb07944ef54f0d6c5e63ae95daf50ea66ab770bb60936af4"
+      },
+      "cfg_documents": {
+        "rows": 13278,
+        "sha256": "2f56066d72bde17cb80c815a690250fe18484896f2ab2f0d7dedf81083a3b35f"
+      },
+      "cfg_documents_fts": {
+        "rows": 13278,
+        "sha256": "a90bcdd629124897b950106848bff6bd5cb151f2b15fe3ac66696d5baf37ad8c"
+      },
+      "cfg_expert_config": {
+        "rows": 16,
+        "sha256": "6dca1415d5be1af140c54c019b4f89b30b246d4e8f312333a702df8d112421dd"
+      },
+      "cfg_incidents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "cfg_lessons": {
+        "rows": 3,
+        "sha256": "e9b917fd64bd81b528e4159a98d640e49768575b362bf516bc64958403a05dbd"
+      },
+      "cfg_metadata": {
+        "rows": 3,
+        "sha256": "aabef782330f3ec0d0096466fab03eb0f6eb1ebd4553ac6ae3f2adf645de773c"
+      },
+      "cfg_profiles": {
+        "rows": 19,
+        "sha256": "f37e8dd763ba2a8fc5a90e89b561750cc329e54b9c704a13ce2c3238c8ded20b"
+      },
+      "cfg_sources": {
+        "rows": 70,
+        "sha256": "79778927fa058d9a22288f767ec2c2b6ad460604cfe7ef6c9956e60b3f329313"
+      },
+      "corpus_ingestion": {
+        "rows": 33503,
+        "sha256": "9178b06b4aa856c5636838d366e012e72220bf2e0cee29e25e83eb3ee4eeb220"
+      },
+      "corpus_snapshots": {
+        "rows": 1,
+        "sha256": "b2237370bb384f8a35cc87eb602f43dc09515fe39a43a69bcb8b818d4f427e88"
+      },
+      "doc_chunks": {
+        "rows": 4403,
+        "sha256": "67b055ffbdb3bb41d37b9b466aae1faa16490defc4598460f841cc2e9cfb4d08"
+      },
+      "doc_documents": {
+        "rows": 14,
+        "sha256": "4a20e6381682df168870cdf60ecf9cd98e5444f0a900bb00aea49f74285db239"
+      },
+      "evidence": {
+        "rows": 33308,
+        "sha256": "51c56643a89373c175e444264d5dfe8b5d27aac4542be18a21582703b2f4e919"
+      },
+      "members": {
+        "rows": 244715,
+        "sha256": "d6603a216fe29e80909384d56b3da5f721f33fda9c7d1bd905680ae6bfd43db7"
+      },
+      "object_capabilities": {
+        "rows": 2,
+        "sha256": "f3537749c851fe33fed22af2cbee8974894623c90ebfe3be887bf6d00677ab76"
+      },
+      "object_content": {
+        "rows": 33307,
+        "sha256": "784282d187ffb802b5805d9a1ed5aab85ae6411400929b82c48b952505939ea4"
+      },
+      "object_knowledge_fts": {
+        "rows": 33307,
+        "sha256": "d4a513122d692cf6da0cc912b80b44d35c1bc5a55914e91ffa0093f5bae5c4a0"
+      },
+      "objects": {
+        "rows": 33307,
+        "sha256": "4453d7752916464d714dc6d75da5f7ac65e41e5364f41b45e842cb384c09cb66"
+      },
+      "recipes": {
+        "rows": 1,
+        "sha256": "d7c35a64f751cb178a906adf8e536c0caa45aa8c943509846bb37c51eab7b66c"
+      },
+      "released_catalog": {
+        "rows": 37030,
+        "sha256": "99b485d0e1551ed5110ae70ed41b284df604ff7866c540dc79137e9218ab2b23"
+      },
+      "yula_aliases": {
+        "rows": 99,
+        "sha256": "76dd20db4f6790a7d526d31e0b800f3428948452575073597781db7d341e0519"
+      },
+      "yula_observations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "yula_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "yula_review_flags": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "yula_sources": {
+        "rows": 6,
+        "sha256": "2fd810a2fe42796078dd093321e5591014ec2416c8215885261c70855f8a00fd"
+      }
+    },
+    "exception": "yula_migrations adds revision 2; optional new table/indexes are additive"
+  },
+  "hostEvidence": "host-compatibility.json",
+  "limits": {
+    "releasedMissingContext": 2539,
+    "curatedCapabilities": 2,
+    "curatedRecipes": 1,
+    "nativeSapRefresh": "CLAS/INTF metadata only",
+    "liveSap": "not tested",
+    "modelAnswerQuality": "not measured",
+    "crossPlatform": "Windows native CLI tests; no native macOS/Linux execution"
+  },
+  "designSources": [
+    "https://developers.openai.com/api/docs/guides/prompt-engineering",
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "https://www.sqlite.org/fts5.html"
+  ]
+}

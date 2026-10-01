@@ -14,3 +14,7 @@ Her skill klasöründe en güncel yönerge, tanıtım, arayüz bilgileri, gerekt
 Dil klasörünün tamamı yerine istediğiniz skill'in kendi klasörünü kurun. Kurulum adımları skill tanıtımında bulunur. Eski sürüm ZIP'leri inceleme ve geri dönüş hazırlığı içindir; aktif skill değildir.
 
 Türkçe ve İngilizce karşılıklar aynı sürümü ve davranışı paylaşır; adlar, açıklamalar ve belgeler ilgili dilde yazılır. Yönergeler çoğunlukla yerelleştirilir; SAP Fiori Tasarım ve Belirtim Yazmanı çiftlerinde modele dönük metin iki pakette İngilizcedir. Bu çiftler de kullanıcının dilinde yanıt verir. Skill eklemeden veya güncelleme yayımlamadan önce [katkı ve sürüm yönetimini](CONTRIBUTING.md) okuyun.
+
+## Tam plugin paketleri
+
+[Yula 1.4.1](../plugins/yula/README.tr.md), Codex ve Claude Code için released object danışmanlığını, ABAP Cloud sözleşmelerini, konfigürasyon mimarisini, dört çevrimdışı MCP okuma aracını ve dolu SQLite veritabanını birlikte sunar. Üç skill ortak dosyalara bağlı olduğundan repo marketplace'inden tam plugin'i kurun. [Plugin katkı kuralları](CONTRIBUTING.md#tam-plugin-paketleri).

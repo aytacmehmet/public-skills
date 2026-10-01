@@ -1,0 +1,17 @@
+{
+  "name": "yula",
+  "version": "1.4.1",
+  "description": "Evidence-bound SAP Public Edition objects, configuration and source maintenance in one offline SQLite corpus.",
+  "author": {
+    "name": "aytacmehmet"
+  },
+  "keywords": [
+    "sap",
+    "abap-cloud",
+    "released-objects",
+    "configuration",
+    "sqlite",
+    "mcp"
+  ],
+  "license": "GPL-3.0-only"
+}

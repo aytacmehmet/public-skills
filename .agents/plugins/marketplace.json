@@ -1,0 +1,20 @@
+{
+  "name": "aytacmehmet-public",
+  "interface": {
+    "displayName": "aytacmehmet Public Plugins"
+  },
+  "plugins": [
+    {
+      "name": "yula",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yula"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

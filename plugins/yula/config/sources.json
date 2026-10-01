@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "sap-released",
+      "kind": "released-catalog",
+      "enabled": true
+    },
+    {
+      "id": "sap-help-01",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-development-tools-for-visual-studio-code/abap-development-tools-for-visual-studio-code?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-02",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/developer-guide-from-classic-abap-to-abap-cloud/developer-guide-from-classic-abap-to-abap-cloud?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-03",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-04",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-hana-tools-user-guide/about-abap-for-sap-hana-development-tools-user-guide?locale=en-US&state=PRODUCTION&version=s4_hana_cloud_pce",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-05",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-06",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-concepts/about?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-07",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-integration-connectivity/abap-integration-and-connectivity?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-08",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-rap/abap-restful-application-programming-model?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-09",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-analytics/abap-analytics?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-10",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-development-tools-for-eclipse-release-notes/release-notes-of-abap-development-tools-for-eclipse?locale=en-US&state=PRODUCTION&version=sap_cross_product_abap",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-11",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-cloud/why-abap-cloud?locale=en-US&state=PRODUCTION&version=latest",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-12",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cross-product/roadmap-info/abap-cloud-roadmap-information?locale=en-US&state=PRODUCTION&version=latest",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-13",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/btp/btp-developers-guide/what-is-btp-developers-guide?locale=en-US&state=PRODUCTION&version=Cloud",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-14",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cross-product/abap-resource-overview/abap-content-overview?locale=en-US&state=PRODUCTION&version=latest",
+      "mode": "document",
+      "maxTopics": 5000
+    },
+    {
+      "id": "sap-help-overview-topic",
+      "kind": "sap-help",
+      "enabled": false,
+      "url": "https://help.sap.com/docs/abap-cloud/abap-cloud/why-abap-cloud?locale=en-US&state=PRODUCTION&version=latest",
+      "mode": "topic"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "boundaries": {
+    "currentReleasedMissingContext": 2539,
+    "nativeSapAdapter": "CLAS/INTF metadata only; public signatures via compatible corpus imports",
+    "originalFailedIngestions": 196,
+    "otherHelpTopics": "retained; not bulk-refreshed"
+  },
+  "liveSourceChecks": {
+    "localCanonicalConfiguration": "PASS; complete staged import and validation",
+    "localWorkbook": "PASS; 4328 activities and 8577 access mappings; unchanged repeat",
+    "officialReleasedCatalog": "PASS; 37030 entries",
+    "sapHelp": "PASS; one live topic check/apply and unchanged repeat"
+  },
+  "localBehavior": [
+    "read-only MCP initialization/discovery/calls",
+    "all three skill retrieval contracts",
+    "released and signature gaps",
+    "local SQLite import and corrupt-content rejection",
+    "immutable record revisions and evidence gates",
+    "preserving user records across configuration imports",
+    "hash-bound apply/replay, stale-plan rejection, cross-process file lock",
+    "partial-source failure and interrupted pointer commit recovery",
+    "old readers retain an intact snapshot across publication",
+    "rollback and content-idempotent repeat",
+    "documentation release isolation",
+    "snapshot-pinned retrieval",
+    "scope/variant/source binding",
+    "topic text/language provenance",
+    "typed knowledge evidence",
+    "logical FTS/catalog consistency",
+    "additive storage migration and rollback"
+  ],
+  "localMarkdownLinks": 16,
+  "notVerified": [
+    "Live SAP authentication/authorization/metadata response",
+    "SAP compiler, ATC, activation and business runtime",
+    "Model-driven end-to-end conversations",
+    "Real user-profile installation and GUI activation",
+    "Native macOS/Linux CLI execution"
+  ],
+  "pluginManifest": "PASS",
+  "skillSchemas": "3/3 PASS",
+  "sqlite": {
+    "bytes": 472088576,
+    "counts": {
+      "cfg_activities": 4328,
+      "doc_chunks": 4403,
+      "doc_documents": 14,
+      "members": 244715,
+      "objects": 33307,
+      "released_catalog": 37030
+    },
+    "foreignKeys": "PASS",
+    "integrity": "PASS",
+    "sha256": "bf16b36d56dd4382dea07a3c5cd63250095e9ba3500b8a607f37b5228996b620"
+  },
+  "status": "LOCAL_PASS",
+  "tests": {
+    "run": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "verifiedAt": "2026-09-23T02:55:55.952690+00:00",
+  "version": "1.2.0",
+  "volumeMeasurements": {
+    "unit": "UTF-8 bytes",
+    "baseline": "1.1.0",
+    "details": "review-1.2.0.json",
+    "workflows": {
+      "object_purpose": {
+        "beforeResponseBytes": 3106,
+        "afterResponseBytes": 1150,
+        "changePercent": -63.0
+      },
+      "known_member_contract": {
+        "beforeResponseBytes": 4208,
+        "afterResponseBytes": 1782,
+        "changePercent": -57.7
+      },
+      "activity_and_linked_sources": {
+        "beforeResponseBytes": 13833,
+        "afterResponseBytes": 3269,
+        "changePercent": -76.4
+      }
+    },
+    "actualTokens": null,
+    "totalLifecycleTokenSavings": "not measured"
+  },
+  "nativeHostCompatibility": "host-compatibility.json",
+  "reviewEvidence": "review-1.2.0.json",
+  "targetedReviewScenarios": {
+    "passed": 12,
+    "total": 12,
+    "scope": "defect reproduction; not general model accuracy"
+  },
+  "storageRevision": 2
+}

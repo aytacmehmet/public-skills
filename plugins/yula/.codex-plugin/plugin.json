@@ -1,0 +1,43 @@
+{
+  "name": "yula",
+  "version": "1.4.1",
+  "description": "Evidence-bound SAP Public Edition objects, configuration and source maintenance in one offline SQLite corpus.",
+  "author": {
+    "name": "aytacmehmet"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yula",
+    "shortDescription": "SAP evidence, compact retrieval and controlled updates.",
+    "longDescription": "Three task-specific skills, four read-only MCP tools, a populated SQLite corpus and hash-bound online/local maintenance. Python 3.11+ with FTS5; no package installation required.",
+    "developerName": "aytacmehmet",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Search"
+    ],
+    "defaultPrompt": [
+      "Find a released SAP object for my requirement.",
+      "Explain a configuration activity using evidence.",
+      "Check and update the Yula knowledge corpus."
+    ]
+  },
+  "mcpServers": {
+    "yula": {
+      "command": "python",
+      "args": [
+        "-X",
+        "utf8",
+        "-B",
+        "./scripts/yula.py",
+        "--data-root",
+        "@user/yula",
+        "mcp"
+      ],
+      "cwd": ".",
+      "env_vars": [
+        "YULA_DATA_ROOT"
+      ]
+    }
+  }
+}

@@ -9,7 +9,20 @@ Dillere göre düzenlenmiş, yeniden kullanılabilir AI skill'leri. Skill'leri i
 | English | [Browse English skills](en/README.md) | [Prompter](en/prompter/README.md), [SAP Development Documentation](en/sap-development-documentation/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md), [Spec Writer](en/spec-writer/README.md) |
 | Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yordamla](tr/yordamla/README.md), [SAP Geliştirme Dokümantasyonu](tr/sap-gelistirme-dokumantasyonu/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md), [Belirtim Yazmanı](tr/belirtim-yazmani/README.md) |
 
+## Complete plugins / Tam plugin paketleri
+
+| Plugin | Version / Sürüm | Documentation / Belgeler |
+| --- | --- | --- |
+| Yula | 1.4.1 | [English](plugins/yula/README.md) · [Türkçe](plugins/yula/README.tr.md) |
+
+Install Yula with its shared runtime, MCP server and populated SQLite corpus from the native Codex or Claude Code marketplace. The three plugin skills must stay together. Standalone language packages retain their existing release/archive rules; complete plugins follow the [English](en/CONTRIBUTING.md#complete-plugins) / [Turkish](tr/CONTRIBUTING.md#tam-plugin-paketleri) plugin rules.
+
+Yula'yı ortak runtime, MCP sunucusu ve dolu SQLite veritabanıyla native Codex veya Claude Code marketplace'inden kurun. Üç plugin skill'i birlikte tutulmalıdır. Dil paketlerinin mevcut sürüm/arşiv kuralları devam eder; tam plugin'ler yukarıdaki iki dilde açıklanan plugin kurallarını izler.
+
 ```text
+.agents/plugins/marketplace.json  ← Codex marketplace
+.claude-plugin/marketplace.json  ← Claude Code marketplace
+plugins/yula/                    ← complete bilingual plugin
 en/
   README.md
   CONTRIBUTING.md

@@ -1,4 +1,4 @@
-name: Validate skills
+name: Validate skills and plugins
 
 on:
   push:
@@ -27,6 +27,14 @@ jobs:
         run: python -B en/sap-development-documentation/scripts/test_vault.py
       - name: Test Turkish SAP documentation behavior
         run: python -B tr/sap-gelistirme-dokumantasyonu/scripts/test_vault.py
+      - name: Test Yula runtime and distribution
+        run: python -B -m unittest discover -s plugins/yula/tests -v
+      - name: Validate Yula package and decoded corpus
+        run: python -B plugins/yula/scripts/check_package.py --work-dir "$RUNNER_TEMP/yula-check"
+      - name: Verify reproducible public marketplace ZIP
+        run: |
+          python -B plugins/yula/scripts/build_package.py --output-dir "$RUNNER_TEMP/yula-artifacts"
+          cmp plugins/yula/PACKAGE-MANIFEST.json "$RUNNER_TEMP/yula-artifacts/PACKAGE-MANIFEST.json"
       - name: Validate packages and release history
         env:
           BASE_REVISION: ${{ github.event.pull_request.base.sha || github.event.before }}

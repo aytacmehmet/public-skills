@@ -1,0 +1,50 @@
+{
+  "version": "1.2.0",
+  "status": "LOCAL_PASS",
+  "platform": "Windows",
+  "python": "3.14.6",
+  "hosts": {
+    "claude": {
+      "cliVersion": "2.1.268",
+      "nativeInstallation": "PASS",
+      "installedManifest": "PASS",
+      "installedSqliteHash": "PASS",
+      "installedMcpStdioProbe": "PASS",
+      "tools": 4,
+      "skillRetrievalCases": 3,
+      "runtimeVersion": "1.2.0",
+      "nativeMcpHealth": "Connected"
+    },
+    "codex": {
+      "cliVersion": "0.153.4",
+      "nativeInstallation": "PASS",
+      "installedManifest": "PASS",
+      "installedSqliteHash": "PASS",
+      "installedMcpStdioProbe": "PASS",
+      "tools": 4,
+      "skillRetrievalCases": 3,
+      "runtimeVersion": "1.2.0",
+      "nativeMcpRegistration": "PASS",
+      "modelSession": "not run; installed stdio runtime tested directly"
+    }
+  },
+  "regressionTests": {
+    "run": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sharedCorpusAcrossHosts": "PASS; both installed runtimes read the same verified snapshot",
+  "bundledSqliteUnchanged": "bf16b36d56dd4382dea07a3c5cd63250095e9ba3500b8a607f37b5228996b620",
+  "realUserSettingsUnchanged": true,
+  "notRun": [
+    "Live SAP operations",
+    "Model-driven end-to-end conversations",
+    "Native macOS/Linux CLI execution"
+  ],
+  "sources": [
+    "https://code.claude.com/docs/en/plugins-reference",
+    "https://code.claude.com/docs/en/plugin-marketplaces",
+    "https://developers.openai.com/plugins/build/plugins"
+  ]
+}

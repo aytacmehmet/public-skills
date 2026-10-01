@@ -1,0 +1,13 @@
+interface:
+  display_name: "SAP Released Object Developer"
+  short_description: "Retrieve verified public SAP coding contracts"
+  default_prompt: "Use $sap-released-object-developer to resolve this SAP Public Edition request with compact evidence."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "yula"
+      description: "Offline SAP evidence retrieval"
+
+policy:
+  allow_implicit_invocation: true
