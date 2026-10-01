@@ -43,8 +43,11 @@ def summarize(messages, requested_model, expect=None):
     elif expect is not None and (not isinstance(result.get("result"), str) or result["result"].strip() != expect):
         failed, category = True, "unexpected_response"
     status = next((int(value) for value in re.findall(r"API Error:\s*([1-5]\d\d)", text)), None)
+    quota_exhausted = bool(re.search(r"you(?:'|’)ve hit your limit|you have (?:hit|reached|exceeded).*limit|usage limit|weekly limit|extra usage", text, re.I))
+    reset_hint = re.search(r"\bresets?\s+((?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+)?\d{1,2}(?::\d{2})?\s*(?:am|pm)(?:\s*\((?:[A-Za-z_]+/[A-Za-z_]+|UTC)\))?)", text, re.I)
     return {"status": "FAIL" if failed else "PASS", "category": category, "requested_model": requested_model,
             "http_status": status, "is_error": result.get("is_error") is not False,
+            "quota_exhausted": quota_exhausted, "reset_hint": reset_hint.group(1) if reset_hint else None,
             "num_turns": result.get("num_turns") if type(result.get("num_turns")) is int else None,
             "result_fields": sorted(key for key in result if re.fullmatch(r"[a-zA-Z_]{1,40}", key)),
             "assistant_error_codes": sorted({message["error"] for message in messages if isinstance(message, dict)
@@ -74,6 +77,13 @@ def main():
         summary = {"status": "NOT_RUN", "category": "unreadable_execution", "requested_model": args.model}
     Path(args.output).write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary))
+    if summary["status"] != "PASS":
+        reasons = {"usage_limit": "Claude reported a usage or rate limit. Restore available usage and rerun the review.",
+                   "authentication_failed": "Claude rejected the repository credential. Renew CLAUDE_CODE_OAUTH_TOKEN through the account owner.",
+                   "model_unavailable": "Claude rejected the selected model. Check the account model availability.",
+                   "missing_result": "No completed Claude execution result was produced."}
+        reason = reasons.get(summary["category"], "Claude did not complete successfully; inspect the bounded execution summary.")
+        print("::error title=Claude review " + summary["category"] + "::" + reason)
     return 0 if summary["status"] == "PASS" else 1
 
 

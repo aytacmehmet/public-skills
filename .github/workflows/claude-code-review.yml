@@ -43,3 +43,19 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
+      - name: Explain failed Claude execution
+        if: ${{ failure() && steps.claude-review.outputs.execution_file != '' }}
+        env:
+          EXECUTION_FILE: ${{ steps.claude-review.outputs.execution_file }}
+        run: |
+          python -B .github/scripts/claude_execution_summary.py --execution-file "$EXECUTION_FILE" --model default --output "$RUNNER_TEMP/claude-review-summary.json"
+
+      - name: Retain the bounded failure summary
+        if: ${{ failure() && steps.claude-review.outputs.execution_file != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: claude-review-failure
+          path: ${{ runner.temp }}/claude-review-summary.json
+          retention-days: 7
+          if-no-files-found: error
+
