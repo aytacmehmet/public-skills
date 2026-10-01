@@ -90,3 +90,9 @@ python -B plugins/yula/scripts/build_package.py --output-dir <harici-artifact-kl
 ```
 
 Üretilen paket manifestini plugin'e kopyalayın; commit öncesi doğrulamayı yeniden çalıştırıp diff'i inceleyin. Tarihsel yeterlilik raporlarının sürümlerini koruyun. Yerel kontroller ve hosted CI ayrı kanıtlardır; ikisi de SAP tenant uygunluğunu kanıtlamaz. Branch üzerinde çalışıp inceleme için PR açın; branch'in yayımlanması main'e merge edildiği anlamına gelmez.
+
+## Claude inceleme işletimi
+
+Otomatik incelemeler varsayılan olarak mevcut `CLAUDE_CODE_OAUTH_TOKEN` secret'ını kullanır. Action, `subtype: success` ile birlikte `is_error: true` döndürebilir; bu başarısız yürütmedir. Workflow, SDK yürütme dosyasından yalnız sınırlı hata sınıfı ve sıfırlanma bilgisini saklar. Ham model/araç çıktısı ve kimlik bilgileri yüklenmez. Kullanım limiti hatası başarısız kalır; yeniden çalıştırmadan önce bildirilen sıfırlanmayı bekleyin veya hesapta kullanılabilir kullanım sağlayın. Manuel kimlik kontrolü workflow'u mevcut OAuth kimliğiyle iki kısa, araçsız sorgu yapar.
+
+API kimliği repo sahibinin açık seçimidir. API ücretlendirmesini onayladıktan sonra GitHub repo secret'larına `ANTHROPIC_API_KEY` ekleyin ve repo değişkenini `CLAUDE_REVIEW_AUTH_MODE=api` yapın. Workflow bu durumda yalnız API anahtarını; varsayılan/`oauth` modunda yalnız abonelik OAuth token'ını geçirir. API kullanımı Claude aboneliğinden ayrı ücretlendirilir; [resmî GitHub Actions belgesine](https://code.claude.com/docs/en/github-actions) bakın. Kimlik bilgilerini issue, PR, yorum veya loga yapıştırmayın. Anthropic GitHub App kimlik kontrolünün değişmiş inceleme workflow'unu çalıştırabilmesi için workflow değişikliği default branch'te etkinleşmelidir; kimlik kontrolünün atladığı koşu NOT_RUN'dır, inceleme kabulü değildir.
