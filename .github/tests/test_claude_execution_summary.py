@@ -42,6 +42,14 @@ class ExecutionSummaryTests(unittest.TestCase):
             result = summary.summarize([{"type": "result", "subtype": "success", "is_error": True, "result": text}], "fixture")
             self.assertEqual(category, result["category"])
 
+    def test_quota_exhaustion_retains_only_the_bounded_reset_hint(self):
+        result = summary.summarize([
+            {"type": "assistant", "error": "rate_limit", "message": {"content": [{"type": "text", "text": "You've hit your limit · resets Oct 3, 7pm (UTC). PRIVATE_CONTEXT"}]}},
+            {"type": "result", "subtype": "success", "is_error": True}], "fixture")
+        self.assertTrue(result["quota_exhausted"])
+        self.assertEqual("Oct 3, 7pm (UTC)", result["reset_hint"])
+        self.assertNotIn("PRIVATE_CONTEXT", json.dumps(result))
+
 
 if __name__ == "__main__":
     unittest.main()

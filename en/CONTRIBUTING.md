@@ -90,3 +90,9 @@ python -B plugins/yula/scripts/build_package.py --output-dir <external-artifacts
 ```
 
 Copy the generated package manifest into the plugin and rerun validation before committing; inspect the diff. Preserve historical qualification versions. Local checks and hosted CI are separate evidence, and neither establishes SAP tenant readiness. Work on a branch and open a PR for review; publishing a branch does not merge it into main.
+
+## Claude review operation
+
+Automatic reviews use the existing `CLAUDE_CODE_OAUTH_TOKEN` secret by default. The action can report `subtype: success` together with `is_error: true`; that is a failed execution. The workflow retains only a bounded error category and reset hint from the SDK execution file. Raw model/tool output and credentials are not uploaded. A usage-limit failure remains failed; wait for the reported reset or restore available account usage before rerunning. The manual authentication-check workflow uses two short tool-free probes with the existing OAuth credential.
+
+API authentication is an explicit repository-owner choice. Add `ANTHROPIC_API_KEY` through GitHub repository secrets and set repository variable `CLAUDE_REVIEW_AUTH_MODE=api` only after approving API billing. The workflow then passes only the API key; the default/`oauth` mode passes only the subscription OAuth token. API usage is billed separately from Claude subscription usage; see [official GitHub Actions documentation](https://code.claude.com/docs/en/github-actions). Do not paste credentials into issues, PRs, comments or logs. Workflow-file changes need default-branch activation before Anthropic's GitHub App identity check can run the changed review workflow; an identity-check skip is NOT_RUN, not review acceptance.

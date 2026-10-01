@@ -12,6 +12,8 @@ def summarize(messages, requested_model, expect=None):
         return {"status": "NOT_RUN", "category": "missing_result", "requested_model": requested_model}
     result = results[-1]
     text = result.get("result", "")
+    if not isinstance(text, str):
+        text = ""
     errors = result.get("errors", [])
     if isinstance(errors, list):
         text = str(text) + " " + " ".join(item for item in errors if isinstance(item, str))
@@ -22,7 +24,10 @@ def summarize(messages, requested_model, expect=None):
             if not isinstance(message, dict) or message.get("type") != "assistant" or not message.get("error"):
                 continue
             text += " " + str(message.get("error"))
-            for block in message.get("message", {}).get("content", []):
+            payload = message.get("message")
+            if not isinstance(payload, dict) or not isinstance(payload.get("content"), list):
+                continue
+            for block in payload["content"]:
                 if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str):
                     text += " " + block["text"]
     category = "completed"
