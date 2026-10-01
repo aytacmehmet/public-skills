@@ -48,15 +48,16 @@ def summarize(messages, requested_model, expect=None):
     elif expect is not None and (not isinstance(result.get("result"), str) or result["result"].strip() != expect):
         failed, category = True, "unexpected_response"
     status = next((int(value) for value in re.findall(r"API Error:\s*([1-5]\d\d)", text)), None)
+    if type(result.get("api_error_status")) is int and 100 <= result["api_error_status"] <= 599:
+        status = result["api_error_status"]
     quota_exhausted = bool(re.search(r"you(?:'|’)ve hit your limit|you have (?:hit|reached|exceeded).*limit|usage limit|weekly limit|extra usage", text, re.I))
     reset_hint = re.search(r"\bresets?\s+((?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+)?\d{1,2}(?::\d{2})?\s*(?:am|pm)(?:\s*\((?:[A-Za-z_]+/[A-Za-z_]+|UTC)\))?)", text, re.I)
     return {"status": "FAIL" if failed else "PASS", "category": category, "requested_model": requested_model,
             "http_status": status, "is_error": result.get("is_error") is not False,
             "quota_exhausted": quota_exhausted, "reset_hint": reset_hint.group(1) if reset_hint else None,
             "num_turns": result.get("num_turns") if type(result.get("num_turns")) is int else None,
-            "result_fields": sorted(key for key in result if re.fullmatch(r"[a-zA-Z_]{1,40}", key)),
             "assistant_error_codes": sorted({message["error"] for message in messages if isinstance(message, dict)
-                and message.get("type") == "assistant" and message.get("error") in
+                and message.get("type") == "assistant" and isinstance(message.get("error"), str) and message["error"] in
                 {"authentication_failed", "billing_error", "rate_limit", "invalid_request", "server_error", "unknown"}})}
 
 
