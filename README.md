@@ -14,6 +14,7 @@ Dillere göre düzenlenmiş, yeniden kullanılabilir AI skill'leri. Skill'leri i
 | Plugin | Version / Sürüm | Documentation / Belgeler |
 | --- | --- | --- |
 | Yula | 1.4.1 | [English](plugins/yula/README.md) · [Türkçe](plugins/yula/README.tr.md) |
+| Belirtim Yazmanı | 2.0.2 | [English](plugins/belirtim-yazmani/README.md) · [Türkçe](plugins/belirtim-yazmani/README.tr.md) |
 
 Install Yula with its shared runtime, MCP server and populated SQLite corpus from the native Codex or Claude Code marketplace. The three plugin skills must stay together. Standalone language packages retain their existing release/archive rules; complete plugins follow the [English](en/CONTRIBUTING.md#complete-plugins) / [Turkish](tr/CONTRIBUTING.md#tam-plugin-paketleri) plugin rules.
 
@@ -23,6 +24,7 @@ Yula'yı ortak runtime, MCP sunucusu ve dolu SQLite veritabanıyla native Codex 
 .agents/plugins/marketplace.json  ← Codex marketplace
 .claude-plugin/marketplace.json  ← Claude Code marketplace
 plugins/yula/                    ← complete bilingual plugin
+plugins/belirtim-yazmani/         ← complete TOON FS-TS plugin
 en/
   README.md
   CONTRIBUTING.md

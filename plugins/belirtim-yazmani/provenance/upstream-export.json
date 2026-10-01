@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "source": "tr/belirtim-yazmani",
+  "source_name": "belirtim-yazmani",
+  "name": "belirtim-yazmani",
+  "version": "1.1.0",
+  "source_commit": "1e7717606641a8dbd0e390142a739acd157bae38",
+  "uncommitted_changes": false,
+  "overlay": null
+}

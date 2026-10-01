@@ -12,6 +12,12 @@
       "source": "./plugins/yula",
       "description": "Evidence-bound SAP Public Edition objects, configuration and source maintenance in one offline SQLite corpus.",
       "version": "1.4.1"
+    },
+    {
+      "name": "belirtim-yazmani",
+      "source": "./plugins/belirtim-yazmani",
+      "description": "Document decided SAP Cloud ERP developments as authoritative TOON FS-TS and release only complete, producer-neutral single-development handoffs.",
+      "version": "2.0.2"
     }
   ]
 }

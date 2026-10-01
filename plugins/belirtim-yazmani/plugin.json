@@ -1,0 +1,17 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "belirtim-yazmani",
+  "version": "2.0.2",
+  "description": "Document decided SAP Cloud ERP developments as authoritative TOON FS-TS and release only complete, producer-neutral single-development handoffs.",
+  "author": {
+    "name": "aytacmehmet"
+  },
+  "license": "GPL-3.0-only",
+  "keywords": [
+    "sap",
+    "cloud-erp",
+    "fs-ts",
+    "toon",
+    "handoff"
+  ]
+}

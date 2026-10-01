@@ -1,0 +1,15 @@
+# Data format
+Private workspace TOON holds imported content, authoritative delivery.spec and private control.
+Only delivery.spec becomes fsts/fsts.toon in the developer ZIP. Refer to workflow.md at migration.
+Public schema: ../../../schema/handoff.schema.json, encoded to fsts/fsts.schema.toon on export.
+Use profile --collection X instead of loading the complete schema. Declared neutral schema $id
+urn:fsts:2.0:handoff. JSON Pointer resolves decoded TOON objects; no second JSON FS-TS is shipped.
+TOON 4.1, UTF-8/LF, indent 2, comma, strict decoding. IDs and exact decimals quoted as strings.
+Unknowns block release; null only with explicit known-none/applicability kind. [] means known empty.
+Functional profile covers callouts/UI sources/conditions/defaults/value help, all action paths,
+rule examples/boundary/decision tables, TR/EN messages, state exits and complete req/AC/test/object
+chains. No expression/pseudocode; write business rules and input/output examples.
+Every artifact is a projection of the same complete target. Excel optional and non-authoritative;
+PNG authoritative only for layout. Baseline/delta are explicit; stable IDs retain order/presence.
+Public manifest lists itself, self-hash external to avoid circularity. Other file hashes exact.
+ZIP naming follows the user's project rule, not an automatically imposed semver/slug policy.
