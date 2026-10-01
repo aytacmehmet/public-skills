@@ -1,0 +1,13 @@
+interface:
+  display_name: "SAP Released Object Advisor"
+  short_description: "Find and explain released SAP object capabilities"
+  default_prompt: "Use $sap-released-object-advisor to resolve this SAP Public Edition request with compact evidence."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "yula"
+      description: "Offline SAP evidence retrieval"
+
+policy:
+  allow_implicit_invocation: true

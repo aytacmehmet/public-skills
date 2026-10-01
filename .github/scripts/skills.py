@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -209,6 +210,10 @@ def validate_links(root):
 
 def validate(root, base=None):
     root = root.resolve()
+    spec = importlib.util.spec_from_file_location("plugin_tools", Path(__file__).with_name("plugins.py"))
+    plugin_tools = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(plugin_tools)
+    plugin_skills = plugin_tools.validate_plugins(root, base)
     skills = {}
     for language in ("en", "tr"):
         require((root / language / "README.md").is_file(), f"Missing {language} catalog.")
@@ -247,7 +252,7 @@ def validate(root, base=None):
                 require(version_tuple(manifest["version"]) < version_tuple(version), f"Archive must precede current version: {item}")
             skills[relative] = meta
     require(skills, "No skills found.")
-    active = {str((root / relative / "SKILL.md").resolve()) for relative in skills}
+    active = {str((root / relative / "SKILL.md").resolve()) for relative in skills} | plugin_skills
     require(all(str(p.resolve()) in active for p in root.rglob("SKILL.md")), "Unexpected nested SKILL.md; keep old versions zipped.")
     for relative, meta in skills.items():
         pair = meta["metadata"].get("counterpart")
@@ -306,7 +311,7 @@ def main():
         elif args.command == "archive":
             print(f"Archived: {archive(ROOT, args.skill, args.ref).relative_to(ROOT).as_posix()}")
         else:
-            print(f"PASS: {validate(ROOT, args.base)} active skill packages; structure, links, language pairing, and archives validated.")
+            print(f"PASS: {validate(ROOT, args.base)} standalone skill packages; complete plugins, structure, links, language pairing, and release history validated.")
     except (ValueError, KeyError, TypeError, OSError, yaml.YAMLError, zipfile.BadZipFile) as error:
         print(f"FAIL: {error}", file=sys.stderr)
         return 1

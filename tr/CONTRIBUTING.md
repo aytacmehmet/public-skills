@@ -72,3 +72,21 @@ Komut `archived/` dışındaki dosyaları kopyalar, istenirse skill adını ve h
 Eski ZIP'leri ilgili skill'in `archived/` klasöründe tutun. İncelemek için yalnız skill keşif yollarının dışındaki ayrı bir klasöre açın. Geri dönüş veya ayrı kurulum hazırlamadan önce manifestini doğrulayın. Arşivdeki `SKILL.md` dosyalarını aktif kurulumun altında açmayın.
 
 Dil köklerinin hemen altındaki her klasör bir skill paketidir ve SKILL.md içermelidir. Hazır çağrı tam skill adını belirtmelidir; örneğin $yordamla-eski, $yordamla yerine geçmez.
+
+## Tam plugin paketleri
+
+Skill'leri ortak runtime, MCP sunucusu veya veritabanına bağlı olan plugin'i bağımsız dil paketlerinin dışında `plugins/<ad>/` altında tutun. Tek bir tam dağıtım kullanın; `aytacmehmet-public` adıyla hem `.claude-plugin/marketplace.json` hem `.agents/plugins/marketplace.json` dosyasına kaydedin. İngilizce/Türkçe tanıtımlarını depo ve dil kataloglarına bağlayın. Plugin içindeki skill'leri `en/` ve `tr/` altında ayrı yönetilen kopyalar olarak çoğaltmayın.
+
+Her plugin'de eşleşen Claude/Codex manifestleri, `README.md` / `README.tr.md`, `CHANGELOG.md` / `CHANGELOG.tr.md`, deponun birebir `LICENSE` kopyası, korunan upstream kaynak koşulları ve dosya bazlı `PACKAGE-MANIFEST.json` bulunur. Her skill'de SKILL.md, İngilizce/Türkçe tanıtımlar ve Codex arayüz metadatası gerekir. Yanıtlar kullanıcının dilini izliyorsa modele dönük yönergeler İngilizce kalabilir. Paket girdilerini, skill ad/sürümlerini, yerel bağlantıları, marketplace yollarını ve dosya hash'lerini doğrulayın; rastgele iç içe SKILL.md dosyaları yasaktır.
+
+Mevcut yayından alınan plugin, upstream sürüm çizgisini korur; kaynak repo, commit ve uyarlamaları kaydeder. Uyumlu dağıtım/belge değişikliği patch sürümünü artırır; uydurma 1.0.0 kaynak yayını veya eski public arşiv oluşturulmaz. Runtime, host, marketplace ve skill sürümleri birlikte ilerler. Public plugin geçmişi commit'li Git sürümlerinde korunur; tam teslim ZIP'lerini veya açılmış SQLite dosyalarını repo içinde çoğaltmayın. Bağımsız skill arşivlerinin yukarıdaki kuralları korunur.
+
+Yula için mevcut repo testlerini ve `skills.py validate --base HEAD` komutunu çalıştırın; ardından:
+
+```text
+python -B -m unittest discover -s plugins/yula/tests -v
+python -B plugins/yula/scripts/check_package.py --work-dir <harici-klasör>
+python -B plugins/yula/scripts/build_package.py --output-dir <harici-artifact-klasörü>
+```
+
+Üretilen paket manifestini plugin'e kopyalayın; commit öncesi doğrulamayı yeniden çalıştırıp diff'i inceleyin. Tarihsel yeterlilik raporlarının sürümlerini koruyun. Yerel kontroller ve hosted CI ayrı kanıtlardır; ikisi de SAP tenant uygunluğunu kanıtlamaz. Branch üzerinde çalışıp inceleme için PR açın; branch'in yayımlanması main'e merge edildiği anlamına gelmez.

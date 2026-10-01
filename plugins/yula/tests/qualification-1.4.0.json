@@ -1,0 +1,47 @@
+{
+  "format": "yula-qualification/1",
+  "version": "1.4.0",
+  "date": "2026-09-30",
+  "scope": "Offline source contracts and controlled native Codex MCP/three-skill qualification; no SAP tenant execution.",
+  "runtimeTests": {"status": "PASS", "count": 51, "evidence": "local unittest", "newPayloadRegressions": 7},
+  "mcpEval": {
+    "provider": "codex", "status": "PASS", "reason": "repair: fixed imported_structured_research_summary",
+    "change": "tca-20260930-005", "baselineRun": "x2", "candidateRun": "x3", "cases": 7, "repeats": 3,
+    "candidateRuns": 21, "baselineReused": true,
+    "quality": {"baseline": 0.857, "candidate": 1.0},
+    "costPerSuccess": {"baseline": 35365.3, "candidate": 29807.3, "deltaPercent": -15.7,
+      "evidence": "measured, tokens weighted by list prices; not money or literal total token count"},
+    "caseMeanLogRatio": 0.010, "signFlipP": 0.4531,
+    "generalTokenSavings": "NOT_PROVEN",
+    "toolCallsPerSuccess": {"baseline": 5.56, "candidate": 3.24, "evidence": "measured"},
+    "failedCallsPerSuccess": {"baseline": 2.94, "candidate": 1.0, "evidence": "measured"},
+    "runner": "codex-cli 0.153.4", "requestedModel": "default", "requestedEffort": "default",
+    "servedModel": "unknown", "firstRequestPrefix": "unknown",
+    "fixture": "Reduced fixture derived from shipped seed plus synthetic structured-summary stress record; not production-frequency evidence"
+  },
+  "activation": {
+    "kind": "candidate-only qualification with all three skills enabled and only fixture Yula MCP",
+    "cases": 30, "positiveCases": 15, "nearMissCases": 15, "repeats": 1,
+    "originalStatus": "NOT_RUN", "originalClearPasses": 29, "originalTriggerFailures": 0,
+    "incompleteCase": "cfg-negative-tr-translation", "incompleteReason": "Exact native enabled-skill inventory check failed before model call",
+    "originalRun": "activation-3aab2ff72c794681a79ed864779cf98e",
+    "separateRetryStatus": "PASS", "retryRun": "activation-retry-67eb91ee45b14bd5b453418a472a334a",
+    "resolvedCases": 30, "unresolvedCases": 0, "originalNotRunPreserved": true,
+    "loadEvidence": "Successful exact isolated SKILL.md read with matching returned content and unchanged file hash",
+    "costComparison": "NOT_RUN"
+  },
+  "strictAnswerSafety": {
+    "status": "PASS", "cases": 3, "run": "strict-quality-6178f6045bb94d358fa2a3825e390495",
+    "checks": "Whole JSON answer, exact fields/types, no duplicate keys/prose/additional claims, required MCP tool calls",
+    "covered": ["missing member without invented signature/parameters/example", "catalog does not establish target readiness", "routine coverage without integrity verification"],
+    "costComparison": "NOT_RUN"
+  },
+  "finalBehaviorFiles": {
+    "runtime/yula/query.py": "557c2fbd05e453bfdcf4a05b8397dfd0c424e4e4639ce8478e0672518e2cd14e",
+    "runtime/yula/mcp.py": "23ea3fe61a169b514964d73de7b194a69a3490ca6f7ac0527d8c29ca5bb68dbf",
+    "references/evidence.md": "9e58e2015a4d14c9c34eb8858c94faa9e1c3c4e70a8838797c5184c42d967900"
+  },
+  "claudeModelEval": {"status": "NOT_RUN", "reason": "Existing subscription authentication unavailable; no new sign-in or alternate API key used"},
+  "sapTenant": "NOT_RUN",
+  "limits": ["No baseline activation cost comparison", "No served-model or first-request-prefix assertion", "Native execution errors remain distinct from routing failures", "Record reference splitting was not justified by per-file usage evidence", "No source code, authentication or sandbox guard was relaxed"]
+}

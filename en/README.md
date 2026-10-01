@@ -14,3 +14,7 @@ Each skill folder contains the latest instructions, an introduction, UI metadata
 Install the individual skill folder you want, rather than this entire language directory. Follow the installation section in its introduction. Historical ZIP files are for retrieval and rollback preparation; they are not active skills.
 
 English and Turkish counterparts share a version and behavior but have localized names, descriptions, and documentation. Instructions are usually localized; the SAP Fiori Design and Spec Writer pairs use English model-facing text in both packages and still answer in the user's language. Read [Contributing and versioning](CONTRIBUTING.md) before adding a skill or publishing an update.
+
+## Complete plugins
+
+[Yula 1.4.1](../plugins/yula/README.md) bundles released-object advice, ABAP Cloud contracts, configuration architecture, four offline MCP read tools and its populated SQLite corpus for Codex and Claude Code. Install the complete plugin from the repository marketplace; its three skills depend on shared files. [Plugin contribution rules](CONTRIBUTING.md#complete-plugins).

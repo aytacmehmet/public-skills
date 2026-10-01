@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "yula": {
+      "command": "python",
+      "args": [
+        "-X",
+        "utf8",
+        "-B",
+        "${CLAUDE_PLUGIN_ROOT}/scripts/yula.py",
+        "--data-root",
+        "@user/yula",
+        "mcp"
+      ]
+    }
+  }
+}

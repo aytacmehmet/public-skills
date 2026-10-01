@@ -72,3 +72,21 @@ The command copies everything except `archived/`, optionally renames the skill a
 Keep historical ZIPs inside their skill's `archived/` folder. Extract one only into an isolated directory outside skill discovery paths. Verify its manifest before preparing a rollback or a separate installation. Never unpack archived `SKILL.md` files underneath an active installation.
 
 Every directory directly under a language root is a skill package and must contain SKILL.md. Default invocations must mention the exact skill name; $prompter-old does not count as $prompter.
+
+## Complete plugins
+
+Put a plugin whose skills depend on a shared runtime, MCP server or corpus under `plugins/<name>/`, outside the standalone language package roots. Keep one complete distribution; register it in both `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` under `aytacmehmet-public`. Add links to its English/Turkish introductions in the repository and language catalogs. Plugin-contained skills remain part of that distribution rather than separately maintained copies in `en/` and `tr/`.
+
+Each plugin needs matching Claude/Codex manifests, `README.md` / `README.tr.md`, `CHANGELOG.md` / `CHANGELOG.tr.md`, the exact repository `LICENSE`, retained upstream source terms and a per-file `PACKAGE-MANIFEST.json`. Each contained skill needs SKILL.md, English/Turkish introductions and Codex UI metadata. Model-facing instructions may remain English when answers follow the user's language. Validate every package entry, skill name/version, local link, marketplace source and payload hash; arbitrary nested SKILL.md files remain forbidden.
+
+A plugin imported from an existing release keeps its upstream version lineage and records its source repository, commit and adaptations. A compatible distribution/documentation change increments the patch version; it does not invent a 1.0.0 source release or a prior public archive. All runtime, host, marketplace and skill versions advance together. Public plugin history is preserved in committed Git revisions; do not put duplicate complete delivery ZIPs or expanded SQLite files in the repository. Standalone skill archives retain the rules above.
+
+For Yula, run the existing repository tests and `skills.py validate --base HEAD`, then:
+
+```text
+python -B -m unittest discover -s plugins/yula/tests -v
+python -B plugins/yula/scripts/check_package.py --work-dir <external-directory>
+python -B plugins/yula/scripts/build_package.py --output-dir <external-artifacts>
+```
+
+Copy the generated package manifest into the plugin and rerun validation before committing; inspect the diff. Preserve historical qualification versions. Local checks and hosted CI are separate evidence, and neither establishes SAP tenant readiness. Work on a branch and open a PR for review; publishing a branch does not merge it into main.

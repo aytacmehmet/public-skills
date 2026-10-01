@@ -1,0 +1,288 @@
+{
+  "format": "yula-publication/1",
+  "version": "1.4.1",
+  "repository": "aytacmehmet/public-skills",
+  "marketplace": "aytacmehmet-public",
+  "firstPublicPluginRelease": true,
+  "upstream": {
+    "repository": "aytacmehmet/private-skills-plugins",
+    "version": "1.4.0",
+    "commit": "1f25a7c8ae88844709469bfeb55a5301cc923e24",
+    "packageManifestSha256": "52318ba73f695a86d23740f458fbf3b9e8c295ca844bc1f77a6a7a264e129954"
+  },
+  "adaptedUpstreamFiles": [
+    ".claude-plugin/plugin.json",
+    ".codex-plugin/plugin.json",
+    "README.md",
+    "README.tr.md",
+    "references/installation.md",
+    "references/installation.tr.md",
+    "runtime/yula/__init__.py",
+    "scripts/build_package.py",
+    "skills/sap-configuration-architect/README.md",
+    "skills/sap-configuration-architect/README.tr.md",
+    "skills/sap-configuration-architect/SKILL.md",
+    "skills/sap-released-object-advisor/README.md",
+    "skills/sap-released-object-advisor/README.tr.md",
+    "skills/sap-released-object-advisor/SKILL.md",
+    "skills/sap-released-object-developer/README.md",
+    "skills/sap-released-object-developer/README.tr.md",
+    "skills/sap-released-object-developer/SKILL.md"
+  ],
+  "upstreamFiles": {
+    ".claude-plugin/plugin.json": {
+      "sha256": "6705e7718a122fa222fb8abac2e8ae6bae09d294370e8d822b250a197dd53848",
+      "bytes": 366
+    },
+    ".codex-plugin/plugin.json": {
+      "sha256": "86fecb7d9c8ec0fab5f424f5a4bd2ec82156eea3d28be1182239dec59fa8627f",
+      "bytes": 1199
+    },
+    ".mcp.json": {
+      "sha256": "21320c61bba3d60ffe07b72da359bf318a5ab3cccec689cba8de5cc381faf5b9",
+      "bytes": 249
+    },
+    "config/sources.example.json": {
+      "sha256": "76e69d9d53132e030eabd061e97c31759fe4af6058cbec1d11e638f0ce950902",
+      "bytes": 1187
+    },
+    "config/sources.json": {
+      "sha256": "a4dee4a3e70a16d95dc7b2ba8be8a2a3d995969463097cb3033801880f9c8fd7",
+      "bytes": 4686
+    },
+    "data/manifest.json": {
+      "sha256": "7ce28d8d5b9f96dabf59f3c8a08fe0a7a410f02f27eb7b165d93ffb02744a5d1",
+      "bytes": 2290
+    },
+    "data/schema-contract.json": {
+      "sha256": "0540f0d68dd76fe2d98fe6909a8e45c3c3973f65ef6cfb4e1b3e379a86c549cb",
+      "bytes": 3669
+    },
+    "data/schema-revision-2.sql": {
+      "sha256": "f21e5e30209170f5434f688be1bf997f7ae34431336916134a48a4dd1513bcbf",
+      "bytes": 1205
+    },
+    "data/schema-v1.sql": {
+      "sha256": "fbcadf70d15b704b42524ce8456f3550bdcc3de7dfd54d72c3a4d4e6a27b0061",
+      "bytes": 4599
+    },
+    "data/yula.sqlite.zip": {
+      "sha256": "17278c44b4c1177d000c56e8a29fbe1ea163f9ec198855cf9b86107e0d3f769a",
+      "bytes": 78681985
+    },
+    "LICENSE": {
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    "LICENSES/SAP-Cloudification-Repository.txt": {
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    "README.md": {
+      "sha256": "02f4283ecbecf62fc02f1bc4b3e9bf183c5ea8c0234a0813f69b7386459aba5d",
+      "bytes": 7099
+    },
+    "README.tr.md": {
+      "sha256": "ff552c784e3556de88ae9aecd1b58a4c51939b408e06dd92664b3cfa0332da7a",
+      "bytes": 7870
+    },
+    "references/configuration-workflows.md": {
+      "sha256": "5d03bf749cbcc932f656ae29ed2ae8f9eae7eea11f09de4b5914c4651b8397bb",
+      "bytes": 3266
+    },
+    "references/diagnosis.md": {
+      "sha256": "6a60b67c4c037e18e96969929a1052fceb1642c09021b0b73299eca43703cf67",
+      "bytes": 1701
+    },
+    "references/evidence.md": {
+      "sha256": "9e58e2015a4d14c9c34eb8858c94faa9e1c3c4e70a8838797c5184c42d967900",
+      "bytes": 3150
+    },
+    "references/installation.md": {
+      "sha256": "eba5b9a441ac629d7ce2f716469ec8df121ef86f1ee1b43e7da09d4ba2d418c4",
+      "bytes": 4264
+    },
+    "references/installation.tr.md": {
+      "sha256": "d7c45cd9a7498dda2a929b4a68813cee64befb644f36d5674eb47040d0863e2b",
+      "bytes": 4490
+    },
+    "references/maintenance.md": {
+      "sha256": "9b2e8f2de9db2a0c25d4264ab982943dfb66b1cdae476b5ab6c0ae1eeffb43f4",
+      "bytes": 7596
+    },
+    "references/provenance.md": {
+      "sha256": "e1c9cef2328eb7c95f57c64573aa20b01806fb91d5d5eaa2cd22b5203e6a47c7",
+      "bytes": 3115
+    },
+    "references/provenance.tr.md": {
+      "sha256": "cd8bc07e217217f00cf9a03183ac42be8cf875888a2a5f3d33b7d3d9520d0a16",
+      "bytes": 3168
+    },
+    "references/records.md": {
+      "sha256": "0b824b5878a79f7944ab75f5f41caa8bdbbec813b0208eb708687692b57669bf",
+      "bytes": 4184
+    },
+    "runtime/yula/__init__.py": {
+      "sha256": "73466c9580d3cfeb14a0c24ac3fd68aea0241083687b15119665627e43b9fa39",
+      "bytes": 89
+    },
+    "runtime/yula/adapters.py": {
+      "sha256": "e89042211d8391832080fc743143d64baa6e66c936869e9142ae222b1955ab2a",
+      "bytes": 30795
+    },
+    "runtime/yula/cli.py": {
+      "sha256": "7600a2b872bd7e114a3c5d2782305068d2a53f011841f033669bb92c760c3d28",
+      "bytes": 3258
+    },
+    "runtime/yula/common.py": {
+      "sha256": "ab8c9ddca82984bc5d0d65d1ec0b25d509cf5e5a8377bbdb7506c6a14cc7d769",
+      "bytes": 12544
+    },
+    "runtime/yula/mcp.py": {
+      "sha256": "23ea3fe61a169b514964d73de7b194a69a3490ca6f7ac0527d8c29ca5bb68dbf",
+      "bytes": 10655
+    },
+    "runtime/yula/migrations.py": {
+      "sha256": "15641e8097b81e61b567e4fc850b3d20ec21c25daeb3bdd3fb48f3cb6b368440",
+      "bytes": 3443
+    },
+    "runtime/yula/network.py": {
+      "sha256": "2c5d29ae687329b6c626c7777807e1954024e6d568bc1dfe6f41473e37b97a78",
+      "bytes": 5629
+    },
+    "runtime/yula/query.py": {
+      "sha256": "557c2fbd05e453bfdcf4a05b8397dfd0c424e4e4639ce8478e0672518e2cd14e",
+      "bytes": 33084
+    },
+    "runtime/yula/records.py": {
+      "sha256": "78b55718fb6f38126e30bf0fffa8208a72732431ef94a3938407e5128ec1d6a3",
+      "bytes": 9562
+    },
+    "runtime/yula/seed.py": {
+      "sha256": "e9f48923cc44523b5aba4480f401a5ff4d230bf2e516a167d15e00cc65d5e222",
+      "bytes": 3553
+    },
+    "runtime/yula/snapshots.py": {
+      "sha256": "1ea7d2c2b62adeb01bf54b085cee2f1f5b7582eb53ba99f462179e553c4f3976",
+      "bytes": 9084
+    },
+    "runtime/yula/updates.py": {
+      "sha256": "4464c7da4f342eac7326ed845f7c77827d303d1384e037b03a8fd5730e8ac672",
+      "bytes": 4719
+    },
+    "runtime/yula/vendor/__init__.py": {
+      "sha256": "e0040297d2803807dc90dc7db5605e0c7283c8c7c3b46ca9bcc6d6f731cc1304",
+      "bytes": 69
+    },
+    "runtime/yula/vendor/sca.py": {
+      "sha256": "a580e8b480e538a0c0da57952c5f3cab2fbbf606db53ded5204a7a0b7ff9202c",
+      "bytes": 37036
+    },
+    "scripts/build_package.py": {
+      "sha256": "1cf358af990bec2a1042a176afb508fdb98a224f974083838c6e32fb614890da",
+      "bytes": 4008
+    },
+    "scripts/check_package.py": {
+      "sha256": "2a10a7c85eba17e9f9db7ac4b6a8feedcb3434ed5c6172f1565fd496d27e9092",
+      "bytes": 4124
+    },
+    "scripts/preflight.py": {
+      "sha256": "92abbbec26cadbb83de92407089d996d36ffb109d4df56636715109adad718b4",
+      "bytes": 3451
+    },
+    "scripts/yula.py": {
+      "sha256": "7b3f7c06a9337704f341ba47ca34c3a100f57256868d00692667ba245de8e973",
+      "bytes": 334
+    },
+    "skills/sap-configuration-architect/agents/openai.yaml": {
+      "sha256": "1d2afaadddb4954a2b1f85676f3ac3ea90883ec5c860886c390c4ebbd60dfc6b",
+      "bytes": 408
+    },
+    "skills/sap-configuration-architect/README.md": {
+      "sha256": "24bc9ca6f802cf277ed400c833b3f3cc8a0d8891c5b264f6c7b3c02b397add44",
+      "bytes": 933
+    },
+    "skills/sap-configuration-architect/README.tr.md": {
+      "sha256": "29eb03b7e16be14bc390fac013a062c4867a548d717516b73e503d55665e730f",
+      "bytes": 964
+    },
+    "skills/sap-configuration-architect/SKILL.md": {
+      "sha256": "812d83b9e2dbfa849d3e1c73a6ca852c85a5b42e6c7d769b28a7626f0f694cb0",
+      "bytes": 1940
+    },
+    "skills/sap-released-object-advisor/agents/openai.yaml": {
+      "sha256": "39f50f981dfab99dc72fcf2324e9389a4eb1f6d2e5d8e6ac98d468e39c4b61b7",
+      "bytes": 406
+    },
+    "skills/sap-released-object-advisor/README.md": {
+      "sha256": "c4d210037087d83059f172d20f425b0862b209056a1f6fb7c08ea889254045db",
+      "bytes": 935
+    },
+    "skills/sap-released-object-advisor/README.tr.md": {
+      "sha256": "fb8c405233c2e873f520f7d80de347db5afd772f7054c0efdb2ed3dcac80c0d2",
+      "bytes": 975
+    },
+    "skills/sap-released-object-advisor/SKILL.md": {
+      "sha256": "67d6d484bcfe3ba341fae01b8494a9589d1c892c5e9ef969b00d61982a36eb5e",
+      "bytes": 1474
+    },
+    "skills/sap-released-object-developer/agents/openai.yaml": {
+      "sha256": "ee81a5958c838313475b143396858d37ff5d9d1e28619cd1dd6e8775020b9ba6",
+      "bytes": 406
+    },
+    "skills/sap-released-object-developer/README.md": {
+      "sha256": "d1757c0642a4de6f01ec6ed657b5b31f67c2038d11623cebf881e74c399e17cf",
+      "bytes": 924
+    },
+    "skills/sap-released-object-developer/README.tr.md": {
+      "sha256": "81677dcb3df966a4365884f6bef38e3a47b38a3c524f87e2ec14417a25861177",
+      "bytes": 964
+    },
+    "skills/sap-released-object-developer/SKILL.md": {
+      "sha256": "63c7a8e1e2593e29a30b59b4cebc00979e85298bc44eaae26ba3b048b26481f6",
+      "bytes": 1539
+    },
+    "tests/host-compatibility.json": {
+      "sha256": "aac0cbf06fe881ae53aee5b4e5787fdf61dc244ef6edfe45f204b63cb62c98dd",
+      "bytes": 1480
+    },
+    "tests/qualification-1.4.0.json": {
+      "sha256": "366703dfbdada5be8b4920683148035c8e356c914277220f0dfe3893e130afb5",
+      "bytes": 3504
+    },
+    "tests/review-1.2.0.json": {
+      "sha256": "1361e44c9c25cfadf08fd04a887ff9cae19f299778a099f3f9a6db3aab147d54",
+      "bytes": 38705
+    },
+    "tests/review_cases.py": {
+      "sha256": "a429660c96d6dc670595d8d83c0637b2b092c2f7285c69f1eee291a3e576d27e",
+      "bytes": 14293
+    },
+    "tests/test_distribution.py": {
+      "sha256": "51b30a7ff67f823e159dc38ae736d5f7fb4f74ef1232ce4c34060fdbb3cf2afd",
+      "bytes": 5303
+    },
+    "tests/test_payload_bounds.py": {
+      "sha256": "6aa4cd4d2f4fcd7f440cbbb4fbe45ddd4e42be20b3235fb23a3be142beb5f39e",
+      "bytes": 11708
+    },
+    "tests/test_review_regressions.py": {
+      "sha256": "a837ea5460a8926ebccdb8f288b5d6f9b3b00c99fa8fea08225ead75d0980150",
+      "bytes": 4879
+    },
+    "tests/test_yula.py": {
+      "sha256": "5c254d87f123f13c185333f87be0294d40c45d7227c6b7401fce21397d2b678f",
+      "bytes": 22806
+    },
+    "tests/validation.json": {
+      "sha256": "a6067de42921153dc8e235d347c8b724aa77a56b168b9e8f2cf56df5c9a76c68",
+      "bytes": 3265
+    }
+  },
+  "corpusSha256": "bf16b36d56dd4382dea07a3c5cd63250095e9ba3500b8a607f37b5228996b620",
+  "historicalQualification": "tests/qualification-1.4.0.json",
+  "boundaries": [
+    "Local package/runtime checks do not establish SAP tenant readiness.",
+    "Historical 1.4.0 qualification is not a new 1.4.1 model evaluation."
+  ]
+}

@@ -1,0 +1,13 @@
+interface:
+  display_name: "SAP Configuration Architect"
+  short_description: "Analyze release-specific SAP configuration evidence"
+  default_prompt: "Use $sap-configuration-architect to resolve this SAP Public Edition request with compact evidence."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "yula"
+      description: "Offline SAP evidence retrieval"
+
+policy:
+  allow_implicit_invocation: true

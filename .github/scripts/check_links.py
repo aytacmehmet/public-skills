@@ -15,7 +15,7 @@ LINK = re.compile(r"\]\((https?://[^)\s]+)\)")
 
 def collect(root):
     links = {}
-    for language in ("en", "tr"):
+    for language in ("en", "tr", "plugins"):
         for path in sorted((root / language).rglob("*.md")):
             if "archived" in path.parts:
                 continue

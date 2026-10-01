@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "sap-released",
+      "kind": "released-catalog",
+      "enabled": true
+    },
+    {
+      "id": "local-objects",
+      "kind": "legacy-objects",
+      "enabled": false,
+      "pathEnv": "YULA_OBJECTS_SOURCE"
+    },
+    {
+      "id": "local-config",
+      "kind": "configuration-root",
+      "enabled": false,
+      "pathEnv": "YULA_CONFIG_SOURCE"
+    },
+    {
+      "id": "local-config-db",
+      "kind": "configuration-db",
+      "enabled": false,
+      "pathEnv": "YULA_CONFIG_DB_SOURCE"
+    },
+    {
+      "id": "sscui-workbook",
+      "kind": "configuration-workbook",
+      "enabled": false,
+      "pathEnv": "YULA_SSCUI_WORKBOOK",
+      "release": "2608"
+    },
+    {
+      "id": "local-records",
+      "kind": "knowledge-records",
+      "enabled": false,
+      "pathEnv": "YULA_RECORDS_SOURCE"
+    },
+    {
+      "id": "sap-public-metadata",
+      "kind": "sap-adt-metadata",
+      "enabled": false,
+      "originEnv": "YULA_SAP_ORIGIN",
+      "authorizationEnv": "YULA_SAP_AUTHORIZATION",
+      "objects": [
+        {
+          "objectType": "CLAS",
+          "objectName": "CL_PRINT_QUEUE_UTILS"
+        }
+      ]
+    }
+  ]
+}
