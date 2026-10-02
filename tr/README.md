@@ -19,4 +19,4 @@ Türkçe ve İngilizce karşılıklar aynı sürümü ve davranışı paylaşır
 
 [Yula 1.4.1](../plugins/yula/README.tr.md), Codex ve Claude Code için released object danışmanlığını, ABAP Cloud sözleşmelerini, konfigürasyon mimarisini, dört çevrimdışı MCP okuma aracını ve dolu SQLite veritabanını birlikte sunar. Üç skill ortak dosyalara bağlı olduğundan repo marketplace'inden tam plugin'i kurun. [Plugin katkı kuralları](CONTRIBUTING.md#tam-plugin-paketleri).
 
-[Belirtim Yazmanı 2.0.2](../plugins/belirtim-yazmani/README.tr.md), kararları verilmiş SAP Cloud ERP geliştirmelerini TOON FS-TS ve tek geliştirmelik tam handoff olarak belgeler. Ortak Python/Node runtime ve sabit codec ile tam plugin'i kurun. Mevcut 1.1.0 standalone çift eski JSON sözleşmesini kullanır; aynı anda tek sürüm kurun.
+[Belirtim Yazmanı 3.0.0](../plugins/belirtim-yazmani/README.tr.md), SAP Cloud ERP geliştirmelerini kendi kendine yeterli TOON FS-TS, danışmanın cevaplayacağı sorular ve koordineli ayrı geliştirme handoff’ları olarak belgeler. Ortak Python/Node runtime ve sabit codec ile tam plugin'i kurun. Mevcut 1.1.0 standalone çift eski JSON sözleşmesini kullanır; aynı anda tek sürüm kurun.

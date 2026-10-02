@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.md) · Türkçe
 
+## 3.0.0 — 2026-10-02
+
+- Yayınlanmış private 3.0.0 kaynağı tam olarak aktarılır; public paket hash kontrolü ve tekrarlanabilir çevrimdışı üretici korunur.
+- Danışmana iş/tasarım soruları için en fazla üç sıralı ve puanlı öneri sunulur; sınırları belli developer teknik kararları kendi kendine yeterli TOON otoritesinde tutulur.
+- Etkilenen geliştirmeler bütün kapılar geçince ayrı ZIP'ler halinde birlikte teslim edilir; her dosya kısa geliştirme adıyla başlar ve gerekli sözleşme/referanslar yerel olarak dahil edilir.
+- Mimari, beş katmanlı/iki turlu yayın kontrolleri, değiştirilemez baseline/import uyumluluğu ve hash'e bağlı artımlı kontrol planı korunur.
+- Public marketplace kimliği ve eski standalone yayın geçmişi korunur. Doğrulanmamış token-audit adayı dahil edilmez; yeni tasarruf veya model/SAP qualification iddiası yoktur.
+
 ## 2.0.2 — 2026-10-01
 
 - PUBLICATION.json içinde kaydedilen private-skills-plugins main commit'inden alınan ilk tam public-skills plugin dağıtımı.

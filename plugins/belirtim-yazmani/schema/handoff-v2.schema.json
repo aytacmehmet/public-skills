@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "const": "3.0"
+      "const": "2.0"
     },
     "meta": {
       "type": "object",
@@ -1042,206 +1042,6 @@
         "additionalProperties": false
       },
       "minItems": 1
-    },
-    "developer_decisions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "owner": {
-            "const": "ABAP_DEVELOPER"
-          },
-          "domain": {
-            "const": "IMPLEMENTATION"
-          },
-          "question": {
-            "type": "string",
-            "minLength": 1
-          },
-          "context": {
-            "type": "string",
-            "minLength": 1
-          },
-          "constraints": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            },
-            "minItems": 1
-          },
-          "architecture_constraint_refs": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            },
-            "minItems": 1
-          },
-          "reference_ids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "affects_functional_contract": {
-            "const": false
-          },
-          "status": {
-            "enum": [
-              "OPEN",
-              "ANSWERED"
-            ]
-          },
-          "answer": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "owner",
-          "domain",
-          "question",
-          "context",
-          "constraints",
-          "architecture_constraint_refs",
-          "reference_ids",
-          "affects_functional_contract",
-          "status",
-          "answer"
-        ],
-        "additionalProperties": false
-      }
-    },
-    "references": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "kind": {
-            "enum": [
-              "FILE",
-              "DOCUMENT",
-              "LIST",
-              "TEXT"
-            ]
-          },
-          "path": {
-            "type": "string",
-            "minLength": 1
-          },
-          "pointer": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "sha256": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "purpose": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "id",
-          "kind",
-          "path",
-          "pointer",
-          "sha256",
-          "purpose"
-        ],
-        "additionalProperties": false
-      }
-    },
-    "architecture": {
-      "type": "object",
-      "properties": {
-        "summary": {
-          "type": "string",
-          "minLength": 1
-        },
-        "boundaries": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "minLength": 1
-              },
-              "object_refs": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "minItems": 1
-              },
-              "responsibility": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "required": [
-              "id",
-              "object_refs",
-              "responsibility"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "constraints": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "minLength": 1
-              },
-              "statement": {
-                "type": "string",
-                "minLength": 1
-              },
-              "requirement_refs": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            },
-            "required": [
-              "id",
-              "statement",
-              "requirement_refs"
-            ],
-            "additionalProperties": false
-          }
-        }
-      },
-      "required": [
-        "summary",
-        "boundaries",
-        "constraints"
-      ],
-      "additionalProperties": false
     }
   },
   "required": [
@@ -1269,13 +1069,10 @@
     "dependencies",
     "baseline",
     "change_rationale",
-    "changelog",
-    "developer_decisions",
-    "references",
-    "architecture"
+    "changelog"
   ],
   "additionalProperties": false,
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:specification:3.0:handoff",
-  "title": "Self-contained role-owned development handoff"
+  "$id": "urn:fsts:2.0:handoff",
+  "title": "Neutral complete FS-TS handoff decoded TOON data"
 }

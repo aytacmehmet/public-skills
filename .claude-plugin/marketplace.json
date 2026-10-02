@@ -16,8 +16,8 @@
     {
       "name": "belirtim-yazmani",
       "source": "./plugins/belirtim-yazmani",
-      "description": "Document decided SAP Cloud ERP developments as authoritative TOON FS-TS and release only complete, producer-neutral single-development handoffs.",
-      "version": "2.0.2"
+      "description": "Role-owned SAP Cloud ERP TOON specifications and self-contained, coordinated separate development handoffs.",
+      "version": "3.0.0"
     }
   ]
 }

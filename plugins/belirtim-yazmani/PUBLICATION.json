@@ -1,24 +1,25 @@
 {
   "format": "plugin-publication/1",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "repository": "aytacmehmet/public-skills",
   "marketplace": "aytacmehmet-public",
-  "firstPublicPluginRelease": true,
+  "firstPublicPluginRelease": false,
+  "previousPublicVersion": "2.0.2",
   "upstream": {
     "repository": "aytacmehmet/private-skills-plugins",
     "ref": "main",
-    "commit": "abd3f221f25fd48b53483a630b6dc49dbf52943d",
+    "commit": "08295d32e6606a466ffe364bc4164b4b7b992498",
     "path": "plugins/belirtim-yazmani",
-    "version": "2.0.1"
+    "version": "3.0.0"
   },
   "upstreamFiles": {
     ".claude-plugin/plugin.json": {
-      "bytes": 382,
-      "sha256": "57f3aa3b30948a803e81c76c38dc492c40551b52cbeec45beaaa95d6e86e4493"
+      "bytes": 345,
+      "sha256": "8aa6a9abb4cceb91fdf299ff78ce5b73baa2aa526e4ae100fdcf8b88cde338ed"
     },
     ".codex-plugin/plugin.json": {
-      "bytes": 407,
-      "sha256": "6ec8a7c89c53926950ee550f87f7b3a7ac902f203a43f69ebd7a4409ba8c8d4f"
+      "bytes": 370,
+      "sha256": "934a096732f9418dd9cf6664253781cdc2f954add185576c4e688262d5020032"
     },
     "LICENSE": {
       "bytes": 35149,
@@ -33,12 +34,12 @@
       "sha256": "f38d7f387b3c0cef3345ea236878153b5b9dded78d6c6d5e5c52b952dbedc6dd"
     },
     "README.md": {
-      "bytes": 3741,
-      "sha256": "99585505d8e96ebf4a75c83bd0da336c711af4a9d539f906fb7857c7f713efdd"
+      "bytes": 4732,
+      "sha256": "b6626908a1d4f72a8ddef545e358f3ee3f7a65a44274991d242adb592dd6b0d2"
     },
     "README.tr.md": {
-      "bytes": 3751,
-      "sha256": "bc7b1ee7e268e01526540ac247cbf0caaef1e834b3481281bafb23e95a0bc6f9"
+      "bytes": 4768,
+      "sha256": "687b743be65da578f9dacf9b0318bc0bb4fea8f3763209a9a57a1b966394760a"
     },
     "assets/EXAMPLE.md": {
       "bytes": 362,
@@ -57,32 +58,32 @@
       "sha256": "e0ba565684f1b59b9381bda05f0bfb89345a02abc4e2fd71c41393aeadda1342"
     },
     "docs/CHANGES.md": {
-      "bytes": 1063,
-      "sha256": "5b445e550888295ad38884a32d4b783d68b1fa0f2b950633f4e819cbae16927a"
+      "bytes": 1491,
+      "sha256": "8ee7484726e3586c0561aaec283ffd63f6cdcb137422e499a073d4f8eced57c6"
     },
     "docs/CHANGES.tr.md": {
-      "bytes": 1115,
-      "sha256": "48c19c6063cf4a2462e2033126f64aebf4854b6179035333301a7a635a5d519e"
+      "bytes": 1561,
+      "sha256": "c535e372f293add498057598454f9e9df22955b17eed528c8f195150e9c70d87"
     },
     "docs/RULE-COVERAGE.toon": {
-      "bytes": 10572,
-      "sha256": "fb72e69985ed73ec4882262c89a046fa69024f8f12df6cf742bbfea5cf7b946f"
+      "bytes": 12617,
+      "sha256": "d2bcd12d244433ef6125ba66c2dd31e4be9a11511ddb636c89816457c4ef295c"
     },
     "docs/TOKEN-EVAL.toon": {
       "bytes": 1715,
       "sha256": "c884824c9b60ceb475b801e4842f5f769de6b02805a7ee750c8ddf9ed1e77891"
     },
     "docs/VERIFICATION.md": {
-      "bytes": 3765,
-      "sha256": "da822174790187041d7079e0ccee88d482c0edff3a81c240e08d042c9d80395f"
+      "bytes": 4899,
+      "sha256": "88638f206e963d8338692d297e2486c50598a50a3b36e624471d5b272a875814"
     },
     "docs/VERIFICATION.tr.md": {
-      "bytes": 3786,
-      "sha256": "76c5e58784ce214cdadd275c045528a2dcc1a5e41490419e563709b55bc5c8aa"
+      "bytes": 4985,
+      "sha256": "80b91112efe8873c8f7b390c4dcd2fc20aa641ff935cff0d5d7b7c3e1e1aeba3"
     },
     "plugin.json": {
-      "bytes": 457,
-      "sha256": "85be85a44f658052edafaf121e917585586484d254fe3ec077c752ae0d74c1fe"
+      "bytes": 420,
+      "sha256": "4a39d7b773a853a37da5058161bc533ec077513f8538ba7d9915e260cad487d0"
     },
     "provenance/upstream-export.json": {
       "bytes": 264,
@@ -100,25 +101,33 @@
       "bytes": 106695,
       "sha256": "915b74a26f24c05e5fbd8d70212ffe798eaa59470144d9de7709ad44373de35a"
     },
-    "schema/handoff.schema.json": {
+    "schema/handoff-v2.schema.json": {
       "bytes": 23325,
       "sha256": "232ce800394bfae3a45e63ba83285a6059b7d0d41cbdf699a89d1dc20ad6739e"
+    },
+    "schema/handoff.schema.json": {
+      "bytes": 28009,
+      "sha256": "5547f76e73b00fdf88acebbdc6dfb5418625e359cf4ac7a2601efacd9ac08ce4"
     },
     "schema/legacy.schema.json": {
       "bytes": 55414,
       "sha256": "de66aea41294980bb22596e509869e12826d16ec79a22b3acbfdf842e48a2888"
     },
     "scripts/bv2.py": {
-      "bytes": 35494,
-      "sha256": "d785f34e293e4b27cfc4fa00e946e1167944bc207343a2da23263df726454a3b"
+      "bytes": 37622,
+      "sha256": "81d20e7afe180ec69019106a3065bf3db68c93afacea986524af29c32665c9bf"
     },
     "scripts/codec.mjs": {
       "bytes": 530,
       "sha256": "b659432e2ee91a472c33c9cee997aee3947d9c77dd6013c8e25f0559684d197a"
     },
     "scripts/delivery.py": {
-      "bytes": 48826,
-      "sha256": "54af382d776f38108915a7b404c81c68960deb753d8cf64119448df20a57c224"
+      "bytes": 51705,
+      "sha256": "56dfa0d5e3276421a91c26b9c38bc6fb103b86b8a22336f7f630d39f587c9c5b"
+    },
+    "scripts/handoff3.py": {
+      "bytes": 32611,
+      "sha256": "45a3004c8d4303ea2a355eb0ded8836a200358362afadd29e9da3ad3c31292df"
     },
     "scripts/legacy_core.py": {
       "bytes": 46452,
@@ -133,40 +142,44 @@
       "sha256": "0362c4c822992028bfed7216e9c986ab216cc553bfdb95cf3715a2a30860e6b4"
     },
     "skills/belirtim-yazmani/SKILL.md": {
-      "bytes": 6022,
-      "sha256": "b0ead51c758618f3336cbcfa5a2d932e492750e4e5ad54954acc8ba8e9adc29e"
+      "bytes": 6834,
+      "sha256": "d0149fd368ef46f87fb750a13d1a683f30a83a75eb2e9e3e8bd946ff37479321"
     },
     "skills/belirtim-yazmani/agents/openai.yaml": {
-      "bytes": 250,
-      "sha256": "94499ad517f03bf3ab824f3986eeb96c3f7dd099294fa8e159e21e50b68267b0"
+      "bytes": 349,
+      "sha256": "a336032846b820a36c7b417d7c530a0c6b925afe40ecd53f94a7f1f4d3a3ed21"
     },
     "skills/belirtim-yazmani/references/eval.md": {
-      "bytes": 2706,
-      "sha256": "00269e5de16492516862b99a71e795e2690115a820dbe21f3f8ddfa65e60846f"
+      "bytes": 2424,
+      "sha256": "d5dee37039b12bc1fda5fb89abd8358e33a1ed92e4c27e33fd444aa777204dd2"
     },
     "skills/belirtim-yazmani/references/format.md": {
-      "bytes": 1380,
-      "sha256": "48a70cbac7686798c572768d4b78c76328fe08ae9582a93ef1f4808b2db148ca"
+      "bytes": 1713,
+      "sha256": "9647bc6f182c4aa3e6eb79e8e30187b30649283be03f9ed4fb0c6ee2b4d1d064"
     },
     "skills/belirtim-yazmani/references/workflow.md": {
-      "bytes": 3887,
-      "sha256": "404122ceb011e832148069715cf97e18c1db9aea3e4497cb336a8ec7b8c7e99b"
+      "bytes": 4392,
+      "sha256": "5989970af88f42e142e7559606143e25773700fbd3d7afa8fc586ca93b2eed61"
     },
     "skills/belirtim-yazmani/scripts/check_package.py": {
       "bytes": 1432,
-      "sha256": "c190e02fcec907c56e25361a7f32d752dcbb6ab78797a395f9b32601cfb4ae7f"
+      "sha256": "978e15d35f5631a8d440c13c9592ddf01f05d518cade65ad2582ca7e1d0d7bda"
     },
     "tests/fixture_v4.py": {
-      "bytes": 7926,
-      "sha256": "5aff1ecc2003c3ee4a49fe942e103c6143d45d4df59f7d43e3abd57669be2ace"
+      "bytes": 8394,
+      "sha256": "29552887eb2b647f525f2620b08f1a31ba804b47a843d3d45ebfc39d142579dd"
     },
     "tests/test_handoff.py": {
       "bytes": 10374,
       "sha256": "f1d098f24709d8717df130445ccf6af06541a32698a61f1f087176dd5a196b52"
     },
+    "tests/test_handoff3.py": {
+      "bytes": 14892,
+      "sha256": "de61a2ee6db2a11383ed803ef508f571ea270f14926cb659e6f168186eb4cb3c"
+    },
     "tests/test_release.py": {
-      "bytes": 14730,
-      "sha256": "95180e51aae3a5a4b5ac048bcd0027275542691ef566ce1c703b9c9c6a4fff9a"
+      "bytes": 14922,
+      "sha256": "141c361f0e28c2ab01cb5b35128f09bee45264517e7a9a1fdf81c3d97f0b95ec"
     },
     "vendor/toon/LICENSE": {
       "bytes": 1082,
@@ -186,12 +199,8 @@
     }
   },
   "adaptedUpstreamFiles": [
-    ".claude-plugin/plugin.json",
-    ".codex-plugin/plugin.json",
     "README.md",
     "README.tr.md",
-    "plugin.json",
-    "skills/belirtim-yazmani/SKILL.md",
     "skills/belirtim-yazmani/scripts/check_package.py"
   ],
   "preservedHistoricalQualification": [
@@ -200,7 +209,9 @@
     "docs/TOKEN-EVAL.toon"
   ],
   "boundaries": [
-    "Historical source qualification is not a new public-release model evaluation.",
-    "No SAP tenant execution or normal-profile installation is performed."
+    "Public packaging adapts installation documentation and payload validation only.",
+    "Unqualified audit candidates and logs are not part of this distribution.",
+    "No new model, visual or SAP qualification or token saving is claimed.",
+    "No normal-profile installation or SAP operation is performed."
   ]
 }

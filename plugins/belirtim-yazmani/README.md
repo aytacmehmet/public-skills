@@ -1,62 +1,42 @@
-# Belirtim Yazmanı 2.0.2
+# Belirtim Yazmanı 3.0.0
 
 English · [Türkçe](README.tr.md)
 
 ## Purpose
-One shared Claude Code/Codex skill and plugin-owned runtime for decided SAP Cloud ERP developments.
-It documents facts and decisions; it does not design solutions, code applications or mutate tenants.
-The private TOON workspace keeps the complete target and private control records separate.
-The developer authority is `fsts/fsts.toon`. Excel is an optional projection.
+Shared Claude Code/Codex documentation skill for SAP Cloud ERP. Consultant business/design decisions are collected with at most three ranked suggestions; implementation questions belong to the ABAP developer. Separate linked-development ZIPs are delivered together after all business, architecture, reference and final review gates pass. The package is self-contained and neutral to the developer's tools/model.
 
 ## Installation
-Python 3.11+, Node.js 20+, and the locked packages in `requirements.txt` are required by the
-plugin runtime. No pip packages or scripts are owned by the embedded skill. The TOON codec is vendored.
-Use a virtual environment and `python -m pip install -r requirements.txt` at the plugin root.
+The plugin-owned runtime requires Python 3.11+, Node.js 20+ and the locked `requirements.txt` packages. Use a virtual environment and `python -m pip install -r requirements.txt`. No dependencies belong to the embedded skill; the official TOON codec is vendored.
 
-Claude Code:
 ```text
 /plugin marketplace add aytacmehmet/public-skills
 /plugin install belirtim-yazmani@aytacmehmet-public
 ```
-Codex:
+
 ```text
 codex plugin marketplace add aytacmehmet/public-skills --sparse .agents --sparse .claude-plugin --sparse plugins/belirtim-yazmani
 codex plugin add belirtim-yazmani@aytacmehmet-public
 ```
-Invoke `/belirtim-yazmani:belirtim-yazmani` in Claude Code or `$belirtim-yazmani` in Codex
-(use the namespaced name if shown by the host). Both use the same rules and runtime.
-No automatic installation, model selection or user configuration change is performed.
+
+Invoke the namespaced skill in Claude Code or `$belirtim-yazmani` in Codex. This repository publication does not install anything or select a model.
 
 ## Workflow
-Use `python scripts/bv2.py --help`. Resolve the runtime path from the installed skill directory;
-the working directory may differ. `BY_NODE` can select the Node executable.
+Resolve `scripts/bv2.py` from the absolute loaded skill directory; cwd may differ.
 
-1. `init` or `migrate` keeps the legacy input and creates a TOON workspace; original JSON is untouched.
-2. `release-init` opens the authoritative `delivery.spec`; imported content becomes read-only reference.
-3. `profile`, `guide`, `patch` and `context` expose only applicable guidance/data with reference closure.
-4. `release-inspect` enforces typed profiles, traceability, zero-open counters and producer/code scans.
-5. `release-approve`, `eval-request`, `eval-record` and `confirm-reviews` bind genuine owner/reviewer records privately.
-6. `handoff` refuses any gap, missing review or fewer than two consecutive clean rounds. `verify` checks saved artifacts.
-7. `feedback` records each developer defect as a regression and requires a new version.
+1. `init`/`migrate`, then `release-init` create a 3.0 private TOON target. Original inputs remain untouched. Existing 2.0 workspaces use `release-upgrade`; old approval/review evidence is invalidated, not silently relabeled.
+2. `questions` returns consultant BUSINESS/USER_EXPERIENCE/BUSINESS_DESIGN items only. Options carry text, rationale, assumptions and separate 0..5 consistency/suitability/quality scores. Their mean orders A/B/C; scores are relative judgments, not approval. No grounded options means an explicit reason, not invented alternatives.
+3. Public `developer_decisions` records are bounded ABAP_DEVELOPER/IMPLEMENTATION choices with sufficient context, constraints, architecture refs and locally packaged inputs. Business gaps cannot be assigned to this list to evade a gate. Delivered open technical choices mean READY_FOR_DEVELOPER_DECISIONS, not READY_FOR_CODING.
+4. `check-plan` computes changed check units and dependency hashes; `check-record` stores actual bound results. Reuse only passed unchanged units. Accumulate intermediate edits before expensive stable-snapshot independent reviews. Cache never approves a release or claims a fresh model run.
+5. Complete responsibility boundaries, architecture constraints, functional chains, baseline and references. Every referenced file/text/list/pointer must exist locally in the ZIP. Every basename starts with the approved meaningful short name. Manifest roles identify the authority; no fixed fsts/fs-ts filenames are emitted.
+6. `release-approve`, final `eval-request`/`eval-record`, and `confirm-reviews` preserve genuine current-snapshot approval and five-layer review. Two clean final rounds are required. No fake execution, autonomous business defaults or SAP mutation.
+7. `handoff-batch` reads a TOON manifest with `developments` entries containing `workspace` and `assets_root` paths inside the manifest directory. Use `--output` and `--batch-id`. Changed linked developments must all be present; contracts bind partner version/hash/source pointer and complete needed content. Separate ZIPs are staged, verified and published together in one new directory; cycles, overlapping mutations or a blocked partner publish nothing.
+8. `verify` reads 3.0 role manifests and legacy 2.0 packages as references. Updates contain baseline content plus stable-ID changes; immutable deliveries are never overwritten. `feedback` creates a new-version regression.
 
-The A-F handoff contract uses TOON for the FS-TS, schema, manifest, readiness, objects and delta.
-UI requires numbered PNG callouts bound by hashes. Interactive assets require an explicit exception,
-offline verification and static checks. Each handoff covers one development and remains immutable.
-Changes to another development require its own handoff. Baseline artifact and decoded spec hashes differ.
-No access is not verified absence. Full target plus stable-ID delta is delivered.
+## Contract and limits
+TOON is the only editable/public specification authority; optional Excel is derived, PNG layout-only. Required dependency contracts and source excerpts are included in each ZIP, not obtained from other files or URLs. Neutral developer instructions describe the reading order, bounded technical decisions and acceptance checks; no local skill/plugin/model, application source, scaffolds or executable development/test scripts are shipped. An existing explicitly authorized offline interactive exception remains separate.
 
-## Verification and limits
-Run `python -m unittest discover -s tests -v` after installing runtime dependencies.
-Local helpers do not call model or SAP services. Hosts run independent readers using the user's settings.
-Three isolated readers, scenario agreement, actual PNG review and code-free plan simulation are required;
-helpers validate supplied execution records and cannot authenticate external runs. Missing capability is `NOT_RUN`.
-Fixtures simulate records, not actual semantic/model/tenant qualification. Neither a valid schema nor a clean
-ZIP proves absolute completeness, SAP activation, ATC, runtime, UAT or token/latency savings.
-Historical 2.0.1 source qualification is preserved in [verification](docs/VERIFICATION.md); rule coverage is in
-`docs/RULE-COVERAGE.toon`. This 2.0.2 public plugin is separate from the repository's legacy 1.1.0 JSON standalone pair.
-Install one version of Spec Writer at a time; the complete 2.x plugin owns its shared TOON runtime.
-See the [public changelog](CHANGELOG.md) and [source publication record](PUBLICATION.json). New model/SAP qualification is not claimed.
+Three independent readers, scenario agreement, real PNG inspection and code-free architecture/plan checks are still final release gates. Fixtures are synthetic; unavailable execution/vision is NOT_RUN. Local schema/ZIP checks are not SAP authorization, activation, ATC, runtime or UAT proof. See [verification](docs/VERIFICATION.md) and [changes](docs/CHANGES.md). No new token/latency benchmark was run for 3.0.0.
 
 ## Public package checks
 
-Run `python -B skills/belirtim-yazmani/scripts/check_package.py` and `python -B -m unittest discover -s tests -v`. Rebuild the complete offline marketplace ZIP with `python -B scripts/build_package.py --output-dir <external-artifacts>`. Copy the generated PACKAGE-MANIFEST.json into the source before committing and rerun repository validation. The builder verifies ZIP CRC and per-file hashes and does not modify the plugin source. Python dependencies remain pinned; the unmodified MIT TOON codec is included. Public and historical qualification are separate evidence.
+Run `python -B skills/belirtim-yazmani/scripts/check_package.py` and the targeted runtime tests. Build the complete offline marketplace ZIP with `python -B scripts/build_package.py --output-dir <external-artifacts>`. Copy the generated PACKAGE-MANIFEST.json into the plugin before committing and run repository validation. Artifacts remain outside the repository. The existing 1.1.0 JSON standalone pair retains its own lineage; install one Spec Writer version at a time. See [public changes](CHANGELOG.md) and [publication provenance](PUBLICATION.json).
