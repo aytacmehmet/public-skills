@@ -2,6 +2,14 @@
 
 English · [Türkçe](CHANGELOG.tr.md)
 
+## 3.0.0 — 2026-10-02
+
+- Import the exact released private 3.0.0 source, preserving the public package hash checker and reproducible offline builder.
+- Consultant business/design questions have up to three ranked scored options; bounded developer implementation decisions remain in the self-contained TOON authority.
+- Deliver affected developments as separate ZIPs together after all gates; prefix every basename with its meaningful development short name and include required contracts/references locally.
+- Preserve architecture, five-layer/two-round release gates, immutable baseline/import compatibility and hash-bound incremental check planning.
+- Retain public marketplace identity and legacy standalone history. The unqualified token-audit candidate is excluded; no new savings or model/SAP qualification is claimed.
+
 ## 2.0.2 — 2026-10-01
 
 - First complete public-skills plugin distribution, copied from the exact private-skills-plugins main commit recorded in PUBLICATION.json.

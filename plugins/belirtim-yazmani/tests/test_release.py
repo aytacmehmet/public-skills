@@ -115,15 +115,15 @@ class ReleaseTests(unittest.TestCase):
         result=d.package(self.doc,self.root/'out',self.root);p=Path(result['path'])
         self.assertEqual(p.name,'handoff-fixture-talep-v1.zip');self.assertEqual(result['verification']['status'],'PASS')
         with zipfile.ZipFile(p) as z:
-            self.assertIn('fsts/fsts.schema.toon',z.namelist());self.assertIn('excel/fsts.xlsx',z.namelist())
+            self.assertIn('fixture-talep-schema.toon',z.namelist());self.assertIn('fixture-talep-specification.xlsx',z.namelist())
             self.assertFalse(any('approval' in n or n.endswith('.py') for n in z.namelist()))
-            manifest=json.loads(b.codec('decode',z.read('manifest.toon').decode()))
+            manifest=json.loads(b.codec('decode',z.read('fixture-talep-manifest.toon').decode()))
             self.assertEqual(set(r['path'] for r in manifest['files']),set(z.namelist()))
-            self.assertIsNone(next(r for r in manifest['files'] if r['path']=='manifest.toon')['sha256'])
-            spec=json.loads(b.codec('decode',z.read('fsts/fsts.toon').decode()));self.assertNotIn('control',spec)
+            self.assertIsNone(next(r for r in manifest['files'] if r['path']=='fixture-talep-manifest.toon')['sha256'])
+            spec=json.loads(b.codec('decode',z.read('fixture-talep-belirtim.toon').decode()));self.assertNotIn('control',spec)
         with self.assertRaises(b.Invalid): d.package(self.doc,self.root/'out',self.root)
         second=d.package(self.doc,self.root/'without-excel',self.root,False)
-        with zipfile.ZipFile(second['path']) as z: self.assertNotIn('excel/fsts.xlsx',z.namelist())
+        with zipfile.ZipFile(second['path']) as z: self.assertNotIn('fixture-talep-specification.xlsx',z.namelist())
     def test_missing_png_and_png_metadata_block_export(self):
         media=self.root/self.spec['media'][0]['path'];media.unlink()
         with self.assertRaises(b.Invalid): d.package(self.doc,self.root/'out',self.root)
@@ -138,7 +138,7 @@ class ReleaseTests(unittest.TestCase):
     def test_zip_hash_tamper_rejected(self):
         result=d.package(self.doc,self.root/'out',self.root);path=Path(result['path'])
         with zipfile.ZipFile(path) as z: files={n:z.read(n) for n in z.namelist()}
-        files['README.md']+=b'changed'
+        files['fixture-talep-readme.md']+=b'changed'
         with zipfile.ZipFile(path,'w',zipfile.ZIP_DEFLATED) as z:
             for n,data in files.items(): z.writestr(n,data)
         with self.assertRaises(b.Invalid): d.verify(path)
@@ -153,16 +153,16 @@ class ReleaseTests(unittest.TestCase):
     def test_update_with_confirmed_baseline_and_full_source(self):
         base=copy.deepcopy(self.spec);prior=d.package(self.doc,self.root/'baseline',self.root);self.spec['meta'].update(mode='UPDATE',handoff_version='v2',fs_version='v2')
         self.spec['changelog'].append({'version':'v2','date':'2026-09-30','change':'Fixture update'})
-        self.spec['change_rationale']='Fixture correction';path=self.root/'evidence/system.md';path.parent.mkdir(exist_ok=True);path.write_text('Controlled fixture: system absent. Not tenant proof.')
-        self.control['assets'].append({'path':'evidence/system.md','sha256':b.digest(path.read_bytes())})
-        self.spec['baseline']={'kind':'FINAL_HANDOFF','system':None,'client':None,'verified_at':None,'reference_name':'handoff-fixture-talep-v1.zip','reference_version':'v1','reference_sha256':prior['zipSha256'],'spec_sha256':d.revision(base),'evidence_paths':['evidence/system.md']}
+        self.spec['change_rationale']='Fixture correction';path=self.root/'evidence/fixture-talep-system.md';path.parent.mkdir(exist_ok=True);path.write_text('Controlled fixture: system absent. Not tenant proof.')
+        self.control['assets'].append({'path':'evidence/fixture-talep-system.md','sha256':b.digest(path.read_bytes())})
+        self.spec['baseline']={'kind':'FINAL_HANDOFF','system':None,'client':None,'verified_at':None,'reference_name':'handoff-fixture-talep-v1.zip','reference_version':'v1','reference_sha256':prior['zipSha256'],'spec_sha256':d.revision(base),'evidence_paths':['evidence/fixture-talep-system.md']}
         self.control.update(baseline_spec=base,baseline_system_state='ABSENT_VERIFIED',baseline_final_approved=True,baseline_reference_path='baseline/handoff-fixture-talep-v1.zip');seal(self.doc)
         result=d.package(self.doc,self.root/'update',self.root)
         with zipfile.ZipFile(result['path']) as z:
-            self.assertIn('delta/baseline.toon',z.namelist());self.assertIn('delta/changes.toon',z.namelist());self.assertIn('fsts/fsts.toon',z.namelist())
+            self.assertIn('fixture-talep-baseline.toon',z.namelist());self.assertIn('fixture-talep-changes.toon',z.namelist());self.assertIn('fixture-talep-belirtim.toon',z.namelist())
     def test_interactive_offline_exception_scope(self):
-        path=self.root/'mockup/interactive/index.html';path.parent.mkdir(parents=True);path.write_text('<html><button>Demo</button></html>')
-        asset={'path':'mockup/interactive/index.html','sha256':b.digest(path.read_bytes())};self.control['assets'].append(asset)
+        path=self.root/'mockup/interactive/fixture-talep-index.html';path.parent.mkdir(parents=True);path.write_text('<html><button>Demo</button></html>')
+        asset={'path':'mockup/interactive/fixture-talep-index.html','sha256':b.digest(path.read_bytes())};self.control['assets'].append(asset)
         with self.assertRaises(b.Invalid): d.package(self.doc,self.root/'out',self.root)
         self.control['mockup_exception']={'authorized':True,'receipt':'Fixture-only explicit exception','offline_verified':True,'offline_evidence':'Fixture simulated offline receipt'}
         self.assertEqual(d.package(self.doc,self.root/'out',self.root)['verification']['status'],'PASS')

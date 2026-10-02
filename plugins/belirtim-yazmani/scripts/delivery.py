@@ -6,6 +6,7 @@ import bv2 as b
 from jsonschema import Draft202012Validator
 
 SCHEMA=json.loads((b.ROOT/'schema/handoff.schema.json').read_text(encoding='utf-8'))
+SCHEMA_V2=json.loads((b.ROOT/'schema/handoff-v2.schema.json').read_text(encoding='utf-8'))
 GAP=re.compile(r'(?i)KARAR BEKLİYOR|BİLGİ BEKLİYOR|DOĞRULANACAK|\bTBD\b|NEEDS[_ ]CLARIFICATION|\bUNKNOWN\b|\bsafe_default\b|uygun şekilde|\bgerekirse\b|\bvb\.|\bmümkünse\b|…')
 CODE=re.compile(r'(?im)\bCAST\s*\(|\bCASE\s+WHEN\b|\bSELECT\s+.+\bFROM\b|\bdefine\s+(?:root\s+)?view\b|^\s*(?:REPORT\s+[zy]\w+\.|CLASS\s+.+(?:DEFINITION|IMPLEMENTATION)|METHOD\s+\w+\.|ENDMETHOD\.|DATA\s*\(|IF\s+.+\.|ENDIF\.)|```(?:abap|cds|bdef|js|javascript|typescript|python|pseudo(?:code)?)\b')
 TOOL=re.compile(b.PRODUCER.pattern+r'|(?i:belirtim[- ]yazman[ıi]|spec[- ]writer|\bbv2?\.py\b|legacy_core\.py|@toon-format/toon|tool_receipt|tool_capabilities|execution_mode|mutation_policy|reasoning_effort|token_budget|obsidian|\[\[[^\]]+\]\]|\b(?:skill|plugin|mcp)[/-]|(?:^|\s)/plan\b)')
@@ -44,9 +45,10 @@ def privacy(value,path=''):
     return errors
 
 def schema_errors(spec):
-    return [issue('D3_SCHEMA','/'+ '/'.join(map(str,e.path)),e.message) for e in Draft202012Validator(SCHEMA).iter_errors(spec)]
+    schema=SCHEMA if spec.get('schemaVersion')=='3.0' else SCHEMA_V2
+    return [issue('D3_SCHEMA','/'+ '/'.join(map(str,e.path)),e.message) for e in Draft202012Validator(schema).iter_errors(spec)]
 
-def shape_and_profile(spec):
+def _shape_and_profile_v2(spec):
     errors=schema_errors(spec)
     if errors: return errors
     errors+=privacy(spec)
@@ -145,6 +147,13 @@ def shape_and_profile(spec):
     if spec['changelog'][-1]['version']!=spec['meta']['handoff_version']: errors.append(issue('A5_CHANGELOG','/changelog','Current version missing'))
     return errors
 
+def shape_and_profile(spec):
+    if spec.get('schemaVersion')!='3.0': return _shape_and_profile_v2(spec)
+    import handoff3 as h
+    errors=schema_errors(spec)
+    if errors: return errors
+    return _shape_and_profile_v2(h.core_spec(spec))+privacy({k:spec[k] for k in h.EXTRAS})+h.profile(spec)
+
 def get_state(doc):
     data=doc.get('delivery')
     if not isinstance(data,dict) or set(data)!={'spec','control'}: raise b.Invalid('AP2.v4 needs delivery.spec and private delivery.control; run release-init')
@@ -154,9 +163,13 @@ def get_state(doc):
 def revision(spec): return b.digest(b.canonical(spec))
 
 def context_packet(spec,collections):
-    unknown=set(collections)-set(COLLECTIONS)-{'dependencies','sections'}
+    groups={name:spec[name] for name in COLLECTIONS}
+    if spec.get('schemaVersion')=='3.0':
+        groups.update({name:spec[name] for name in ('developer_decisions','references')})
+        groups['architecture']=spec['architecture']['constraints']+spec['architecture']['boundaries']
+    unknown=set(collections)-set(groups)-{'dependencies','sections'}
     if unknown: raise b.Invalid('Unknown public collection: '+', '.join(sorted(unknown)))
-    idmap={r['id']:(name,r) for name in COLLECTIONS for r in spec[name]}
+    idmap={r['id']:(name,r) for name,rows in groups.items() for r in rows}
     graph={rid:set() for rid in idmap}
     for rid,(_,row) in idmap.items():
         for value in b.flatten(row).values():
@@ -164,15 +177,19 @@ def context_packet(spec,collections):
             for v in candidates:
                 if isinstance(v,str) and v in idmap and v!=rid:
                     graph[rid].add(v);graph[v].add(rid)
-    selected={r['id'] for name in collections if name in COLLECTIONS for r in spec[name]}
+    selected={r['id'] for name in collections if name in groups for r in groups[name]}
     todo=list(selected)
     while todo:
         for neighbor in graph[todo.pop()]:
             if neighbor not in selected: selected.add(neighbor);todo.append(neighbor)
     data={k:copy.deepcopy(spec[k]) for k in ['schemaVersion','meta','scope_items','naming_rules','functional_defaults','baseline','dependencies']}
-    for name in COLLECTIONS:
-        rows=[r for r in spec[name] if r['id'] in selected]
+    for name,source in groups.items():
+        if name=='architecture': continue
+        rows=[r for r in source if r['id'] in selected]
         if rows: data[name]=rows
+    if 'architecture' in groups and any(r['id'] in selected for r in groups['architecture']):
+        data['architecture']={'summary':spec['architecture']['summary'],
+          **{name:[r for r in spec['architecture'][name] if r['id'] in selected] for name in ('constraints','boundaries')}}
     if 'sections' in collections: data['sections']=spec['sections']
     return {'kind':'SELECTED_PUBLIC_CONTEXT','authoritative':False,'source_sha256':revision(spec),
             'included_ids':sorted(selected),'omitted_ids':sorted(set(idmap)-selected),'data':data}
@@ -235,12 +252,16 @@ def evaluate(doc):
         if not isinstance(row,dict) or row.get('status')!='CLOSED' or row.get('owner_confirmed') is not True: return False
         try: resolve(spec,row.get('answer_pointer'));return True
         except (b.Invalid,KeyError,IndexError,TypeError): return False
+    modern=spec.get('schemaVersion')=='3.0'
+    if modern: import handoff3 as h
     for name in ['intake','decisions_gaps','open_questions','system_conflicts']:
         values=control.get(name)
-        counts[name]=sum(not closed(x) for x in values) if isinstance(values,list) else 1
+        counts[name]=sum(not closed(x) and not (modern and name!='system_conflicts' and h.eligible_technical(spec,x)) for x in values) if isinstance(values,list) else 1
+    if modern:
+        counts['architecture_findings']=sum(not closed(x) for x in control.get('architecture_findings',[]))
     answers=control.get('safe_default_answers')
     counts['unapproved_safe_defaults']=sum(not (closed({**x,'owner_confirmed':x.get('owner_approved')}) and x.get('approval_receipt')) for x in answers) if isinstance(answers,list) else 1
-    counts['markers']=sum(isinstance(v,str) and bool(GAP.search(v)) for v in b.flatten(spec).values())
+    counts['markers']=h.blocking_markers(spec) if modern else sum(isinstance(v,str) and bool(GAP.search(v)) for v in b.flatten(spec).values())
     if any(counts.values()): errors.append(issue('D2_ZERO_OPEN','/control','All open counters must be zero'))
     if control.get('approved_spec_sha256')!=revision(spec) or not control.get('approval_receipt'): errors.append(issue('APPROVAL_CURRENT','/control','Current FS-TS approval required; private receipt stays outside handoff'))
     if control.get('approved_defaults_sha256')!=defaults_sha(spec) or not control.get('defaults_approval_receipt'): errors.append(issue('D5_APPROVED_DEFAULTS','/functional_defaults','Business-approved current defaults required'))
@@ -266,24 +287,29 @@ def evaluate(doc):
     if not rounds:
         for layer in layers[1:]: layer['status']='NOT_RUN'
     errors+=eval_errors
-    return {'decision':'DELIVERABLE' if not errors else 'BLOCKED','spec_sha256':revision(spec),'issues':errors,'open_counts':counts,'layers':layers,'rounds':rounds,'eval_round_count':len(rounds),
+    technical=sum(x['status']=='OPEN' for x in spec.get('developer_decisions',[]))
+    return {'decision':'DELIVERABLE' if not errors else 'BLOCKED','coding_readiness':'BLOCKED' if errors else 'READY_FOR_DEVELOPER_DECISIONS' if technical else 'READY_FOR_CODING',
+            'technical_open_count':technical,'spec_sha256':revision(spec),'issues':errors,'open_counts':counts,'layers':layers,'rounds':rounds,'eval_round_count':len(rounds),
             'confidence_limit':'Deterministic checks and supplied review records increase confidence; they do not prove absolute semantic completeness or SAP runtime.'}
 
 def neutral_report(report):
-    return {k:report[k] for k in ['decision','spec_sha256','open_counts','layers','rounds','eval_round_count','confidence_limit']}
+    return {k:report[k] for k in ['decision','coding_readiness','technical_open_count','spec_sha256','open_counts','layers','rounds','eval_round_count','confidence_limit']}
 
 def release_init(doc):
     if doc.get('delivery') is not None: raise b.Invalid('Delivery state exists; edit the existing TOON workspace')
     content=doc['content']; scope=content['bolumler'].get('1.1',{}).get('alanlar',{})
-    spec={'schemaVersion':'2.0','meta':{'development_id':doc['development']['id'],'name':doc['development']['name'],'development_name':doc['development']['slug'],'handoff_version':doc['handoff']['version'],'fs_version':content['meta']['surum'],'edition':doc['development']['edition'],'release':'BİLGİ BEKLİYOR','types':content['turler'],'language':doc['handoff']['language'],'mode':doc['handoff']['mode']},
+    spec={'schemaVersion':'3.0','developer_decisions':[],'references':[],
+          'architecture':{'summary':'BİLGİ BEKLİYOR','boundaries':[],'constraints':[]},
+          'meta':{'development_id':doc['development']['id'],'name':doc['development']['name'],'development_name':doc['development']['slug'],'handoff_version':doc['handoff']['version'],'fs_version':content['meta']['surum'],'edition':doc['development']['edition'],'release':'BİLGİ BEKLİYOR','types':content['turler'],'language':doc['handoff']['language'],'mode':doc['handoff']['mode']},
           'scope_items':{'included':[],'excluded':[],'preserved':[]},'naming_rules':{},'functional_defaults':{},'sections':copy.deepcopy(content['bolumler']),
           'baseline':{'kind':'NEW' if doc['handoff']['mode']=='NEW' else 'UNKNOWN','system':None,'client':None,'verified_at':None,'reference_name':None,'reference_version':None,'reference_sha256':None,'spec_sha256':None,'evidence_paths':[]},'dependencies':[],'change_rationale':'BİLGİ BEKLİYOR','changelog':[]}
     spec.update({k:[] for k in COLLECTIONS})
     for row in content['bolumler'].get('2.2',{}).get('satirlar',[]):
         if row and isinstance(row[0],str): spec['requirements'].append({'id':row[0],'statement':row[1],'acceptance_criteria':[]})
-    control={'intake':[],'decisions_gaps':[{'id':'OPEN-RELEASE','status':'GAP','question':'Complete profile/defaults/naming and evidence from owner decisions'}],'open_questions':[],'system_conflicts':[],
+    control={'intake':[],'decisions_gaps':[{'id':'OPEN-RELEASE','status':'GAP','owner':'CONSULTANT','domain':'BUSINESS','question':'Supply the approved business scope, behavior and defaults; technical choices belong to the developer','options':[],'options_reason':'Source context is not yet sufficient for grounded alternatives'}],'open_questions':[],'system_conflicts':[],
       'safe_default_answers':[],'approved_spec_sha256':None,'approval_receipt':None,'approved_defaults_sha256':None,'defaults_approval_receipt':None,'review_execution_confirmed':False,'eval_rounds':[],
-      'assets':[],'baseline_spec':None,'mockup_exception':{'authorized':False,'receipt':None},'feedback':[],'eval_requests':[]}
+      'assets':[],'baseline_spec':None,'mockup_exception':{'authorized':False,'receipt':None},'feedback':[],'eval_requests':[],
+      'architecture_findings':[],'dependency_contracts':[],'check_cache':{},'review_history':[]}
     control.update(baseline_system_state='UNKNOWN',baseline_final_approved=False,round_limit=4)
     doc['delivery']={'spec':spec,'control':control}
 
@@ -299,7 +325,7 @@ def eval_request(doc,round_number,assets_root=None):
     packets=[]
     for i in range(3):
         packet={'revision_sha256':revision(spec),'round':round_number,'reader_id':'reader-'+str(i+1),'context_id':str(uuid.uuid4()),
-          'instructions':'Work in a fresh isolated context without other reader results. Inspect this complete spec and project defaults. Produce functional questions with exact decoded-data pointers and answers; cover every requirement and user-visible behavior including draft, numbering and locking. Independently derive every test expected result. Inspect actual referenced PNG files for callout/label/layout matches. Simulate a code-free work plan and list each design decision with its source pointer. Any unanswerable question or invented plan decision is an open point. Return evidence and findings, never fill gaps. No model/provider selection.',
+          'instructions':'Work in a fresh isolated context without other reader results. Inspect the complete spec and project defaults. Ask consultant-resolvable functional questions with pointers and answers; cover every requirement and user-visible behavior. Do not ask consultant implementation questions. Listed bounded developer choices are not missing business decisions; check their context, packaged references and architecture constraints. Independently derive test outcomes; inspect actual PNG callouts and labels. Simulate a code-free plan with pointers for fixed decisions and deferred technical choices. Unanswerable functional questions, missing references, architecture contradictions or invented decisions are blocking findings. Return evidence; never close gaps automatically. No model/provider selection.',
           'spec':spec,'png_files':source_paths or [{'path':m['path'],'sha256':m['sha256']} for m in spec['media']]}
         packet['reply_shape']={'reader_id':'echo request','context_id':'echo request','request_sha256':'echo request','status':'COMPLETED or BLOCKED','isolated':True,'saw_other_results':False,
           'covered_requirements':['all inspected requirement IDs'],'questions':[{'question':'functional question','pointer':'decoded-data pointer or null when unanswerable','answer':'observed value; do not invent'}],
@@ -342,6 +368,8 @@ def clean_png(data):
 
 def invalidate(doc,defaults=False):
     _,control=get_state(doc)
+    import handoff3 as h
+    h.archive_reviews(control)
     control.update(approved_spec_sha256=None,approval_receipt=None,review_execution_confirmed=False,eval_rounds=[],eval_requests=[])
     if defaults: control.update(approved_defaults_sha256=None,defaults_approval_receipt=None)
 
@@ -379,7 +407,11 @@ def render_excel(spec,report,path):
     from openpyxl.styles import Font,PatternFill,Alignment
     wb=Workbook();wb.properties.creator='';wb.properties.lastModifiedBy='';wb.properties.title=spec['meta']['name']
     ws=wb.active;ws.title='Özet'
-    for k,v in [('Geliştirme',spec['meta']['name']),('ID',spec['meta']['development_id']),('Handoff',spec['meta']['handoff_version']),('FS-TS',spec['meta']['fs_version']),('Kapı',report['decision']),('Otorite','fsts/fsts.toon')]: ws.append([k,v])
+    authority='fsts/fsts.toon'
+    if spec.get('schemaVersion')=='3.0':
+        import handoff3 as h
+        authority=h.layout(spec)['specification']
+    for k,v in [('Geliştirme',spec['meta']['name']),('ID',spec['meta']['development_id']),('Handoff',spec['meta']['handoff_version']),('FS-TS',spec['meta']['fs_version']),('Kapı',report['decision']),('Otorite',authority)]: ws.append([k,v])
     for name in COLLECTIONS+['dependencies']:
         rows=spec[name]
         if not rows: continue
@@ -438,14 +470,14 @@ dış teslim doğrulamasında hesaplanır. Teslim edilmiş ZIP değiştirilmez.
 eksiksizlik veya SAP runtime/UAT kanıtı değildir.
 '''
 
-def package(doc,output,assets_root,include_excel=True):
+def _legacy_package(doc,output,assets_root,include_excel=True):
     spec,control=get_state(doc);report=evaluate(doc)
     if report['decision']!='DELIVERABLE': raise b.Invalid('No handoff while gaps/eval gates remain: '+', '.join(sorted({r['code'] for r in report['issues']})))
     out=Path(output);out.mkdir(parents=True,exist_ok=True)
     filename='handoff-'+spec['meta']['development_name']+'-'+spec['meta']['handoff_version']+'.zip';b.safe_name(filename)
     target=out/filename
     if target.exists(): raise b.Invalid('Immutable delivery already exists; use a new version')
-    files={'fsts/fsts.toon':b.encode(spec).encode(),'fsts/fsts.schema.toon':b.encode(SCHEMA).encode(),
+    files={'fsts/fsts.toon':b.encode(spec).encode(),'fsts/fsts.schema.toon':b.encode(SCHEMA_V2).encode(),
       'fsts/readiness-report.toon':b.encode(neutral_report(report)).encode(),
       'objects/object-list.toon':b.encode({'objects':spec['objects']}).encode(),
       'objects/naming-rules.md':('# İsimlendirme\n\n'+spec['naming_rules']['name']+' '+spec['naming_rules']['version']+'\n\n'+spec['naming_rules']['description']+'\n').encode(),
@@ -504,7 +536,7 @@ def package(doc,output,assets_root,include_excel=True):
     control.setdefault('delivery_history',[]).append({'version':spec['meta']['handoff_version'],'spec_sha256':revision(spec),'zip_sha256':b.digest(target.read_bytes())})
     return {'path':str(target),'zipSha256':b.digest(target.read_bytes()),'manifestSha256':b.digest(files['manifest.toon']),'verification':result}
 
-def verify(path,expected_name=None):
+def _verify_v2(path,expected_name=None):
     with zipfile.ZipFile(path) as z:
         names=z.namelist()
         if len(names)!=len(set(names)) or z.testzip() or z.comment: raise b.Invalid('ZIP duplicates/CRC/comment')
@@ -536,7 +568,7 @@ def verify(path,expected_name=None):
             elif suffix=='.png': clean_png(data)
             else: raise b.Invalid('Unexpected code/file')
         schema=json.loads(b.codec('decode',z.read('fsts/fsts.schema.toon').decode()))
-        if b.canonical(schema)!=b.canonical(SCHEMA): raise b.Invalid('Neutral schema mismatch')
+        if b.canonical(schema)!=b.canonical(SCHEMA_V2): raise b.Invalid('Neutral schema mismatch')
         objects=json.loads(b.codec('decode',z.read('objects/object-list.toon').decode()))
         if objects!={'objects':spec['objects']}: raise b.Invalid('Object-list projection mismatch')
         report=json.loads(b.codec('decode',z.read('fsts/readiness-report.toon').decode()))
@@ -553,3 +585,14 @@ def verify(path,expected_name=None):
             with tempfile.TemporaryDirectory(prefix='handoff-check-') as t:
                 book=Path(t)/'fsts.xlsx';book.write_bytes(z.read('excel/fsts.xlsx'));verify_excel(spec,book)
     return {'status':'PASS','files':len(names),'manifestSha256':b.digest(manifest_data),'specSha256':revision(spec),'scope':'Local data/artifact verification; not fresh semantic/SAP execution'}
+
+def package(doc,output,assets_root,include_excel=True):
+    import handoff3 as h
+    return h.package(doc,output,assets_root,include_excel)
+
+def verify(path,expected_name=None):
+    with zipfile.ZipFile(path) as archive:
+        legacy='fsts/fsts.toon' in archive.namelist()
+    if legacy: return _verify_v2(path,expected_name)
+    import handoff3 as h
+    return h.verify(path,expected_name)

@@ -2,6 +2,9 @@
 
 [English](VERIFICATION.md) · Türkçe
 
+## 3.0.0 qualification
+Yayın kabulü danışman/developer ayrımını, sıralı sınırlı seçenekleri, teknik karar readiness ayrımını, tüm dosya adı öneklerini, yerel dosya/belge/pointer kapanışını, ayrı atomik bağlı ZIP’leri ve değişmeyen/eski kontrol planını kapsar. Fonksiyonel/tarafsızlık/baseline/onay ve son okuyucu kapıları zorunludur. 3.0.0 gerçek LLM, görsel ve SAP qualification NOT_RUN; 2.0.1 token sonucu yeni sözleşmeye genellenmez. 2026-10-02 tarihinde 85 testlik tam plugin paketi geçti; son değişiklikler ardından 16 hedefli bağlam/sözleşme kontrolü ve altı etkilenen kayıtlı ZIP kontrolü geçti. Böylece 87 farklı plugin testi kapsandı. Repo yayın araçlarının 31 testi de geçti. Repo/paket/skill doğrulayıcıları, altı bağımsız skill paketi, strict TOON kural eşlemesi ve boşluk kontrolleri geçti. Claude strict manifest doğrulaması geçti; izole Codex plugin/read, kurulum veya model çağrısı olmadan localVersion 3.0.0 sürümünü keşfetti. Tam paketin ardından yalnızca değişen bağlam ve kayıtlı ZIP yolları tekrar test edildi. Son commit için GitHub CI ayrı kanıttır ve merge öncesi geçmelidir.
+
 ## 2.0.1 aday kanıtı
 Yerel 2.0.1 yayın kontrolleri geçti: repo doğrulayıcıları, altı standalone yayın paketi, 71 plugin testi, 31 yayın/arşiv testi, standart kütüphaneli paket kontrolü ve skill frontmatter doğrulaması. Claude strict manifest kontrolü geçti; izole Codex `plugin/read`, kurulum veya model çağrısı olmadan localVersion 2.0.1 ve güncel ortak skill'i bildirdi. Hosted son commit CI ayrıdır; merge öncesi geçmelidir.
 

@@ -22,14 +22,14 @@ rules[49]{id,mechanism,test_or_workflow,evidence_scope}:
   C5,privacy/TOOL scan; neutral metadata; private control excluded,test_producer_model_private_and_syntax; test_snake_case_private_metadata_and_build_prompt,Local artifact/constraint checks
   C6,privacy/TOOL scan; neutral metadata; private control excluded,test_producer_model_private_and_syntax; test_snake_case_private_metadata_and_build_prompt,Local artifact/constraint checks
   C7,privacy/TOOL scan; neutral metadata; private control excluded,test_producer_model_private_and_syntax; test_snake_case_private_metadata_and_build_prompt,Local artifact/constraint checks
-  D1,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D2,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D3,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D4,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D5,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D6,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D7,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
-  D8,shape_and_profile; pointer-linked closure and zero counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D1,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D2,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D3,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D4,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D5,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D6,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D7,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
+  D8,shape_and_profile; pointer-linked closure and zero blocking consultant/system counters,test_closed_flag_without_owner_answer_is_not_closed; test_profile_missing_mandatory_attribute; test_requirement_ac_test_object_chains,Local artifact/constraint checks
   E1,"owner scope, confirmed system/reference artifacts, full source+delta",test_foreign_object_changes_need_separate_handoff; test_update_with_confirmed_baseline_and_full_source,Local artifact/constraint checks
   E2,"owner scope, confirmed system/reference artifacts, full source+delta",test_foreign_object_changes_need_separate_handoff; test_update_with_confirmed_baseline_and_full_source,Local artifact/constraint checks
   E3,"owner scope, confirmed system/reference artifacts, full source+delta",test_foreign_object_changes_need_separate_handoff; test_update_with_confirmed_baseline_and_full_source,Local artifact/constraint checks
@@ -49,3 +49,16 @@ rules[49]{id,mechanism,test_or_workflow,evidence_scope}:
   F8,eval_request/record/eval_gate; seeded regressions and feedback,test_three_independent_fresh_readers; test_reader_findings_cannot_be_ignored_by_zero_summary; test_two_clean_and_current_revision,Mechanical + required workflow; real reader/SAP execution NOT_RUN
   F9,eval_request/record/eval_gate; seeded regressions and feedback,test_three_independent_fresh_readers; test_reader_findings_cannot_be_ignored_by_zero_summary; test_two_clean_and_current_revision,Mechanical + required workflow; real reader/SAP execution NOT_RUN
   F10,eval_request/record/eval_gate; seeded regressions and feedback,test_three_independent_fresh_readers; test_reader_findings_cannot_be_ignored_by_zero_summary; test_two_clean_and_current_revision,Mechanical + required workflow; real reader/SAP execution NOT_RUN
+
+release: 3.0.0
+additional_rules[10]{id,mechanism,test_or_workflow,evidence_scope}:
+  V3-1,role-owned consultant questions,test_consultant_only_questions_sorted_and_scored; test_mixed_or_unowned_technical_question_not_sent_to_consultant,Synthetic local regression
+  V3-2,at most three grounded scored options; no approval,test_options_cap_range_and_information_without_invented_choices,Synthetic local regression
+  V3-3,bounded developer decisions; distinct coding readiness,test_bounded_technical_open_is_deliverable_but_not_coding_ready; test_architecture_missing_context_blocks,Synthetic local regression
+  V3-4,short-name-prefixed files and manifest roles,test_all_file_prefixes_manifest_roles_and_standalone_contract,Synthetic local regression
+  V3-5,local file/document/list/text pointer closure,test_missing_file_document_list_pointer_and_free_text_ref_block,Synthetic local regression
+  V3-6,separate linked ZIPs; atomic all-member publication,test_separate_zip_batch_is_atomic_and_contracts_self_contained; test_blocked_partner_and_missing_member_publish_nothing,Synthetic local regression
+  V3-7,input/dependency hashes invalidate only affected planning units,test_incremental_reuse_dependency_closure_and_stale_result_rejection,Planning cache only; no measured token or latency savings
+  V3-8,legacy references readable; no new 2.0 export,test_old_handoff_is_readable_baseline_but_not_new_export,Synthetic local regression
+  V3-9,selected technical context closes architecture and input-reference graph,test_selected_context_includes_technical_architecture_and_reference_closure,Synthetic local regression
+  V3-10,saved-ZIP local mockup and TOON text pointer closure,test_offline_mockup_cannot_reference_a_missing_local_asset; test_missing_file_document_list_pointer_and_free_text_ref_block,Synthetic local regression

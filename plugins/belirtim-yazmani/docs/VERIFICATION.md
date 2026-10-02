@@ -2,6 +2,9 @@
 
 English · [Türkçe](VERIFICATION.tr.md)
 
+## 3.0.0 qualification
+The release acceptance covers consultant/developer separation, ranked bounded options, delegated technical readiness, all-name prefixes, local file/document/pointer closure, atomic separate linked ZIPs and stale/unchanged check planning. Functional/neutrality/baseline/approval and final reader gates remain mandatory. Actual LLM, visual and SAP qualification for 3.0.0 is NOT_RUN; no 2.0.1 token result is extrapolated to this new contract. On 2026-10-02, the complete 85-test plugin suite passed, followed by 16 scoped context/contract checks and six affected saved-package checks after the final changes: 87 distinct plugin tests are covered. All 31 repository release-tooling tests passed. Repository/package/skill validators, six standalone-package checks, strict TOON rule-coverage decoding and whitespace checks passed. Claude strict manifest validation passed; isolated Codex plugin/read discovered localVersion 3.0.0 without installation or a model call. Only changed context and saved-package paths were retested after the complete suite. Hosted final-head CI is separate and must pass before merge.
+
 ## 2.0.1 candidate evidence
 Local 2.0.1 publication gates passed: repository validators, six standalone release packages, 71 plugin tests, 31 release-tooling tests, the standard-library package check and skill frontmatter validation. Claude strict manifest validation passed; isolated Codex `plugin/read` reported localVersion 2.0.1 and the updated shared skill, without installation or a model call. Hosted final-head CI is separate and must pass before merge.
 

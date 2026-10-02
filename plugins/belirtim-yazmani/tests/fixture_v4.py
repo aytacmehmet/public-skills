@@ -11,11 +11,15 @@ def png():
     return b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',2,2,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(b'\x00\xff\xff\xff\xff\xff\xff'*2))+chunk(b'IEND',b'')
 
 def valid(root):
-    image=png();rel='mockup/screens/screen-01.png';path=Path(root)/rel;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(image)
+    image=png();rel='mockup/screens/fixture-talep-screen-01.png';path=Path(root)/rel;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(image)
     content={'sema':'1.0','meta':{'surum':'v1','tarih':'2026-09-30','hazirlayan':'Fixture','durum':'Taslak','musteri':'Fixture'},'turler':['U'],'profil':'standart','bolumler':{'1.1':{'alanlar':{'gel_id':'DEMO-01','baslik':'Fixture talep','sistem':'S/4HANA Cloud Public Edition'}}},'surum_gecmisi':[],'onaylar':[]}
     doc=b.wrap(content,'DEMO-01','fixture-talep','Fixture talep','1.0.0');d.release_init(doc)
     spec={
-      'schemaVersion':'2.0','meta':{'development_id':'DEMO-01','name':'Fixture talep','development_name':'fixture-talep','handoff_version':'v1','fs_version':'v1','edition':'S/4HANA Cloud Public Edition','release':'2608','types':['U'],'language':'tr','mode':'NEW'},
+      'schemaVersion':'3.0','developer_decisions':[],'references':[],
+      'architecture':{'summary':'Quantity persistence and authorization follow the stated business contract.',
+        'boundaries':[{'id':'BOUNDARY-01','object_refs':['OBJ-01'],'responsibility':'Own the request quantity record.'}],
+        'constraints':[{'id':'ARCH-01','statement':'Every implementation preserves positive quantity and authorization outcomes.','requirement_refs':['REQ-01','REQ-02']}]},
+      'meta':{'development_id':'DEMO-01','name':'Fixture talep','development_name':'fixture-talep','handoff_version':'v1','fs_version':'v1','edition':'S/4HANA Cloud Public Edition','release':'2608','types':['U'],'language':'tr','mode':'NEW'},
       'scope_items':{'included':['Talep miktarı doğrulama'],'excluded':['SAP tenant işlemleri'],'preserved':['Mevcut süreçte değişiklik yok']},
       'naming_rules':{'name':'Fixture naming','version':'1.0','development_pattern':'[a-z]+(?:-[a-z]+)*','version_pattern':'v[0-9]+','object_pattern':'Z[A-Z_]+','description':'Fixture adı küçük harf ve tire, sürüm v ve sayı, özel nesne Z ile başlar.'},
       'functional_defaults':{'name':'Fixture iş varsayılanları','version':'1.0','rules':[{'id':'DEF-01','text':'Miktar KG ve üç ondalık basamakla gösterilir; otomatik yuvarlama yapılmaz.'}]},

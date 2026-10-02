@@ -1,62 +1,42 @@
-# Belirtim Yazmanı 2.0.2
+# Belirtim Yazmanı 3.0.0
 
 [English](README.md) · Türkçe
 
 ## Amaç
-Kararları verilmiş SAP Cloud ERP geliştirmeleri için ortak Claude Code/Codex skill'i ve plugin runtime'ı.
-Olgu ve kararları belgeler; çözüm tasarlamaz, uygulama kodlamaz veya tenant değiştirmez.
-Özel TOON çalışma alanı tam hedefi ve üretici kontrol kayıtlarını ayırır.
-Developer otoritesi `fsts/fsts.toon`; Excel isteğe bağlı projeksiyondur.
+SAP Cloud ERP için ortak Claude Code/Codex belgeleme skill'i. Danışman iş/tasarım kararları en fazla üç sıralı öneriyle toplanır; uygulama tekniği soruları ABAP developer'a aittir. Bağlı geliştirmelerin ayrı ZIP'leri iş, mimari, referans ve son inceleme kapıları geçince topluca teslim edilir. Paketler kendi bağlamını içerir; developer'ın araç/model seçimine bağımlı değildir.
 
 ## Kurulum
-Plugin runtime'ı Python 3.11+, Node.js 20+ ve `requirements.txt` içindeki kilitli paketleri gerektirir.
-Gömülü skill'in sahip olduğu pip paketi veya script yoktur. TOON codec pakette bulunur.
-Ayrı bir sanal ortamda plugin kökünden `python -m pip install -r requirements.txt` kullanın.
+Plugin runtime'ı Python 3.11+, Node.js 20+ ve kilitli `requirements.txt` paketlerini gerektirir. Ayrı sanal ortamda `python -m pip install -r requirements.txt` kullanın. Gömülü skill'in bağımlılığı yoktur; resmi TOON codec pakettedir.
 
-Claude Code:
 ```text
 /plugin marketplace add aytacmehmet/public-skills
 /plugin install belirtim-yazmani@aytacmehmet-public
 ```
-Codex:
+
 ```text
 codex plugin marketplace add aytacmehmet/public-skills --sparse .agents --sparse .claude-plugin --sparse plugins/belirtim-yazmani
 codex plugin add belirtim-yazmani@aytacmehmet-public
 ```
-Claude Code'da `/belirtim-yazmani:belirtim-yazmani`, Codex'te `$belirtim-yazmani` kullanın
-(host gösteriyorsa tam namespaced ad). İki host aynı kuralları ve runtime'ı kullanır.
-Otomatik kurulum, model seçimi veya kullanıcı ayarı değişikliği yapılmaz.
+
+Claude Code'da tam skill adını, Codex'te `$belirtim-yazmani` kullanın. Bu repo yayını kurulum yapmaz veya model seçmez.
 
 ## İşleyiş
-`python scripts/bv2.py --help` kullanın. Runtime yolunu kurulu skill konumundan çözün;
-çalışma dizini farklı olabilir. `BY_NODE`, Node executable yolunu seçebilir.
+`scripts/bv2.py` yolunu yüklenen skill'in mutlak konumundan çözün; cwd farklı olabilir.
 
-1. `init` veya `migrate`, legacy girdiyi koruyup TOON çalışma alanı açar; özgün JSON değişmez.
-2. `release-init`, yetkili `delivery.spec` alanını açar; içe alınmış içerik salt okunur referans olur.
-3. `profile`, `guide`, `patch`, `context` yalnız geçerli rehberi/veriyi ilişki kapanışıyla getirir.
-4. `release-inspect` profili, izlenebilirliği, sıfır açık sayaçları ve üretici/kod taramasını zorlar.
-5. `release-approve`, `eval-request`, `eval-record`, `confirm-reviews` gerçek sahip/okuyucu kayıtlarını özel alanda bağlar.
-6. `handoff`, açık, eksik eval veya iki temiz tur yokluğunda durur. `verify` kaydedilen paketi kontrol eder.
-7. `feedback`, developer'ın her spec hatasını regresyona alır ve yeni sürüm gerektirir.
+1. `init`/`migrate`, ardından `release-init` özel TOON 3.0 hedefi oluşturur. Özgün girdiler değişmez. Mevcut 2.0 workspace için `release-upgrade` kullanılır; eski onay/inceleme kanıtı geçersizleşir, yeni diye etiketlenmez.
+2. `questions` yalnız danışman BUSINESS/USER_EXPERIENCE/BUSINESS_DESIGN konularını döndürür. Öneriler metin, gerekçe, varsayım ve ayrı 0..5 tutarlılık/uygunluk/kalite puanları taşır. Ortalama A/B/C sırasını belirler; puan göreli yargıdır, onay değildir. Gerçekçi öneri yoksa gerekçe belirtilir, seçenek uydurulmaz.
+3. Public `developer_decisions` bağlamı, kısıtları, mimari referansları ve paket içi girdileri tamam ABAP_DEVELOPER/IMPLEMENTATION kararlarıdır. İş açığı kapıyı aşmak için bu listeye atanamaz. Teslimde teknik karar varsa READY_FOR_DEVELOPER_DECISIONS denir; READY_FOR_CODING denmez.
+4. `check-plan` değişen kontrol birimlerini ve bağımlılık hash'lerini hesaplar; `check-record` gerçek bağlı sonucu saklar. Yalnız geçmiş geçerli/değişmeyen birim tekrar kullanılır. Pahalı son okuyuculardan önce ara değişiklikleri biriktirin. Cache teslim onayı veya yeni model yürütmesi değildir.
+5. Sorumluluk sınırları, mimari kısıtlar, fonksiyonel zincirler, baseline ve referansları tamamlayın. Her dosya/metin/liste/pointer ZIP içinde bulunmalıdır. Her dosya adı onaylı anlamlı kısa adla başlar. Otoriteyi manifest rolleri belirler; sabit fsts/fs-ts dosya adı üretilmez.
+6. `release-approve`, son `eval-request`/`eval-record` ve `confirm-reviews` gerçek güncel snapshot onayını ve beş katmanlı incelemeyi korur. İki temiz son tur gerekir. Sahte yürütme, otomatik iş varsayılanı veya SAP değişikliği yoktur.
+7. `handoff-batch`, manifest dizini içindeki `workspace` ve `assets_root` yollarından oluşan `developments` TOON listesini okur. `--output` ve `--batch-id` kullanılır. Değişen bağlı geliştirmelerin hepsi bulunmalıdır; sözleşme partner sürüm/hash/pointer'ına ve eksiksiz gereken içeriğe bağlıdır. Ayrı ZIP'ler stage edilir, doğrulanır ve tek yeni dizinde topluca yayımlanır; döngü, ortak nesneye çakışan değişiklik veya engelli partnerde final teslim çıkmaz.
+8. `verify`, 3.0 rol manifestini ve salt okunur baseline için eski 2.0 paketini okur. Güncellemeler baseline içeriği ile stable-ID farkı taşır; teslimler üzerine yazılmaz. `feedback` yeni sürümlü regresyon oluşturur.
 
-A-F sözleşmesinde FS-TS, şema, manifest, readiness, nesne ve delta TOON'dur.
-UI, hash ile bağlı numaralı PNG callout'ları gerektirir. İnteraktif dosyalar açık istisna,
-offline doğrulama ve statik kontrol gerektirir. Her handoff tek geliştirmeye aittir ve değişmez.
-Diğer geliştirme değişikliği ayrı handoff ister. Baseline artifact ve çözülmüş spec hash'i ayrıdır.
-Erişememek yokluk teyidi değildir. Tam hedef ve stable-ID delta birlikte teslim edilir.
+## Sözleşme ve sınırlar
+Tek düzenlenebilir/public belirtim otoritesi TOON'dur; Excel türev, PNG yalnız yerleşim içindir. Gerekli bağlı sözleşme ve kaynak parçaları her ZIP'e dahil edilir; başka dosya/URL'den aranmaz. Tarafsız developer rehberi okuma sırasını, sınırları belli teknik kararları ve kabul kontrollerini açıklar; lokal skill/plugin/model, uygulama kaynağı, scaffold veya çalıştırılabilir geliştirme/test script'i teslim edilmez. Mevcut açıkça onaylanmış offline interaktif istisna ayrıdır.
 
-## Doğrulama ve sınırlar
-Runtime bağımlılıkları kurulduktan sonra `python -m unittest discover -s tests -v` çalıştırın.
-Yerel yardımcılar model/SAP servisi çağırmaz. Host bağımsız okuyucuları kullanıcının ayarlarıyla yürütür.
-Üç izole okuyucu, senaryo uyuşması, gerçek PNG kontrolü ve kodsuz plan simülasyonu gerekir;
-yardımcılar verilen kayıtları kontrol eder, dış yürütmeyi kimlik doğrulamasıyla kanıtlamaz. Eksik yetenek `NOT_RUN`.
-Fixture'lar gerçek semantik/model/tenant kanıtı değil, kayıt simülasyonudur. Geçerli şema veya temiz
-ZIP mutlak eksiksizlik, SAP aktivasyonu, ATC, runtime, UAT ya da token/hız tasarrufu kanıtlamaz.
-Tarihsel 2.0.1 kaynak yeterliliği [doğrulama](docs/VERIFICATION.tr.md), kural eşlemesi `docs/RULE-COVERAGE.toon` içindedir.
-Bu 2.0.2 public plugin, deponun eski 1.1.0 JSON standalone çiftinden ayrı bir dağıtımdır.
-Aynı anda tek Belirtim Yazmanı sürümü kurun; tam 2.x plugin ortak TOON runtime'ının sahibidir.
-[Public değişiklik geçmişine](CHANGELOG.tr.md) ve [kaynak yayın kaydına](PUBLICATION.json) bakın. Yeni model/SAP yeterliliği iddia edilmez.
+Üç bağımsız okuyucu, senaryo uyuşması, gerçek PNG incelemesi ve kodsuz mimari/plan kontrolü son teslim kapılarıdır. Fixture sentetiktir; yürütme/görsel yetenek yoksa NOT_RUN. Yerel şema/ZIP kontrolü SAP yetkisi, aktivasyon, ATC, runtime veya UAT kanıtı değildir. [Doğrulama](docs/VERIFICATION.tr.md) ve [değişiklikler](docs/CHANGES.tr.md) içindedir. 3.0.0 için yeni token/latency benchmark'ı çalıştırılmadı.
 
 ## Public paket kontrolleri
 
-`python -B skills/belirtim-yazmani/scripts/check_package.py` ve `python -B -m unittest discover -s tests -v` çalıştırın. Tam çevrimdışı marketplace ZIP'ini `python -B scripts/build_package.py --output-dir <harici-artifact-klasörü>` ile üretin. Üretilen PACKAGE-MANIFEST.json dosyasını commit öncesi kaynağa kopyalayıp repo doğrulamasını yeniden çalıştırın. Paketleyici ZIP CRC ve dosya hash'lerini doğrular; plugin kaynağını değiştirmez. Python bağımlılıkları sabitlenmiştir; değiştirilmemiş MIT TOON codec dahildir. Public ve tarihsel yeterlilik ayrı kanıtlardır.
+`python -B skills/belirtim-yazmani/scripts/check_package.py` ve ilgili runtime testlerini çalıştırın. Tam çevrimdışı marketplace ZIP'ini `python -B scripts/build_package.py --output-dir <external-artifacts>` ile üretin. Üretilen PACKAGE-MANIFEST.json dosyasını commit öncesinde plugin'e kopyalayıp repo doğrulamasını çalıştırın. Teslim paketleri repo dışında tutulur. Mevcut 1.1.0 JSON standalone çift kendi yayın çizgisini korur; aynı anda tek Spec Writer sürümü kurun. [Public değişikliklere](CHANGELOG.tr.md) ve [yayın kaynağına](PUBLICATION.json) bakın.

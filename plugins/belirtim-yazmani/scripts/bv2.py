@@ -379,7 +379,7 @@ def output(value): print(json.dumps(value,ensure_ascii=False,indent=None,allow_n
 
 def main(argv=None):
     if hasattr(sys.stdout,'reconfigure'): sys.stdout.reconfigure(encoding='utf-8')
-    p=argparse.ArgumentParser(description='FS-TS TOON / handoff v2')
+    p=argparse.ArgumentParser(description='Role-owned TOON specifications / handoff v3')
     sub=p.add_subparsers(dest='cmd',required=True)
     for name in ('init','migrate'):
         q=sub.add_parser(name); q.add_argument('--slug',required=True); q.add_argument('--version',required=True); q.add_argument('--output',required=True)
@@ -403,6 +403,13 @@ def main(argv=None):
     q=sub.add_parser('eval-request');q.add_argument('source');q.add_argument('--round',type=int,required=True);q.add_argument('--output',required=True);q.add_argument('--assets-root')
     q=sub.add_parser('eval-record');q.add_argument('source');q.add_argument('record')
     q=sub.add_parser('feedback');q.add_argument('source');q.add_argument('--category',required=True);q.add_argument('--defect',required=True)
+
+    for op in ('release-upgrade','questions','check-plan','check-record'):
+        q=sub.add_parser(op);q.add_argument('source')
+        if op=='check-plan': q.add_argument('--final',action='store_true')
+        if op=='check-record':
+            q.add_argument('--check',required=True);q.add_argument('--input-sha256',required=True);q.add_argument('--status',required=True,choices=['PASS','FAIL'])
+    q=sub.add_parser('handoff-batch');q.add_argument('manifest');q.add_argument('--output',required=True);q.add_argument('--batch-id',required=True)
 
     a=p.parse_args(argv)
     if a.cmd=='profile':
@@ -440,7 +447,30 @@ def main(argv=None):
         doc=wrap(content,a.id,a.slug,a.name,a.version); save(doc,a.output); output({'path':a.output,'readiness':'BLOCKED'}); return
     if a.cmd=='verify': output(verify_zip(a.source)); return
     if a.cmd=='delta': save(delta(load(a.baseline),load(a.target)),a.output); output({'path':a.output}); return
+    if a.cmd=='handoff-batch':
+        import handoff3 as h
+        manifest=load(a.manifest);base=Path(a.manifest).resolve().parent;items=[];paths=[]
+        if set(manifest)!={'developments'}: raise Invalid('Use a batch manifest with developments only')
+        for entry in manifest['developments']:
+            if set(entry)!={'workspace','assets_root'}: raise Invalid('Batch entry needs workspace and assets_root')
+            def scoped(raw):
+                result=base.joinpath(*safe_name(raw).parts)
+                if result.is_symlink() or not result.resolve().is_relative_to(base): raise Invalid('Batch path escaped its input root')
+                return result.resolve()
+            source=scoped(entry['workspace']);assets=scoped(entry['assets_root'])
+            items.append({'doc':load(source),'assets_root':assets});paths.append(source)
+        result=h.batch(items,a.output,a.batch_id)
+        for item,source in zip(items,paths): save(item['doc'],source,True)
+        output(result);return
     doc=load(a.source)
+    if a.cmd in ('release-upgrade','questions','check-plan','check-record'):
+        import handoff3 as h
+        if a.cmd=='questions': output({'questions':h.consultant_questions(doc),'technical_questions_sent_to_consultant':False});return
+        if a.cmd=='check-plan': output(h.check_plan(doc,a.final));return
+        if a.cmd=='release-upgrade': result=h.upgrade(doc)
+        else:
+            h.record_check(doc,a.check,a.input_sha256,a.status);result={'check':a.check,'status':a.status}
+        save(doc,a.source,True);output(result);return
     if a.cmd in ('release-init','release-inspect','release-approve','confirm-reviews','eval-request','eval-record','feedback'):
         import delivery
         if a.cmd=='release-init': delivery.release_init(doc)
