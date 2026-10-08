@@ -5,18 +5,16 @@
 | Skill | Ne yapar? | İngilizce karşılığı |
 | --- | --- | --- |
 | [Yordamla](yordamla/README.md) | Bağlama uygun prompt üretir, yürütme modeli önerir, onay ister ve aynı sohbette uygular. | [Prompter](../en/prompter/README.md) |
-| [SAP Geliştirme Dokümantasyonu](sap-gelistirme-dokumantasyonu/README.md) | İngilizce SAP geliştirme tasarımını, ilerleyişini, kararlarını, bağımlılıklarını ve devam hafızasını proje içindeki Obsidian Vault'ta tutar. | [SAP Development Documentation](../en/sap-development-documentation/README.md) |
 | [SAP Fiori Tasarım](sap-fiori-tasarim/README.md) | SAP Fiori for Web ekranı tasarlar, ABAP paketini (isteğe bağlı olarak servis `$metadata`'sını da) kanıtlı sözleşmeye çevirir; aynı sözleşmeden UI5 prototipi, kayıtlı PNG'ler ve üretim kodu üretir. | [SAP Fiori Design](../en/sap-fiori-design/README.md) |
-| [Belirtim Yazmanı](belirtim-yazmani/README.md) | Kararları verilmiş SAP Cloud ERP geliştirmesinin FS-TS'sini yazar: önce denetlenmiş JSON içerik dosyası, sonra Word, Excel, Markdown ya da Obsidian vault. | [Spec Writer](../en/spec-writer/README.md) |
 
 Her skill klasöründe en güncel yönerge, tanıtım, arayüz bilgileri, gerektiğinde destek kaynakları, değişiklik geçmişi ve kendi `archived/` klasörü bulunur. Güncel sürüm `SKILL.md` içindeki `metadata.version` alanında kayıtlıdır.
 
 Dil klasörünün tamamı yerine istediğiniz skill'in kendi klasörünü kurun. Kurulum adımları skill tanıtımında bulunur. Eski sürüm ZIP'leri inceleme ve geri dönüş hazırlığı içindir; aktif skill değildir.
 
-Türkçe ve İngilizce karşılıklar aynı sürümü ve davranışı paylaşır; adlar, açıklamalar ve belgeler ilgili dilde yazılır. Yönergeler çoğunlukla yerelleştirilir; SAP Fiori Tasarım ve Belirtim Yazmanı çiftlerinde modele dönük metin iki pakette İngilizcedir. Bu çiftler de kullanıcının dilinde yanıt verir. Skill eklemeden veya güncelleme yayımlamadan önce [katkı ve sürüm yönetimini](CONTRIBUTING.md) okuyun.
+Türkçe ve İngilizce karşılıklar aynı sürümü ve davranışı paylaşır; adlar, açıklamalar ve belgeler ilgili dilde yazılır. Yönergeler çoğunlukla yerelleştirilir; SAP Fiori Tasarım çiftinde modele dönük metin iki pakette İngilizcedir. Bu çift de kullanıcının dilinde yanıt verir. Skill eklemeden veya güncelleme yayımlamadan önce [katkı ve sürüm yönetimini](CONTRIBUTING.md) okuyun.
 
 ## Tam plugin paketleri
 
 [Yula 1.4.1](../plugins/yula/README.tr.md), Codex ve Claude Code için released object danışmanlığını, ABAP Cloud sözleşmelerini, konfigürasyon mimarisini, dört çevrimdışı MCP okuma aracını ve dolu SQLite veritabanını birlikte sunar. Üç skill ortak dosyalara bağlı olduğundan repo marketplace'inden tam plugin'i kurun. [Plugin katkı kuralları](CONTRIBUTING.md#tam-plugin-paketleri).
 
-[Belirtim Yazmanı 3.0.0](../plugins/belirtim-yazmani/README.tr.md), SAP Cloud ERP geliştirmelerini kendi kendine yeterli TOON FS-TS, danışmanın cevaplayacağı sorular ve koordineli ayrı geliştirme handoff’ları olarak belgeler. Ortak Python/Node runtime ve sabit codec ile tam plugin'i kurun. Mevcut 1.1.0 standalone çift eski JSON sözleşmesini kullanır; aynı anda tek sürüm kurun.
+[Belirtim Yazmanı 3.0.0](../plugins/belirtim-yazmani/README.tr.md), SAP Cloud ERP geliştirmelerini kendi kendine yeterli TOON FS-TS, danışmanın cevaplayacağı sorular ve koordineli ayrı geliştirme handoff’ları olarak belgeler. Ortak Python/Node runtime ve sabit codec ile tam plugin'i kurun.

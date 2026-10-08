@@ -1,7 +1,10 @@
 """Exercise release preservation with isolated, real Git histories."""
 
 import importlib.util
+import hashlib
+import json
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 import zipfile
@@ -75,6 +78,75 @@ class ReleaseTests(unittest.TestCase):
 
     def archive_both(self):
         return [tools.archive(self.root, relative) for relative in self.paths]
+
+    def retire_both(self):
+        records = {}
+        for relative, counterpart in zip(self.paths, reversed(self.paths)):
+            entrypoint = tools.git(self.root, "show", f"HEAD:{relative}/SKILL.md")
+            records[relative] = {
+                "counterpart": counterpart,
+                "entrypoint_sha256": hashlib.sha256(entrypoint).hexdigest(),
+            }
+            shutil.rmtree(self.root / relative)
+        manifest = self.root / ".github/retired-skills.json"
+        manifest.parent.mkdir(exist_ok=True)
+        manifest.write_text(json.dumps({"schema_version": 1, "packages": records}), encoding="utf-8")
+        return manifest
+
+    def test_explicit_pair_retirement_preserves_unrelated_releases(self):
+        self.archive_both()
+        self.bump("1.0.1")
+        self.commit()
+        # Keep a second published pair to verify that retirement does not disable its history gate.
+        for relative, counterpart in (("en/keeper", "tr/korunan"), ("tr/korunan", "en/keeper")):
+            original = self.paths[0 if relative.startswith("en/") else 1]
+            shutil.copytree(self.root / original, self.root / relative)
+            folder = self.root / relative
+            for snapshot in (folder / "archived").glob("*.zip"):
+                snapshot.unlink()
+            meta = tools.frontmatter((folder / "SKILL.md").read_bytes())
+            meta["name"] = folder.name
+            meta["metadata"].update(family="keeper", counterpart=counterpart)
+            self.write_skill(relative, meta)
+            ui_path = folder / "agents/openai.yaml"
+            ui = yaml.safe_load(ui_path.read_text(encoding="utf-8"))
+            ui["interface"]["default_prompt"] = f"${folder.name} Draft this fixture request."
+            ui_path.write_text(yaml.safe_dump(ui), encoding="utf-8")
+        self.commit()
+        self.retire_both()
+        self.assertEqual(tools.validate(self.root, "HEAD"), 2)
+        base = self.commit()
+        self.assertEqual(tools.validate(self.root, base), 2)
+        shutil.rmtree(self.root / "en/keeper")
+        shutil.rmtree(self.root / "tr/korunan")
+        with self.assertRaisesRegex(ValueError, "Previously published skill was removed"):
+            tools.validate_history(self.root, {}, base)
+
+    def test_retirement_rejects_unlisted_removal(self):
+        for relative in self.paths:
+            shutil.rmtree(self.root / relative)
+        with self.assertRaisesRegex(ValueError, "Previously published skill was removed"):
+            tools.validate_history(self.root, {}, tools.resolve_ref(self.root, "HEAD"))
+
+    def test_retirement_rejects_one_language_and_wrong_release(self):
+        manifest = self.retire_both()
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        del data["packages"][self.paths[1]]
+        manifest.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "both language counterparts"):
+            tools.retired_skills(self.root)
+        data["packages"][self.paths[1]] = {
+            "counterpart": self.paths[0], "entrypoint_sha256": "0" * 64,
+        }
+        manifest.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "differs from the published release"):
+            tools.validate_history(self.root, {}, tools.resolve_ref(self.root, "HEAD"))
+
+    def test_retirement_rejects_retained_package_directory(self):
+        self.retire_both()
+        (self.root / self.paths[0]).mkdir()
+        with self.assertRaisesRegex(ValueError, "Retired package still exists"):
+            tools.retired_skills(self.root)
 
     def test_first_release_has_two_active_packages_and_no_fake_archives(self):
         self.assertEqual(tools.validate(self.root, "HEAD"), 2)

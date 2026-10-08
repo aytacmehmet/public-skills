@@ -208,8 +208,38 @@ def validate_links(root):
             require(target.is_relative_to(root.resolve()) and target.exists(), f"Broken local link in {path}: {link}")
 
 
+def retired_skills(root):
+    manifest = root / ".github/retired-skills.json"
+    if not manifest.exists():
+        return {}
+    require(not manifest.is_symlink(), "Retirement manifest must not be a symlink.")
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    require(isinstance(data, dict) and set(data) == {"schema_version", "packages"}
+            and data["schema_version"] == 1, "Invalid retirement manifest schema.")
+    packages = data["packages"]
+    require(isinstance(packages, dict), "Retired packages must be a mapping.")
+    for relative, record in packages.items():
+        folder = checked_path(root, relative)
+        require(not folder.exists(), f"Retired package still exists: {relative}")
+        require(isinstance(record, dict) and set(record) == {"counterpart", "entrypoint_sha256"},
+                f"Invalid retirement record: {relative}")
+        counterpart = record["counterpart"]
+        require(isinstance(counterpart, str) and SKILL_PATH.fullmatch(counterpart)
+                and counterpart.split("/")[0] != relative.split("/")[0],
+                f"Invalid retired counterpart: {relative}")
+        digest = record["entrypoint_sha256"]
+        require(isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest),
+                f"Invalid retired entrypoint hash: {relative}")
+    for relative, record in packages.items():
+        counterpart = record["counterpart"]
+        require(counterpart in packages and packages[counterpart]["counterpart"] == relative,
+                f"Retirement requires both language counterparts: {relative}")
+    return packages
+
+
 def validate(root, base=None):
     root = root.resolve()
+    retired = retired_skills(root)
     spec = importlib.util.spec_from_file_location("plugin_tools", Path(__file__).with_name("plugins.py"))
     plugin_tools = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(plugin_tools)
@@ -264,15 +294,24 @@ def validate(root, base=None):
         require(other["version"] == meta["metadata"]["version"], f"Translation version mismatch: {relative}")
     validate_links(root)
     if base:
-        validate_history(root, skills, resolve_ref(root, base))
+        validate_history(root, skills, resolve_ref(root, base), retired)
     return len(skills)
 
 
-def validate_history(root, skills, base):
+def validate_history(root, skills, base, retired=None):
+    retired = retired if retired is not None else retired_skills(root)
     for language in ("en", "tr"):
         paths = tracked_paths(root, base, language)
         previous = {str(PurePosixPath(p).parent) for p in paths if len(PurePosixPath(p).parts) == 3 and p.endswith("/SKILL.md")}
         for relative in sorted(previous):
+            if relative in retired:
+                entrypoint = git(root, "show", f"{base}:{relative}/SKILL.md")
+                require(hashlib.sha256(entrypoint).hexdigest() == retired[relative]["entrypoint_sha256"],
+                        f"Retired entrypoint differs from the published release: {relative}")
+                counterpart = frontmatter(entrypoint)["metadata"]["counterpart"]
+                require(counterpart == retired[relative]["counterpart"],
+                        f"Retired counterpart differs from the published release: {relative}")
+                continue
             require(relative in skills, f"Previously published skill was removed: {relative}")
             before = committed_payload(root, relative, base)
             after = working_payload(root / relative)
@@ -286,6 +325,8 @@ def validate_history(root, skills, base):
                 require(payload == before, f"Archive does not match the previous committed package: {snapshot}")
         for path in paths:
             parts = PurePosixPath(path).parts
+            if "/".join(parts[:2]) in retired:
+                continue
             if len(parts) == 4 and parts[2] == "archived" and path.endswith(".zip"):
                 current = root / path
                 require(current.is_file() and current.read_bytes() == git(root, "show", f"{base}:{path}"), f"Published archive changed or was removed: {path}")
