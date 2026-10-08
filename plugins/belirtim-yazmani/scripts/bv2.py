@@ -59,6 +59,17 @@ def encode(value):
         raise Invalid('TOON roundtrip changed data or numeric precision; quote exact decimals')
     return encoded
 
+def encode_many(values):
+    ensure_numbers(values)
+    rows=json.loads(codec('batch-encode',json.dumps(values,ensure_ascii=False,allow_nan=False)))
+    for key,value in values.items():
+        if canonical(rows[key]['decoded']) != canonical(value):
+            raise Invalid('TOON roundtrip changed data or numeric precision; quote exact decimals')
+    return {key:row['text'] for key,row in rows.items()}
+
+def decode_many(values):
+    return json.loads(codec('batch-decode',json.dumps(values,ensure_ascii=False,allow_nan=False)))
+
 def load(path):
     p=Path(path)
     if p.stat().st_size>16*1024*1024: raise Invalid('Document exceeds 16 MiB')
@@ -404,8 +415,9 @@ def main(argv=None):
     q=sub.add_parser('eval-record');q.add_argument('source');q.add_argument('record')
     q=sub.add_parser('feedback');q.add_argument('source');q.add_argument('--category',required=True);q.add_argument('--defect',required=True)
 
-    for op in ('release-upgrade','questions','check-plan','check-record'):
+    for op in ('release-upgrade','questions','check-plan','check-record','preflight','status'):
         q=sub.add_parser(op);q.add_argument('source')
+        if op in ('check-plan','check-record','preflight','status'): q.add_argument('--assets-root')
         if op=='check-plan': q.add_argument('--final',action='store_true')
         if op=='check-record':
             q.add_argument('--check',required=True);q.add_argument('--input-sha256',required=True);q.add_argument('--status',required=True,choices=['PASS','FAIL'])
@@ -463,13 +475,16 @@ def main(argv=None):
         for item,source in zip(items,paths): save(item['doc'],source,True)
         output(result);return
     doc=load(a.source)
-    if a.cmd in ('release-upgrade','questions','check-plan','check-record'):
+    if a.cmd in ('release-upgrade','questions','check-plan','check-record','preflight','status'):
         import handoff3 as h
         if a.cmd=='questions': output({'questions':h.consultant_questions(doc),'technical_questions_sent_to_consultant':False});return
-        if a.cmd=='check-plan': output(h.check_plan(doc,a.final));return
+        if a.cmd in ('preflight','status'):
+            import preflight
+            output(preflight.inspect(doc,a.assets_root or Path(a.source).parent) if a.cmd=='preflight' else preflight.status(doc,a.assets_root or Path(a.source).parent));return
+        if a.cmd=='check-plan': output(h.check_plan(doc,a.final,a.assets_root or Path(a.source).parent));return
         if a.cmd=='release-upgrade': result=h.upgrade(doc)
         else:
-            h.record_check(doc,a.check,a.input_sha256,a.status);result={'check':a.check,'status':a.status}
+            h.record_check(doc,a.check,a.input_sha256,a.status,a.assets_root or Path(a.source).parent);result={'check':a.check,'status':a.status}
         save(doc,a.source,True);output(result);return
     if a.cmd in ('release-init','release-inspect','release-approve','confirm-reviews','eval-request','eval-record','feedback'):
         import delivery

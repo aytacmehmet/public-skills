@@ -1,0 +1,43 @@
+version: 3.1.0
+date: 2026-10-08
+status: PASS_LOCAL_BOUNDED
+source_base_commit: db60350b481e8f59d944d0e52251ff11073f6fed
+source_state: UNCOMMITTED_REVIEWABLE_BRANCH
+plugin_tests: 104
+repository_tests: 35
+skill_sha256: e62f0986435da1571234f337929806e944301c2f6bb62506b14fb7c5d3892355
+runtime_sha256:
+  "scripts\\bv2.py": cc9fc796b9cc151686ac480f91340d894c61e93facda0f4e07f44a39c2151cc9
+  "scripts\\codec.mjs": ac1b0e4d1c92c0750ea7a51c0878bc4d347499f233572b39ecab60ba2eb81930
+  "scripts\\delivery.py": ef1ca1cce56f6d7e01e1adc33b96e2aa102da7e6fc0396e1d1e3cde222263521
+  "scripts\\handoff3.py": bfd2c4c3f4d5321f88333ba98246ddf6802bea9e5e50411a00fe42a747ddccd5
+  "scripts\\legacy_core.py": 2ebd5b3bbd1b1c2cf34609a714d6bc01fa79a9cbb8da6ff2e5422c4fac1ac11f
+  "scripts\\preflight.py": 1ea402fb78b692f77cb00043714c86bbe3d05beecae440a99ac388f521d44f72
+  "scripts\\review_contract.py": 49dcebd54fe54c238ccc2d39a1622ef8a07d9da988d4f5cb1e3f1b05aeb5de05
+native_provider:
+  status: PASS_BOUNDED_SMOKE
+  positive_cases: 2
+  negative_controls: 1
+  model: gpt-6.1-sol
+  effort: xhigh
+  binding: Native skill input with unique enabled skill and exact SKILL.md hash; parsed outputs inspected
+  shell_mediated_attempt: NOT_RUN_SKILL_APPLICATION_READ_BLOCKED
+  scope: Business/developer ownership and blocked readiness only; no runtime tools or handoff readers
+local_mechanics:
+  repeats: 3
+  files: 15
+  excel: false
+  baseline_processes: 27
+  candidate_processes: 6
+  baseline_median_seconds: 3.1738
+  candidate_median_seconds: 0.6314
+  zip_bytes_identical: true
+  zip_sha256: 3fbffd5a9ddfd22001f47180e54206e0da42dadb72d9728f6c89d21f629f9eeb
+  scope: "Synthetic fixture mechanics, not general latency or token savings"
+limits:
+  implicit_positive_routing: SELECTION_OBSERVED_READ_BLOCKED
+  provider_cost_comparison: NOT_RUN
+  full_independent_handoff_reader_execution: NOT_RUN
+  claude_model_execution: NOT_RUN
+  hosted_ci: NOT_RUN
+  sap_tenant_activation_runtime_uat: NOT_RUN

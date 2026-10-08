@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "belirtim-yazmani",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Role-owned SAP Cloud ERP TOON specifications and self-contained, coordinated separate development handoffs.",
   "author": {
     "name": "aytacmehmet"

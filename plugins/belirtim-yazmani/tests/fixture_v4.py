@@ -50,15 +50,17 @@ def seal(doc):
     spec,control=d.get_state(doc);control['eval_rounds']=[];control['eval_requests']=[]
     control.update(approved_spec_sha256=d.revision(spec),approval_receipt='SYNTHETIC_FIXTURE_ONLY',approved_defaults_sha256=d.defaults_sha(spec),defaults_approval_receipt='SYNTHETIC_FIXTURE_ONLY',review_execution_confirmed=True,review_confirmation_receipt='SYNTHETIC_FIXTURE_ONLY')
     for n in [1,2]:
-        packets=d.eval_request(doc,n);readers=[]
+        packets=d._issue_review_packets(doc,n,{'assets':[],'references':[],'input_sha256':'SYNTHETIC_FIXTURE_ONLY'});readers=[]
         for i,packet in enumerate(packets):
             reader={'reader_id':packet['reader_id'],'context_id':packet['context_id'],'request_sha256':packet['request_sha256'],'isolated':True,'saw_other_results':False,'status':'COMPLETED',
               'covered_requirements':[x['id'] for x in spec['requirements']],
-              'questions':[{'question':'What is the stated behavior?','pointer':'/requirements/0/statement','answer':spec['requirements'][0]['statement']}],
+              'questions':[{'requirement_ref':r['id'],'question':'What is the stated functional behavior?','pointer':'/requirements/'+str(j)+'/statement','answer':r['statement']} for j,r in enumerate(spec['requirements'])],
               'expected_results':{r['id']:r['expected'] for r in spec['test_cases']},
               'visual_matches':[{'media_ref':r['media_ref'],'ui_element_ref':r['ui_element_ref'],'method':'PNG_INSPECTION','label_match':True,'layout_match':True} for r in spec['ui_callouts']],
-              'plan_completed':True,'plan_decisions':[{'decision':'Use the stated object.','pointer':'/objects/0/name'}],
+              'plan_completed':True,'plan_decisions':[{'decision':'Use the stated object.','pointer':'/objects/0/name'}]+[{'decision':'Preserve the stated constraint.','pointer':'/architecture/constraints/'+str(j)+'/statement'} for j,r in enumerate(spec.get('architecture',{}).get('constraints',[]))]+[{'decision':'Respect dependency rollout.','pointer':'/dependencies/'+str(j)+'/contract'} for j,r in enumerate(spec.get('dependencies',[]))]+[{'decision':'Defer the bounded implementation choice.','pointer':'/developer_decisions/'+str(j)+'/question'} for j,r in enumerate(spec.get('developer_decisions',[])) if r['status']=='OPEN'],
               'execution_evidence':'SYNTHETIC_RESPONSE_NOT_REAL_MODEL_EXECUTION','response_sha256':b.digest(b.canonical({'fixture':n,'reader':i}))}
             reader['findings']=[]
+            import review_contract
+            reader['response_sha256']=review_contract.response_sha(reader)
             readers.append(reader)
         d.record_round(doc,{'revision_sha256':d.revision(spec),'readers':readers,'new_open_count':0})
