@@ -205,6 +205,15 @@ def eval_gate(spec,control):
     requests={x.get('context_id'):x for x in control.get('eval_requests',[]) if x.get('revision_sha256')==revision(spec)}
     for rn,r in enumerate(rounds):
         current=[];readers=r.get('readers',[])
+        import review_contract
+        if not isinstance(readers,list):
+            current.append(issue('F2_RESPONSE_SHAPE','/eval_rounds/'+str(rn),'Readers must be an array'));readers=[]
+        valid_readers=[]
+        for index,reader in enumerate(readers):
+            problems=review_contract.shape_errors(reader,f'/eval_rounds/{rn}/readers/{index}')
+            current+=problems
+            if not problems:valid_readers.append(reader)
+        readers=valid_readers
         if r.get('revision_sha256')!=revision(spec): current.append(issue('F5_STALE_ROUND','/eval_rounds/'+str(rn),'Round is for another revision'))
         if len(readers)<3 or len({x.get('reader_id') for x in readers})!=len(readers): current.append(issue('F2_READERS','/eval_rounds/'+str(rn),'Three independent readers required'))
         for i,reader in enumerate(readers):
@@ -221,6 +230,10 @@ def eval_gate(spec,control):
                     actual=resolve(spec,question.get('pointer'))
                     if b.canonical(actual)!=b.canonical(question.get('answer')): current.append(issue('F2_ANSWER',ptr,'Pointer answer differs'))
                 except (b.Invalid,KeyError,IndexError,TypeError): current.append(issue('F2_POINTER',ptr,'Question cannot be answered at pointer'))
+            import review_contract
+            current+=review_contract.findings(spec,reader,ptr)
+            if request.get('reader_id')!=reader.get('reader_id'): current.append(issue('F2_REQUEST_BINDING',ptr,'Reader identity differs from issued packet'))
+            if request.get('protocol')!='3.1': current.append(issue('F2_PROTOCOL',ptr,'Reissue legacy review packets for protocol 3.1'))
             if not re.fullmatch('[a-f0-9]{64}',reader.get('response_sha256','')) or not reader.get('execution_evidence'): current.append(issue('F2_EXECUTION',ptr,'Recorded execution evidence and response hash required'))
         if len(readers)>=2:
             left=readers[0].get('expected_results',{});right=readers[1].get('expected_results',{})
@@ -247,6 +260,12 @@ def eval_gate(spec,control):
 def evaluate(doc):
     try: spec,control=get_state(doc)
     except b.Invalid as e: return {'decision':'BLOCKED','issues':[issue('D3_DELIVERY_MISSING','/delivery',str(e))],'open_counts':{'missing_profile':1},'layers':[],'rounds':[]}
+    schema_issues=schema_errors(spec)
+    if schema_issues:
+        return {'decision':'BLOCKED','coding_readiness':'BLOCKED','technical_open_count':0,
+          'spec_sha256':revision(spec),'issues':schema_issues,'open_counts':{'invalid_profile':len(schema_issues)},
+          'layers':[{'layer':1,'status':'FAIL'}]+[{'layer':n,'status':'NOT_RUN'} for n in range(2,6)],
+          'rounds':[],'eval_round_count':0,'confidence_limit':'Invalid data has not been evaluated'}
     errors=shape_and_profile(spec);counts={}
     def closed(row):
         if not isinstance(row,dict) or row.get('status')!='CLOSED' or row.get('owner_confirmed') is not True: return False
@@ -313,28 +332,45 @@ def release_init(doc):
     control.update(baseline_system_state='UNKNOWN',baseline_final_approved=False,round_limit=4)
     doc['delivery']={'spec':spec,'control':control}
 
-def eval_request(doc,round_number,assets_root=None):
-    spec,control=get_state(doc)
-    if shape_and_profile(spec): raise b.Invalid('Complete deterministic profile before reader evaluation')
-    if round_number!=len(control['eval_rounds'])+1 or round_number>control.get('round_limit',4): raise b.Invalid('Round sequence/limit reached; resolve with owner before continuing')
-    source_paths=[]
-    if assets_root is not None:
-        for media in spec['media']:
-            _,data=copy_asset({'path':media['path'],'sha256':media['sha256']},assets_root)
-            source_paths.append({'path':str(Path(assets_root).resolve()/media['path']),'sha256':b.digest(data)})
-    packets=[]
+def _issue_review_packets(doc,round_number,prepared):
+    # Pure packet assembly is also used by explicitly synthetic test fixtures.
+    import review_contract as review
+    spec,control=get_state(doc);packets=[]
+    pngs=[row for row in prepared['assets'] if row['path'] in {m['path'] for m in spec['media']}]
     for i in range(3):
-        packet={'revision_sha256':revision(spec),'round':round_number,'reader_id':'reader-'+str(i+1),'context_id':str(uuid.uuid4()),
-          'instructions':'Work in a fresh isolated context without other reader results. Inspect the complete spec and project defaults. Ask consultant-resolvable functional questions with pointers and answers; cover every requirement and user-visible behavior. Do not ask consultant implementation questions. Listed bounded developer choices are not missing business decisions; check their context, packaged references and architecture constraints. Independently derive test outcomes; inspect actual PNG callouts and labels. Simulate a code-free plan with pointers for fixed decisions and deferred technical choices. Unanswerable functional questions, missing references, architecture contradictions or invented decisions are blocking findings. Return evidence; never close gaps automatically. No model/provider selection.',
-          'spec':spec,'png_files':source_paths or [{'path':m['path'],'sha256':m['sha256']} for m in spec['media']]}
-        packet['reply_shape']={'reader_id':'echo request','context_id':'echo request','request_sha256':'echo request','status':'COMPLETED or BLOCKED','isolated':True,'saw_other_results':False,
-          'covered_requirements':['all inspected requirement IDs'],'questions':[{'question':'functional question','pointer':'decoded-data pointer or null when unanswerable','answer':'observed value; do not invent'}],
-          'expected_results':{'test-case ID':'independently derived result'},'visual_matches':[{'media_ref':'ID','ui_element_ref':'ID','method':'PNG_INSPECTION or NOT_RUN','label_match':'boolean','layout_match':'boolean'}],
-          'plan_completed':'boolean','plan_decisions':[{'decision':'plan decision','pointer':'source pointer or null'}],'findings':['every unresolved issue; empty only after review'],
-          'execution_evidence':'controller supplies genuine private execution reference; reader must not fabricate it','response_sha256':'controller computes digest of recorded response'}
-        packet['request_sha256']=b.digest(b.canonical(packet)); packets.append(packet)
-    control['eval_requests']+= [{'revision_sha256':revision(spec),'round':round_number,'reader_id':x['reader_id'],'context_id':x['context_id'],'request_sha256':x['request_sha256']} for x in packets]
+        packet={'protocol':'3.1','revision_sha256':revision(spec),'round':round_number,
+          'reader_id':'reader-'+str(i+1),'context_id':str(uuid.uuid4()),
+          'instructions':'Use a fresh isolated context. Inspect functional requirements, approved defaults, packaged references and actual PNGs. Return one functional question per requirement with requirement_ref, its statement pointer and observed answer. The first two readers derive every test result from functional rules and inputs; expected test answers are withheld. The third reader checks the complete specification. Cover actual PNG callouts. Provide concrete plan decisions pointing to objects, architecture constraints, dependencies and each delegated technical decision that exists. Report every contradiction, missing business answer and missing reference. Do not fabricate execution evidence, choose tools or change the functional contract.',
+          'scenario_reader':i<2,'authoritative':False,'spec':review.review_spec(spec,i<2),
+          'png_files':[{'path':x['source_path'],'sha256':x['sha256']} for x in pngs],
+          'references':prepared['references'],'dependency_contracts':prepared.get('dependency_contracts',[]),
+          'input_sha256':prepared.get('input_sha256')}
+        packet['reply_shape']={'reader_id':'echo request','context_id':'echo request','request_sha256':'echo request',
+          'status':'COMPLETED or BLOCKED','isolated':True,'saw_other_results':False,
+          'covered_requirements':['all inspected requirement IDs'],
+          'questions':[{'requirement_ref':'requirement ID','question':'functional question','pointer':'/requirements/N/statement','answer':'observed statement'}],
+          'expected_results':{'test-case ID':'independently derived result'},
+          'visual_matches':[{'media_ref':'ID','ui_element_ref':'ID','method':'PNG_INSPECTION or NOT_RUN','label_match':'boolean','layout_match':'boolean'}],
+          'plan_completed':'boolean','plan_decisions':[{'decision':'concrete decision','pointer':'object, architecture, dependency or delegated-decision pointer'}],
+          'findings':['unresolved issues'],
+          'execution_evidence':'controller supplies genuine private execution reference',
+          'response_sha256':'controller hashes the parsed response excluding response_sha256 and execution_evidence'}
+        packet['request_sha256']=b.digest(b.canonical(packet));packets.append(packet)
+    control['eval_requests'] += [{'protocol':'3.1','revision_sha256':revision(spec),'round':round_number,
+      'reader_id':x['reader_id'],'context_id':x['context_id'],'request_sha256':x['request_sha256'],
+      'input_sha256':x['input_sha256']} for x in packets]
     return packets
+
+def eval_request(doc,round_number,assets_root=None):
+    import preflight
+    spec,control=get_state(doc)
+    if shape_and_profile(spec):raise b.Invalid('Complete deterministic profile before reader evaluation')
+    if round_number!=len(control['eval_rounds'])+1 or round_number>control.get('round_limit',4):
+        raise b.Invalid('Round sequence/limit reached; resolve with owner before continuing')
+    prepared=preflight.inspect(doc,assets_root)
+    if prepared['status']!='PASS':
+        raise b.Invalid('Preflight blocked: '+json.dumps(prepared['issues'],ensure_ascii=False))
+    return _issue_review_packets(doc,round_number,prepared)
 
 def record_round(doc,record):
     spec,control=get_state(doc)
@@ -342,7 +378,8 @@ def record_round(doc,record):
     expected={r['context_id']:r for r in control['eval_requests'] if r['round']==len(control['eval_rounds'])+1 and r['revision_sha256']==revision(spec)}
     for reader in record.get('readers',[]):
         if reader.get('context_id') not in expected or reader.get('request_sha256')!=expected[reader['context_id']]['request_sha256']: raise b.Invalid('Review is not bound to an issued independent packet')
-        reader['response_sha256']=b.digest(b.canonical({k:v for k,v in reader.items() if k!='response_sha256'}))
+        import review_contract
+        reader['response_sha256']=review_contract.response_sha(reader)
     control['eval_rounds'].append(record)
 
 def feedback(doc,text,category):

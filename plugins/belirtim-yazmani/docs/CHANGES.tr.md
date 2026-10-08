@@ -2,6 +2,9 @@
 
 [English](CHANGES.md) · Türkçe
 
+## 3.1.0 — 2026-10-08
+Ortak fiziksel dosya çözümleme, salt okunur preflight/status, okuyuculara yerel referans içeriği, gereksinim/plan/yanıt bağlaması ve beklenen cevabı gizleyen senaryo türetme. Gerçek dosya/doğrulayıcı parmak izleri ve kayıt kontrolleri eski kanıtı ve ilgisiz tekrarları azaltır. Toplu codec işlemleri katı ayrıştırma ve tam round-trip denetimini korur. Public 3.0 handoff şeması ile bütün onay/üç okuyucu/iki tur kapıları korunur; eski özel okuyucu paketleri protokol 3.1 ile yeniden yürütülmelidir. Keşif açıklaması açık FS/TS ve Türkçe görev tetikleyicilerini içerir; danışman soruları gerçek önkoşulları destekler.
+
 ## 3.0.0 — 2026-10-02
 Danışman soru sahipliği ve sınırları belli developer kararları; kısa-ad önekli kendi bağlamını içeren dosya rolleri; ayrı atomik toplu ZIP teslimi; baseline/bağlı sözleşme içeriği; sıkı referans kapanışı ve hash bağlı ara kontrol planı. Public sözleşme değişir: 2.0 salt okunur import/baseline, 3.0 export biçimidir. Tarafsız/kodsuz politika ve gerçek son bağımsız inceleme korunur.
 

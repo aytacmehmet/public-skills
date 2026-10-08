@@ -12,7 +12,7 @@ SKILL = ROOT / 'skills/belirtim-yazmani'
 def main():
     identities = [json.loads((ROOT / p).read_text(encoding='utf-8')) for p in
                   ('plugin.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json')]
-    assert all(x['name'] == 'belirtim-yazmani' and x['version'] == '3.0.0' for x in identities)
+    assert all(x['name'] == 'belirtim-yazmani' and x['version'] == '3.1.0' for x in identities)
     manifest = json.loads((ROOT / 'PACKAGE-MANIFEST.json').read_text(encoding='utf-8'))
     assert manifest['version'] == identities[0]['version']
     files = {p.relative_to(ROOT).as_posix(): p for p in ROOT.rglob('*') if p.is_file() and p != ROOT / 'PACKAGE-MANIFEST.json'}
@@ -27,6 +27,8 @@ def main():
         assert (SKILL / path).is_file() and path in text
     assert (ROOT / 'scripts/bv2.py').is_file()
     assert (ROOT / 'scripts/delivery.py').is_file()
+    assert (ROOT / 'scripts/preflight.py').is_file()
+    assert (ROOT / 'scripts/review_contract.py').is_file()
     digest = hashlib.sha256((ROOT / 'vendor/toon/index.mjs').read_bytes()).hexdigest()
     assert digest in (ROOT / 'vendor/toon/NOTICE.md').read_text(encoding='utf-8')
     for path in ROOT.rglob('*'):

@@ -1,4 +1,4 @@
-# Belirtim Yazmanı 3.0.0
+# Belirtim Yazmanı 3.1.0
 
 English · [Türkçe](README.tr.md)
 
@@ -20,6 +20,11 @@ codex plugin add belirtim-yazmani@aytacmehmet-public
 
 Invoke the namespaced skill in Claude Code or `$belirtim-yazmani` in Codex. This repository publication does not install anything or select a model.
 
+## 3.1 operation
+Run `status <workspace> --assets-root <inputs>` for current blockers and the next action. Before final readers run `preflight <workspace> --assets-root <inputs>`; missing assets, source mappings, references, pointers, business closure and dependency contracts stop packet issuance. It is read-only and does not approve a release. `check-plan`/`check-record` accept the same assets root and use checker-byte/physical-file fingerprints plus functional, UI, object and record units.
+
+Private review protocol 3.1 requires fresh execution of old reader records. Every reader supplies a functional question per requirement and concrete plan evidence. The first two readers derive scenario outcomes without `test_cases.expected`; the third inspects the complete specification. Packets include needed reference content and contracts. Actual parsed replies are hash-bound; owner confirmation remains mandatory and does not authenticate providers. Public handoff schema 3.0, three readers, two clean rounds and immutable separate ZIPs remain unchanged. Consultant questions may declare real `depends_on` prerequisites and report `blocked_by`/`unlocks`.
+
 ## Workflow
 Resolve `scripts/bv2.py` from the absolute loaded skill directory; cwd may differ.
 
@@ -39,4 +44,6 @@ Three independent readers, scenario agreement, real PNG inspection and code-free
 
 ## Public package checks
 
-Run `python -B skills/belirtim-yazmani/scripts/check_package.py` and the targeted runtime tests. Build the complete offline marketplace ZIP with `python -B scripts/build_package.py --output-dir <external-artifacts>`. Copy the generated PACKAGE-MANIFEST.json into the plugin before committing and run repository validation. Artifacts remain outside the repository. The existing 1.1.0 JSON standalone pair retains its own lineage; install one Spec Writer version at a time. See [public changes](CHANGELOG.md) and [publication provenance](PUBLICATION.json).
+Run `python -B skills/belirtim-yazmani/scripts/check_package.py` and targeted runtime tests. Build the complete offline marketplace ZIP with `python -B scripts/build_package.py --output-dir <external-artifacts>`. Copy its generated PACKAGE-MANIFEST.json into the plugin and run repository validation before committing. Delivery ZIPs remain outside the repository. The former Spec Writer standalone pair is retired; complete plugin history and previous archives are preserved in Git. Install one active Spec Writer version at a time. See [public changes](CHANGELOG.md) and [publication provenance](PUBLICATION.json).
+
+The upstream qualification records were collected on the private local candidate before commit and publication. PUBLICATION.json pins the actual imported private commit; hosted checks and merge records are separate evidence. Public packaging does not extend the qualification's model, cost or SAP scope.

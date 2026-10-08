@@ -1,25 +1,25 @@
 {
   "format": "plugin-publication/1",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "repository": "aytacmehmet/public-skills",
   "marketplace": "aytacmehmet-public",
   "firstPublicPluginRelease": false,
-  "previousPublicVersion": "2.0.2",
+  "previousPublicVersion": "3.0.0",
   "upstream": {
     "repository": "aytacmehmet/private-skills-plugins",
-    "ref": "main",
-    "commit": "08295d32e6606a466ffe364bc4164b4b7b992498",
+    "ref": "update/belirtim-yazmani-3.1.0-20261008",
+    "commit": "b6541aa70894d22223723b87ce29992582555ba1",
     "path": "plugins/belirtim-yazmani",
-    "version": "3.0.0"
+    "version": "3.1.0"
   },
   "upstreamFiles": {
     ".claude-plugin/plugin.json": {
       "bytes": 345,
-      "sha256": "8aa6a9abb4cceb91fdf299ff78ce5b73baa2aa526e4ae100fdcf8b88cde338ed"
+      "sha256": "594515d6a21dfdb2de5eebad5581905bb920733612577697e5f216b3a717c201"
     },
     ".codex-plugin/plugin.json": {
       "bytes": 370,
-      "sha256": "934a096732f9418dd9cf6664253781cdc2f954add185576c4e688262d5020032"
+      "sha256": "afdfc0b3b03adc7ac61449b202d2ba436c053e348ae00ef953f58f8c9cfc6f46"
     },
     "LICENSE": {
       "bytes": 35149,
@@ -34,12 +34,12 @@
       "sha256": "f38d7f387b3c0cef3345ea236878153b5b9dded78d6c6d5e5c52b952dbedc6dd"
     },
     "README.md": {
-      "bytes": 4732,
-      "sha256": "b6626908a1d4f72a8ddef545e358f3ee3f7a65a44274991d242adb592dd6b0d2"
+      "bytes": 5893,
+      "sha256": "d943b7a9d8083c13dd1d301a4f67f982513ed0c71bc614f15cb3538a72c00122"
     },
     "README.tr.md": {
-      "bytes": 4768,
-      "sha256": "687b743be65da578f9dacf9b0318bc0bb4fea8f3763209a9a57a1b966394760a"
+      "bytes": 6047,
+      "sha256": "97282e0d73823ce6edd18b3cd228eb77a9f8dbed0c5fa469a3f191c60bb5c3f5"
     },
     "assets/EXAMPLE.md": {
       "bytes": 362,
@@ -58,12 +58,16 @@
       "sha256": "e0ba565684f1b59b9381bda05f0bfb89345a02abc4e2fd71c41393aeadda1342"
     },
     "docs/CHANGES.md": {
-      "bytes": 1491,
-      "sha256": "8ee7484726e3586c0561aaec283ffd63f6cdcb137422e499a073d4f8eced57c6"
+      "bytes": 2093,
+      "sha256": "9ae0d7e5a2427b9053bf92528e28a3bebc80bcec97c54c64a9dee4f66fa0448c"
     },
     "docs/CHANGES.tr.md": {
-      "bytes": 1561,
-      "sha256": "c535e372f293add498057598454f9e9df22955b17eed528c8f195150e9c70d87"
+      "bytes": 2256,
+      "sha256": "d510e578c3799bd7ea4dac9b5b0ffb50a8196da6c5c0a8ffa78c5d21cf90afee"
+    },
+    "docs/QUALIFICATION-3.1.toon": {
+      "bytes": 1956,
+      "sha256": "d76410af3e1c9c408c1b58d123e31c288c9213445d462848a47549523e78717b"
     },
     "docs/RULE-COVERAGE.toon": {
       "bytes": 12617,
@@ -74,16 +78,16 @@
       "sha256": "c884824c9b60ceb475b801e4842f5f769de6b02805a7ee750c8ddf9ed1e77891"
     },
     "docs/VERIFICATION.md": {
-      "bytes": 4899,
-      "sha256": "88638f206e963d8338692d297e2486c50598a50a3b36e624471d5b272a875814"
+      "bytes": 6610,
+      "sha256": "7524c02bcf76b29691891f26e238e990adcae5ba7e06a7c757ddbc1febc1c045"
     },
     "docs/VERIFICATION.tr.md": {
-      "bytes": 4985,
-      "sha256": "80b91112efe8873c8f7b390c4dcd2fc20aa641ff935cff0d5d7b7c3e1e1aeba3"
+      "bytes": 6868,
+      "sha256": "9c91d9679d4e6c9406ed1f9f684395673464d7b8cd709d82faeeafddb8bd3a8d"
     },
     "plugin.json": {
       "bytes": 420,
-      "sha256": "4a39d7b773a853a37da5058161bc533ec077513f8538ba7d9915e260cad487d0"
+      "sha256": "10ca597244dc1a10dbdd33e5a25530f0de0b42b9af9cc8677550139677e36eae"
     },
     "provenance/upstream-export.json": {
       "bytes": 264,
@@ -114,24 +118,32 @@
       "sha256": "de66aea41294980bb22596e509869e12826d16ec79a22b3acbfdf842e48a2888"
     },
     "scripts/bv2.py": {
-      "bytes": 37622,
-      "sha256": "81d20e7afe180ec69019106a3065bf3db68c93afacea986524af29c32665c9bf"
+      "bytes": 38626,
+      "sha256": "cc9fc796b9cc151686ac480f91340d894c61e93facda0f4e07f44a39c2151cc9"
     },
     "scripts/codec.mjs": {
-      "bytes": 530,
-      "sha256": "b659432e2ee91a472c33c9cee997aee3947d9c77dd6013c8e25f0559684d197a"
+      "bytes": 1063,
+      "sha256": "ac1b0e4d1c92c0750ea7a51c0878bc4d347499f233572b39ecab60ba2eb81930"
     },
     "scripts/delivery.py": {
-      "bytes": 51705,
-      "sha256": "56dfa0d5e3276421a91c26b9c38bc6fb103b86b8a22336f7f630d39f587c9c5b"
+      "bytes": 53638,
+      "sha256": "ef1ca1cce56f6d7e01e1adc33b96e2aa102da7e6fc0396e1d1e3cde222263521"
     },
     "scripts/handoff3.py": {
-      "bytes": 32611,
-      "sha256": "45a3004c8d4303ea2a355eb0ded8836a200358362afadd29e9da3ad3c31292df"
+      "bytes": 36495,
+      "sha256": "bfd2c4c3f4d5321f88333ba98246ddf6802bea9e5e50411a00fe42a747ddccd5"
     },
     "scripts/legacy_core.py": {
       "bytes": 46452,
       "sha256": "2ebd5b3bbd1b1c2cf34609a714d6bc01fa79a9cbb8da6ff2e5422c4fac1ac11f"
+    },
+    "scripts/preflight.py": {
+      "bytes": 6764,
+      "sha256": "1ea402fb78b692f77cb00043714c86bbe3d05beecae440a99ac388f521d44f72"
+    },
+    "scripts/review_contract.py": {
+      "bytes": 5471,
+      "sha256": "49dcebd54fe54c238ccc2d39a1622ef8a07d9da988d4f5cb1e3f1b05aeb5de05"
     },
     "skills/belirtim-yazmani/README.md": {
       "bytes": 434,
@@ -142,40 +154,44 @@
       "sha256": "0362c4c822992028bfed7216e9c986ab216cc553bfdb95cf3715a2a30860e6b4"
     },
     "skills/belirtim-yazmani/SKILL.md": {
-      "bytes": 6834,
-      "sha256": "d0149fd368ef46f87fb750a13d1a683f30a83a75eb2e9e3e8bd946ff37479321"
+      "bytes": 7179,
+      "sha256": "e62f0986435da1571234f337929806e944301c2f6bb62506b14fb7c5d3892355"
     },
     "skills/belirtim-yazmani/agents/openai.yaml": {
       "bytes": 349,
       "sha256": "a336032846b820a36c7b417d7c530a0c6b925afe40ecd53f94a7f1f4d3a3ed21"
     },
     "skills/belirtim-yazmani/references/eval.md": {
-      "bytes": 2424,
-      "sha256": "d5dee37039b12bc1fda5fb89abd8358e33a1ed92e4c27e33fd444aa777204dd2"
+      "bytes": 3149,
+      "sha256": "97cb37c5f38132ebf441ddc976a568baec1e2394bd79601e50029f43f05b855a"
     },
     "skills/belirtim-yazmani/references/format.md": {
       "bytes": 1713,
       "sha256": "9647bc6f182c4aa3e6eb79e8e30187b30649283be03f9ed4fb0c6ee2b4d1d064"
     },
     "skills/belirtim-yazmani/references/workflow.md": {
-      "bytes": 4392,
-      "sha256": "5989970af88f42e142e7559606143e25773700fbd3d7afa8fc586ca93b2eed61"
+      "bytes": 4696,
+      "sha256": "650fdeaed6691b69aa748e92f77efc19f65887ea0748c66a30f57b7829eea762"
     },
     "skills/belirtim-yazmani/scripts/check_package.py": {
-      "bytes": 1432,
-      "sha256": "978e15d35f5631a8d440c13c9592ddf01f05d518cade65ad2582ca7e1d0d7bda"
+      "bytes": 1544,
+      "sha256": "1070db3816425d57c28baf52e87d92ea092a8851484fa138104e5d7a5f5c0bae"
     },
     "tests/fixture_v4.py": {
-      "bytes": 8394,
-      "sha256": "29552887eb2b647f525f2620b08f1a31ba804b47a843d3d45ebfc39d142579dd"
+      "bytes": 9162,
+      "sha256": "5efa9d137bccd49df33ad0d8c306f9f2a7db90484b2ed843283661c4d84fef8b"
+    },
+    "tests/test_effectiveness.py": {
+      "bytes": 9458,
+      "sha256": "faf90acd3fcfa5db08b30e2054a4eabe2c7bb258bdb33d195c67cb466be878dd"
     },
     "tests/test_handoff.py": {
       "bytes": 10374,
       "sha256": "f1d098f24709d8717df130445ccf6af06541a32698a61f1f087176dd5a196b52"
     },
     "tests/test_handoff3.py": {
-      "bytes": 14892,
-      "sha256": "de61a2ee6db2a11383ed803ef508f571ea270f14926cb659e6f168186eb4cb3c"
+      "bytes": 15042,
+      "sha256": "31dd4a457bda231134b9678af57678c213da11f83da47cc420e84f21536a3b12"
     },
     "tests/test_release.py": {
       "bytes": 14922,
@@ -206,12 +222,13 @@
   "preservedHistoricalQualification": [
     "docs/VERIFICATION.md",
     "docs/VERIFICATION.tr.md",
-    "docs/TOKEN-EVAL.toon"
+    "docs/TOKEN-EVAL.toon",
+    "docs/QUALIFICATION-3.1.toon"
   ],
   "boundaries": [
-    "Public packaging adapts installation documentation and payload validation only.",
-    "Unqualified audit candidates and logs are not part of this distribution.",
-    "No new model, visual or SAP qualification or token saving is claimed.",
-    "No normal-profile installation or SAP operation is performed."
+    "Public adaptations are installation documentation and payload validation only.",
+    "Private qualification records precede publication; bounded native skill behavior is not full handoff-reader execution.",
+    "No comparative provider-cost, new Claude model or SAP qualification is claimed.",
+    "Public package transfer does not install a second active skill or change credentials."
   ]
 }

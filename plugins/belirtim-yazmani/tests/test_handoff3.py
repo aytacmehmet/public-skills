@@ -98,15 +98,15 @@ class Handoff3Tests(unittest.TestCase):
             self.spec['change_rationale']=text
             with self.assertRaises(b.Invalid): d.package(self.doc,self.root/('bad-'+str(len(text))),self.root,False)
     def test_incremental_reuse_dependency_closure_and_stale_result_rejection(self):
-        initial=h.check_plan(self.doc)
-        for name,digest in initial['input_sha256'].items(): h.record_check(self.doc,name,digest,'PASS')
-        self.assertEqual(h.check_plan(self.doc)['run'],[])
+        initial=h.check_plan(self.doc,assets_root=self.root)
+        for name,digest in initial['input_sha256'].items(): h.record_check(self.doc,name,digest,'PASS',self.root)
+        self.assertEqual(h.check_plan(self.doc,assets_root=self.root)['run'],[])
         self.spec['architecture']['constraints'][0]['statement']+=' Preserve the declared unit.'
-        changed=h.check_plan(self.doc)
+        changed=h.check_plan(self.doc,assets_root=self.root)
         self.assertIn('decisions',changed['run']);self.assertIn('architecture',changed['run'])
         self.assertIn('core',changed['reuse']);self.assertIn('references',changed['reuse'])
-        with self.assertRaises(b.Invalid): h.record_check(self.doc,'architecture',initial['input_sha256']['architecture'],'PASS')
-        self.assertTrue(h.check_plan(self.doc,True)['final_integrity_required'])
+        with self.assertRaises(b.Invalid): h.record_check(self.doc,'architecture',initial['input_sha256']['architecture'],'PASS',self.root)
+        self.assertTrue(h.check_plan(self.doc,True,self.root)['final_integrity_required'])
     def partner(self):
         root=self.root/'partner';doc=valid(root);spec,control=d.get_state(doc)
         doc['development'].update(id='OTHER-01',slug='linked-change')
@@ -164,10 +164,10 @@ class Handoff3Tests(unittest.TestCase):
 
     def test_contract_change_invalidates_dependent_check_plan(self):
         partner,_=self.partner();self.link(partner)
-        original=h.check_plan(self.doc)
-        for name,digest in original['input_sha256'].items(): h.record_check(self.doc,name,digest,'PASS')
+        original=h.check_plan(self.doc,assets_root=self.root)
+        for name,digest in original['input_sha256'].items(): h.record_check(self.doc,name,digest,'PASS',self.root)
         self.control['dependency_contracts'][0]['content']={'quantity':'revised contract'}
-        plan=h.check_plan(self.doc)
+        plan=h.check_plan(self.doc,assets_root=self.root)
         self.assertIn('references',plan['run']);self.assertIn('decisions',plan['run']);self.assertIn('packaging',plan['run'])
         self.assertIn('core',plan['reuse'])
 

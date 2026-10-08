@@ -2,6 +2,14 @@
 
 [English](CHANGELOG.md) · Türkçe
 
+## 3.1.0 — 2026-10-08
+
+- PUBLICATION.json içindeki kesin private 3.1.0 commit'ini aktarır; iki host manifestini ve tam runtime/şema/test/codec paketini korur.
+- Erken salt okunur preflight/status, ortak fiziksel dosya eşlemesi, okuyucuya referans içeriği, daha güçlü işlev/plan/yanıt bağlaması ve beklenen cevabı gizleyen senaryo girdileri ekler.
+- Geçerli ve değişmemiş işlev/UI/nesne/kayıt kontrollerini gerçek dosya/doğrulayıcı parmak izleriyle tekrar kullanır; geçerli örnek ZIP byte'larını değiştirmeden katı codec işlemlerini toplar.
+- Public 3.0 handoff biçimini, onay/üç okuyucu/iki tur kapılarını ve ayrı değişmez geliştirme ZIP'lerini korur. Eski özel incelemeler protokol 3.1 ile yürütülmelidir.
+- Tarihsel doğrulamayı ve public builder/hash kontrollerini korur. Yerel model kanıtı sınırlandırılmıştır; karşılaştırmalı maliyet, tam handoff okuyucusu veya SAP doğrulaması iddia edilmez.
+
 ## 3.0.0 — 2026-10-02
 
 - Yayınlanmış private 3.0.0 kaynağı tam olarak aktarılır; public paket hash kontrolü ve tekrarlanabilir çevrimdışı üretici korunur.

@@ -1,8 +1,8 @@
 ---
 name: belirtim-yazmani
-description: "Prepare/update/validate SAP Cloud ERP specifications and coordinated separate handoff ZIPs. Consultant business/design questions only; developer technical decisions stay in self-contained TOON packages. Skip application coding, tenant operations and estimates. Resolve the listed skill path absolutely from workspace cwd."
+description: "Prepare, update and validate SAP Cloud ERP FS/TS specifications and coordinated developer handoff ZIPs. Use for belirtim hazırlama/güncelleme, FS/TS yazımı and geliştirici handoff paketi requests. Ask consultant business/design questions; delegate bounded implementation choices. Excludes application coding, SAP tenant operations and effort estimates."
 metadata:
-  version: "3.0.0"
+  version: "3.1.0"
   family: "fs-ts-spec-writing"
 ---
 # Spec Writer
@@ -22,15 +22,17 @@ Shared model-facing entrypoint.
 - **R-BYW-11** Handoff has no application source, method bodies, scaffolds or executable development/test scripts. Object/naming/data/API/test-vector specifications are allowed. Mockup executable assets require an explicit per-delivery exception receipt; default to callout screenshots and interaction contract; any supplied interactive package must work offline without external calls. Never generate or execute mockup code here.
 - **R-BYW-12** Prefix EVERY delivered file basename with its approved meaningful development short name, including readme, manifest, specification, schema, readiness, objects, defaults, naming, media, delta and decision list. Resolve roles from the manifest; never emit fixed fsts/fs-ts filenames. Keep ZIP name handoff-<short-name>-<version>.zip and immutable versions. No vault, build prompts or host-specific instructions.
 - **R-BYW-13** Ensure every referenced file, document, list, text/pointer and required contract exists in the same ZIP with valid identity/hash/coverage. Required external links or another ZIP cannot replace packaged input. Validate strict TOON, schema, IDs, reference closure, approval, asset and saved ZIP bindings. Do not claim universal completeness or unmeasured token/latency savings.
-- **R-BYW-14** Read inputs once; load only the current route/section. Use check-plan and matching input/dependency/checker hashes to reuse passed unchanged checks. Invalidate affected evidence; never label a reused result fresh. Collect intermediate edits before expensive final readers. Run one final inventory/reference/batch integrity scan; do not rerun the whole package after every change.
+- **R-BYW-14** Read inputs once; load only the current route/section. Use check-plan and matching input/dependency/checker-byte hashes and actual asset snapshots to reuse passed unchanged checks. Invalidate affected evidence; never label a reused result fresh. Collect intermediate edits before expensive final readers. Run one final inventory/reference/batch integrity scan; do not rerun the whole package after every change.
 - **R-BYW-15** Same core in Claude Code and Codex. Resolve ../../scripts/bv2.py from the visible SKILL.md directory and quote its absolute path; cwd need not be plugin root. Missing Python/Node/dependencies means an explicit limitation, not a complete handoff. No dependency on another skill/plugin or a fixed model.
 - **R-BYW-16** Bundle consultant questions and offer at most three grounded options. Score consistency, suitability and quality separately 0..5, average equally, rank highest A then B/C, explain assumptions and ties. Scores are relative judgments, not measured quality or consent. If facts cannot support options, state the reason rather than inventing them. Delivered corrections require a new version and regression; reply in the user language.
-- **R-BYW-17** Retain A-F functional, privacy, baseline and approval gates. At the stable final snapshot run five layers: deterministic; three independent functional question/pointer readers; two scenario results; actual PNG/callout agreement; code-free plan/architecture checks. Listed bounded technical decisions are not missing business answers. Two clean current-snapshot rounds are required for release, not after every intermediate patch. Missing execution/vision is NOT_RUN, never simulated PASS.
+- **R-BYW-17** Retain A-F functional, privacy, baseline and approval gates. At the stable final snapshot run five layers: deterministic; three independent readers with functional question/pointer evidence for every requirement and concrete plan coverage; two scenario results; actual PNG/callout agreement; code-free plan/architecture checks. Listed bounded technical decisions are not missing business answers. Two clean current-snapshot rounds are required for release, not after every intermediate patch. Missing execution/vision is NOT_RUN, never simulated PASS.
 
 Read only the applicable route:
 - intake/new/import/update/handoff/batch → references/workflow.md
 - data/format/contract question → references/format.md
 - one section writing → run guide --section N --types RICEF --profile P
-- intermediate checks → run check-plan; record real scoped results with check-record
+- current blockers/next action → run status with the physical assets root
+- intermediate checks → run check-plan with the physical assets root; record real scoped results with check-record
+- before issuing final readers → run preflight; fix profile, business, asset and reference closure issues
 - stable final independent readers → references/eval.md
 - final package check → run release-inspect/handoff-batch/verify; inspect affected diagnostics

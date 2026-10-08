@@ -1,10 +1,9 @@
-# Belirtim Yazmanı 3.0.0
+# Belirtim Yazmanı 3.1.0
 
 [English](README.md) · Türkçe
 
 ## Amaç
 SAP Cloud ERP için ortak Claude Code/Codex belgeleme skill'i. Danışman iş/tasarım kararları en fazla üç sıralı öneriyle toplanır; uygulama tekniği soruları ABAP developer'a aittir. Bağlı geliştirmelerin ayrı ZIP'leri iş, mimari, referans ve son inceleme kapıları geçince topluca teslim edilir. Paketler kendi bağlamını içerir; developer'ın araç/model seçimine bağımlı değildir.
-
 ## Kurulum
 Plugin runtime'ı Python 3.11+, Node.js 20+ ve kilitli `requirements.txt` paketlerini gerektirir. Ayrı sanal ortamda `python -m pip install -r requirements.txt` kullanın. Gömülü skill'in bağımlılığı yoktur; resmi TOON codec pakettedir.
 
@@ -19,6 +18,11 @@ codex plugin add belirtim-yazmani@aytacmehmet-public
 ```
 
 Claude Code'da tam skill adını, Codex'te `$belirtim-yazmani` kullanın. Bu repo yayını kurulum yapmaz veya model seçmez.
+
+## 3.1 kullanımı
+Güncel engeller ve sonraki işlem için `status <workspace> --assets-root <inputs>` çalıştırın. Son okuyuculardan önce `preflight <workspace> --assets-root <inputs>` kullanın; eksik dosya, kaynak eşlemesi, referans, pointer, açık iş kararı ve bağımlılık sözleşmesi değerlendirme paketi üretimini durdurur. Salt okunurdur ve teslim onayı vermez. `check-plan`/`check-record` aynı dosya kökünü alır; doğrulayıcı byte ve gerçek dosya parmak izleri ile işlev, UI, nesne ve kayıt birimlerini kullanır.
+
+Özel inceleme protokolü 3.1, eski okuyucu kayıtlarının yeniden gerçekten yürütülmesini gerektirir. Her okuyucu her gereksinim için işlevsel soru ve somut plan kanıtı sunar. İlk iki okuyucu senaryo sonuçlarını `test_cases.expected` olmadan türetir; üçüncüsü tam belirtimi inceler. Paketler gerekli referans içeriğini ve sözleşmeleri içerir. Ayrıştırılmış gerçek yanıtlar hash'e bağlanır; insan teyidi zorunlu kalır ve sağlayıcı kimlik doğrulaması yerine geçmez. Public handoff şeması 3.0, üç okuyucu, iki temiz tur ve değişmez ayrı ZIP koşulları korunur. Danışman soruları gerçek `depends_on` önkoşulları tanımlayabilir; `blocked_by`/`unlocks` alanlarını gösterir.
 
 ## İşleyiş
 `scripts/bv2.py` yolunu yüklenen skill'in mutlak konumundan çözün; cwd farklı olabilir.
@@ -39,4 +43,6 @@ Tek düzenlenebilir/public belirtim otoritesi TOON'dur; Excel türev, PNG yalnı
 
 ## Public paket kontrolleri
 
-`python -B skills/belirtim-yazmani/scripts/check_package.py` ve ilgili runtime testlerini çalıştırın. Tam çevrimdışı marketplace ZIP'ini `python -B scripts/build_package.py --output-dir <external-artifacts>` ile üretin. Üretilen PACKAGE-MANIFEST.json dosyasını commit öncesinde plugin'e kopyalayıp repo doğrulamasını çalıştırın. Teslim paketleri repo dışında tutulur. Mevcut 1.1.0 JSON standalone çift kendi yayın çizgisini korur; aynı anda tek Spec Writer sürümü kurun. [Public değişikliklere](CHANGELOG.tr.md) ve [yayın kaynağına](PUBLICATION.json) bakın.
+`python -B skills/belirtim-yazmani/scripts/check_package.py` ve ilgili runtime testlerini çalıştırın. Tam çevrimdışı marketplace ZIP'i `python -B scripts/build_package.py --output-dir <external-artifacts>` ile oluşturun. Üretilen PACKAGE-MANIFEST.json dosyasını plugin'e kopyalayıp commit öncesi repo doğrulamasını çalıştırın. Teslim ZIP'leri repo dışında kalır. Eski Spec Writer standalone çifti emekli edilmiştir; tam plugin geçmişi ve önceki arşivler Git'te korunur. Aynı anda tek etkin Spec Writer sürümü kurun. [Public değişiklikler](CHANGELOG.tr.md) ve [yayın kökeni](PUBLICATION.json) kayıtlarına bakın.
+
+Upstream doğrulama kayıtları private yerel aday üzerinde commit ve yayın öncesinde toplanmıştır. PUBLICATION.json aktarılan gerçek private commit'i sabitler; hosted kontroller ve merge kayıtları ayrı kanıttır. Public paketleme doğrulamanın model, maliyet veya SAP kapsamını genişletmez.

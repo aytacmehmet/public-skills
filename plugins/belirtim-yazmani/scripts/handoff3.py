@@ -6,9 +6,11 @@ import bv2 as b
 
 EXTRAS={'developer_decisions','references','architecture'}
 CORE_DEPENDENCIES={
- 'core':set(), 'architecture':{'core','decisions'},
- 'decisions':{'references'}, 'references':{'core'},
- 'questions':{'decisions'}, 'packaging':{'core','architecture','references','decisions','questions'}}
+ 'core':set(),'objects':{'core'},'functional':{'core','objects'},
+ 'architecture':{'core','objects','decisions'},'decisions':{'references'},
+ 'references':{'core'},'ui':{'core','functional','objects','references'},
+ 'questions':{'decisions'},
+ 'packaging':{'core','functional','objects','ui','architecture','references','decisions','questions'}}
 FILE_TOKEN=re.compile(r'(?<![\w:/.-])((?:\./|\.\./)*[\w-]+(?:/[\w.-]+)*\.(?:toon|md|png|xlsx|csv|xml|pdf|docx|txt|html|mjs|js|css|json|svg))(?:#([^\s)\]`,]+))?',re.I)
 ASSET_LINK=re.compile(r'(?:\b(?:src|href)\s*=\s*[\"\x27]([^\"\x27]+)[\"\x27]|url\(\s*[\"\x27]?([^\s\"\x27)]+))',re.I)
 LINK=re.compile(r'\[[^\]]*\]\(([^)]+)\)')
@@ -72,7 +74,11 @@ def score_options(options):
     return rows
 
 def consultant_questions(doc):
-    _,control=state(doc);rows=[]
+    _,control=state(doc);rows=[];known=set();closed=set()
+    for name in ('intake','decisions_gaps','open_questions'):
+        for question in control.get(name,[]):
+            known.add(question['id'])
+            if question.get('status')=='CLOSED':closed.add(question['id'])
     for name in ('intake','decisions_gaps','open_questions'):
         for question in control.get(name,[]):
             if question.get('status')=='CLOSED': continue
@@ -87,8 +93,20 @@ def consultant_questions(doc):
             rows.append({'id':question['id'],'owner':'CONSULTANT','domain':question['domain'],
                 'question':question['question'],'options':score_options(question.get('options')),
                 'options_reason':question.get('options_reason'),
+                'depends_on':question.get('depends_on',[]),
                 'score_note':'Equal-weight relative judgment; tied scores do not imply a quality difference'})
-    return rows
+    if len({row['id'] for row in rows})!=len(rows):raise b.Invalid('Duplicate consultant question ID')
+    byid={row['id']:row for row in rows};pending=set(byid);ordered=[]
+    for row in rows:
+        if not isinstance(row['depends_on'],list) or any(dep not in known for dep in row['depends_on']):
+            raise b.Invalid('Question prerequisite must identify an existing question')
+        row['blocked_by']=[dep for dep in row['depends_on'] if dep not in closed]
+        row['unlocks']=[other['id'] for other in rows if row['id'] in other['depends_on']]
+    while pending:
+        ready=[row['id'] for row in rows if row['id'] in pending and not set(row['depends_on'])&pending]
+        if not ready:raise b.Invalid('Cyclic consultant question prerequisites')
+        ordered.extend(byid[id_] for id_ in ready);pending-=set(ready)
+    return ordered
 
 def state(doc):
     import delivery as d
@@ -141,34 +159,67 @@ def blocking_markers(spec):
     import delivery as d
     return sum(isinstance(v,str) and bool(d.GAP.search(v)) for v in b.flatten({k:v for k,v in spec.items() if k!='developer_decisions'}).values())
 
-def fingerprints(doc):
+def fingerprints(doc,assets_root=None):
+    import preflight as pre
     spec,control=state(doc)
-    values={'core':core_spec(spec),'architecture':spec.get('architecture'),
+    assets=[]
+    for row in control.get('assets',[]):
+        actual='NOT_RUN'
+        if assets_root is not None:
+            try:
+                _,data=copy_asset(row,assets_root);actual=b.digest(data)
+            except (b.Invalid,OSError) as error: actual='INVALID:'+str(error)
+        assets.append({'record':row,'actual_sha256':actual})
+    ui_names={'screens','media','ui_callouts','ui_elements','ui_actions'}
+    functional_names={'requirements','acceptance_criteria','test_cases','business_rules','messages','statuses','status_transitions','cds_fields','table_fields'}
+    core={k:v for k,v in core_spec(spec).items() if k not in ui_names|functional_names|{'objects'}}
+    baseline_bytes='NOT_RUN'
+    if assets_root is not None and control.get('baseline_reference_path'):
+        root=Path(assets_root).resolve();path=root.joinpath(*b.safe_name(control['baseline_reference_path']).parts)
+        baseline_bytes=b.digest(path.read_bytes()) if path.is_file() and not path.is_symlink() and path.resolve().is_relative_to(root) else 'MISSING'
+    values={'core':core,'functional':{k:spec[k] for k in sorted(functional_names)},
+      'objects':spec['objects'],'ui':{**{k:spec[k] for k in sorted(ui_names)},'assets':assets},
+      'architecture':spec.get('architecture'),
       'decisions':{'rows':spec.get('developer_decisions'),'architecture':spec.get('architecture')},
-      'references':{'rows':spec.get('references'),'contracts':control.get('dependency_contracts')},
+      'references':{'rows':spec.get('references'),'contracts':control.get('dependency_contracts'),'assets':assets},
       'questions':{k:control.get(k) for k in ('intake','decisions_gaps','open_questions','system_conflicts','architecture_findings')},
-      'packaging':{'assets':control.get('assets'),'baseline':spec['baseline'],'dependencies':spec['dependencies']}}
-    hashes={}
+      'packaging':{'assets':assets,'baseline':control.get('baseline_spec'),'baseline_path':control.get('baseline_reference_path'),
+                   'baseline_bytes':baseline_bytes,'system_state':control.get('baseline_system_state'),
+                   'final_reference_approved':control.get('baseline_final_approved')}}
+    checker=pre.checker_hash();hashes={}
     def visit(name):
         if name not in hashes:
             dep={x:visit(x) for x in CORE_DEPENDENCIES[name]}
-            hashes[name]=b.digest(b.canonical({'input':values[name],'dependencies':dep,'checker_version':'3.0.0'}))
+            hashes[name]=b.digest(b.canonical({'input':values[name],'dependencies':dep,'checker_sha256':checker}))
         return hashes[name]
-    for name in values: visit(name)
+    for name in values:visit(name)
+    # Record checks bind to the actual row and its immediate referenced records.
+    import delivery as d
+    rows={r['id']:r for name in d.COLLECTIONS for r in spec[name]}
+    for name in d.COLLECTIONS:
+        for row in spec[name]:
+            refs={v:rows[v] for v in b.flatten(row).values() if isinstance(v,str) and v in rows and v!=row['id']}
+            hashes['record:'+name+':'+row['id']]=b.digest(b.canonical({'row':row,'references':refs,'core':hashes['core'],'checker_sha256':checker}))
     return hashes
 
-def check_plan(doc,final=False):
-    _,control=state(doc);now=fingerprints(doc);cache=control.get('check_cache',{})
-    run=[n for n,h in now.items() if cache.get(n,{}).get('input_sha256')!=h or cache[n].get('status')!='PASS']
+def check_plan(doc,final=False,assets_root=None):
+    _,control=state(doc);now=fingerprints(doc,assets_root);cache=control.get('check_cache',{})
+    unverified={'ui','references','packaging'} if assets_root is None and control.get('assets') else set()
+    run=[n for n,h in now.items() if n in unverified or cache.get(n,{}).get('input_sha256')!=h or cache[n].get('status')!='PASS']
     reused=sorted(set(now)-set(run))
     return {'run':run,'reuse':reused,'input_sha256':now,'final_integrity_required':bool(final),
+      'physical_evidence':'NOT_RUN' if unverified else 'CHECKED',
       'reader_policy':'Collect edits first; run current-snapshot independent release reviews only after consultant closure and architecture checks',
-      'scope':'Planning only; reused PASS requires matching checker and dependency hashes'}
+      'scope':'Planning only; reused PASS binds to checker bytes, inputs, assets and dependencies'}
 
-def record_check(doc,name,input_sha256,status):
-    _,control=state(doc)
-    if name not in CORE_DEPENDENCIES or fingerprints(doc)[name]!=input_sha256 or status not in ('PASS','FAIL'):
-        raise b.Invalid('Check result must bind to its current input/dependency snapshot')
+def record_check(doc,name,input_sha256,status,assets_root=None):
+    _,control=state(doc);now=fingerprints(doc,assets_root)
+    if name not in now or now[name]!=input_sha256 or status not in ('PASS','FAIL'):
+        raise b.Invalid('Check result must bind to its current input/dependency/checker snapshot')
+    if status=='PASS' and assets_root is None and control.get('assets') and name in ('ui','references','packaging'):
+        raise b.Invalid('Physical assets root required to record this PASS')
+    if status=='PASS' and assets_root is not None and name in ('ui','references','packaging'):
+        for row in control.get('assets',[]):copy_asset(row,assets_root)
     control.setdefault('check_cache',{})[name]={'input_sha256':input_sha256,'status':status}
 
 def archive_reviews(control):
@@ -176,15 +227,16 @@ def archive_reviews(control):
         control.setdefault('review_history',[]).append({'rounds':copy.deepcopy(control['eval_rounds']),
           'requests':copy.deepcopy(control.get('eval_requests',[]))})
 
-def verify_references(spec,files):
+def verify_references(spec,files,decoded=None):
     import delivery as d
     refs={r['id']:r for r in spec['references']}
+    decoded=decoded if decoded is not None else b.decode_many({name:data.decode('utf-8') for name,data in files.items() if Path(name).suffix=='.toon'})
     for row in refs.values():
         path=row['path']
         if path not in files or b.digest(files[path])!=row['sha256']: raise b.Invalid('Referenced file missing or hash differs: '+path)
         if row['pointer'] is not None:
             if Path(path).suffix!='.toon': raise b.Invalid('Pointers require a decoded TOON document')
-            try: d.resolve(json.loads(b.codec('decode',files[path].decode())),row['pointer'])
+            try: d.resolve(decoded[path],row['pointer'])
             except (b.Invalid,KeyError,IndexError,TypeError): raise b.Invalid('Referenced text/list pointer missing: '+row['id'])
     def scan(text,source):
         for rid in REF_TOKEN.findall(text):
@@ -203,7 +255,7 @@ def verify_references(spec,files):
             resolved=direct if direct in files else relative
             if resolved not in files: raise b.Invalid('Dangling file reference: '+target)
             if fragment and Path(resolved).suffix=='.toon':
-                try: d.resolve(json.loads(b.codec('decode',files[resolved].decode())),fragment)
+                try: d.resolve(decoded[resolved],fragment)
                 except (b.Invalid,KeyError,IndexError,TypeError): raise b.Invalid('Dangling TOON text/list pointer: '+target+'#'+fragment)
     for name,data in files.items():
         if Path(name).suffix in ('.md','.toon','.csv','.xml','.txt','.html','.js','.mjs','.css','.json','.svg'): scan(data.decode('utf-8'),name)
@@ -224,18 +276,15 @@ def dependency_records(doc):
     if any(not isinstance(x.get('requires_change'),bool) for x in records): raise b.Invalid('Dependency change status must be explicit')
     return {x['development_id']:x for x in records}
 
-def build(doc,assets_root,include_excel=True):
+def public_documents(spec,report):
     import delivery as d
-    spec,control=state(doc)
-    if spec['schemaVersion']!='3.0': raise b.Invalid('2.0 handoffs are read-only references; run release-upgrade')
-    report=d.evaluate(doc)
-    if report['decision']!='DELIVERABLE': raise b.Invalid('Consultant, architecture, reference or review gate remains: '+','.join(sorted({i['code'] for i in report['issues']})))
+    return {'specification':spec,'schema':SCHEMA,'readiness':d.neutral_report(report),
+      'objects':{'objects':spec['objects']},'technical_decisions':{'decisions':spec['developer_decisions']},
+      'architecture':spec['architecture'],'references':{'references':spec['references']}}
+
+def public_text(spec):
     roles=layout(spec)
-    files={roles['specification']:b.encode(spec).encode(),roles['schema']:b.encode(SCHEMA).encode(),
-      roles['readiness']:b.encode(d.neutral_report(report)).encode(),roles['objects']:b.encode({'objects':spec['objects']}).encode(),
-      roles['technical_decisions']:b.encode({'decisions':spec['developer_decisions']}).encode(),
-      roles['architecture']:b.encode(spec['architecture']).encode(),roles['references']:b.encode({'references':spec['references']}).encode(),
-      roles['naming']:('# Naming\n\n'+spec['naming_rules']['name']+' '+spec['naming_rules']['version']+'\n'+spec['naming_rules']['description']+'\n').encode(),
+    return {roles['naming']:('# Naming\n\n'+spec['naming_rules']['name']+' '+spec['naming_rules']['version']+'\n'+spec['naming_rules']['description']+'\n').encode(),
       roles['defaults']:('# '+spec['functional_defaults']['name']+'\n\n'+spec['functional_defaults']['version']+'\n'+'\n'.join(x['id']+': '+x['text'] for x in spec['functional_defaults']['rules'])+'\n').encode(),
       roles['changelog']:('# Changes\n\n'+'\n'.join(x['version']+' | '+x['date']+' | '+x['change'] for x in spec['changelog'])+'\n').encode(),
       roles['format']:('''# Data contract
@@ -247,6 +296,16 @@ Excel is derived; PNG is layout authority only. Versions are immutable.
 Open developer decisions are bounded implementation choices, not missing business requirements.
 Recorded local/reviewer checks do not prove SAP activation, runtime or UAT.
 ''').encode()}
+
+def build(doc,assets_root,include_excel=True):
+    import delivery as d
+    spec,control=state(doc)
+    if spec['schemaVersion']!='3.0': raise b.Invalid('2.0 handoffs are read-only references; run release-upgrade')
+    report=d.evaluate(doc)
+    if report['decision']!='DELIVERABLE': raise b.Invalid('Consultant, architecture, reference or review gate remains: '+','.join(sorted({i['code'] for i in report['issues']})))
+    roles=layout(spec)
+    files={roles[key]:text.encode() for key,text in b.encode_many(public_documents(spec,report)).items()}
+    files.update(public_text(spec))
     for asset in control.get('assets',[]):
         name,data=copy_asset(asset,assets_root)
         if not prefixed(spec,name): raise b.Invalid('Every asset filename must start with the development short name')
@@ -313,15 +372,16 @@ def verify(path,expected_name=None):
             if info.flag_bits&1 or (info.external_attr>>16)&0o170000==0o120000: raise b.Invalid('ZIP encryption/symlink')
         candidates=[n for n in names if n.endswith('-manifest.toon')]
         if len(candidates)!=1: raise b.Invalid('Exactly one scoped manifest required')
-        manifest_data=z.read(candidates[0]);manifest=json.loads(b.codec('decode',manifest_data.decode()))
+        files={n:z.read(n) for n in names}
+        decoded=b.decode_many({n:data.decode('utf-8') for n,data in files.items() if Path(n).suffix=='.toon'})
+        manifest_data=files[candidates[0]];manifest=decoded[candidates[0]]
         roles=manifest['roles'];required={'manifest','specification','schema','readiness','objects','naming','defaults','changelog','format','readme','technical_decisions','architecture','references','dependency_contracts'}
         if not required<=set(roles) or len(set(roles.values()))!=len(roles) or any(n not in names for n in roles.values()): raise b.Invalid('Manifest roles missing/ambiguous')
-        spec=json.loads(b.codec('decode',z.read(roles['specification']).decode()))
+        spec=decoded[roles['specification']]
         if spec.get('schemaVersion')!='3.0' or d.shape_and_profile(spec): raise b.Invalid('Invalid complete v3 specification')
         if roles!={k:v for k,v in layout(spec).items() if v in names}: raise b.Invalid('Role filenames differ from scoped layout')
         rows={r['path']:r for r in manifest['files']}
         if set(rows)!=set(names) or len(rows)!=len(manifest['files']) or manifest['self_hash']!='EXTERNAL' or rows[roles['manifest']]['sha256'] is not None: raise b.Invalid('Manifest inventory/self hash')
-        files={n:z.read(n) for n in names}
         for name,data in files.items():
             if not prefixed(spec,name): raise b.Invalid('Unscoped filename')
             if name!=roles['manifest'] and (b.digest(data)!=rows[name]['sha256'] or len(data)!=rows[name]['bytes']): raise b.Invalid('File hash differs')
@@ -337,26 +397,26 @@ def verify(path,expected_name=None):
                     if any(p.endswith('.xml') and d.TOOL.search(book.read(p).decode()) for p in book.namelist()): raise b.Invalid('Workbook producer metadata')
             else: raise b.Invalid('Unsupported/code artifact')
         if manifest['spec_sha256']!=d.revision(spec) or manifest['development_id']!=spec['meta']['development_id'] or manifest['handoff_version']!=spec['meta']['handoff_version'] or manifest['baseline']!=spec['baseline'] or manifest['linked_handoffs']!=spec['dependencies']: raise b.Invalid('Manifest binding differs')
-        schema=json.loads(b.codec('decode',files[roles['schema']].decode()))
+        schema=decoded[roles['schema']]
         if b.canonical(schema)!=b.canonical(SCHEMA): raise b.Invalid('Public schema differs')
         for role,wanted in [('objects',{'objects':spec['objects']}),('technical_decisions',{'decisions':spec['developer_decisions']}),('architecture',spec['architecture']),('references',{'references':spec['references']})]:
-            if json.loads(b.codec('decode',files[roles[role]].decode()))!=wanted: raise b.Invalid('Projection differs: '+role)
-        report=json.loads(b.codec('decode',files[roles['readiness']].decode()))
+            if decoded[roles[role]]!=wanted: raise b.Invalid('Projection differs: '+role)
+        report=decoded[roles['readiness']]
         if report['decision']!='DELIVERABLE' or report['spec_sha256']!=d.revision(spec) or any(report['open_counts'].values()) or any(r['status']!='PASS' for r in report['layers']) or len(report['rounds'])<2 or any(r['status']!='PASS' or r['new_open_count']!=0 or r['reader_count']<3 for r in report['rounds'][-2:]): raise b.Invalid('Release reviews not clean')
         pending=sum(x['status']=='OPEN' for x in spec['developer_decisions'])
         if report.get('technical_open_count')!=pending or report.get('coding_readiness')!=('READY_FOR_DEVELOPER_DECISIONS' if pending else 'READY_FOR_CODING'): raise b.Invalid('Technical readiness differs')
         for media in spec['media']:
             if media['path'] not in files or b.digest(files[media['path']])!=media['sha256']: raise b.Invalid('Media differs')
-        contracts=json.loads(b.codec('decode',files[roles['dependency_contracts']].decode()))['contracts']
+        contracts=decoded[roles['dependency_contracts']]['contracts']
         byid={x['development_id']:x for x in contracts}
         if len(byid)!=len(contracts) or set(byid)!={x['development_id'] for x in spec['dependencies']}: raise b.Invalid('Dependency content missing')
         for dep in spec['dependencies']:
             if byid[dep['development_id']]['version']!=dep['version'] or byid[dep['development_id']]['contract']!=dep['contract'] or not byid[dep['development_id']].get('content'): raise b.Invalid('Dependency contract differs')
         if spec['meta']['mode']=='UPDATE':
             if not {'baseline','baseline_spec','changes'}<=set(roles): raise b.Invalid('Baseline content/delta missing')
-            baseline=json.loads(b.codec('decode',files[roles['baseline_spec']].decode()));delta=json.loads(b.codec('decode',files[roles['changes']].decode()))
+            baseline=decoded[roles['baseline_spec']];delta=decoded[roles['changes']]
             if d.revision(baseline)!=spec['baseline']['spec_sha256'] or delta!=d.changes(baseline,spec): raise b.Invalid('Baseline/delta differs')
-        verify_references(spec,files)
+        verify_references(spec,files,decoded)
         filename='handoff-'+spec['meta']['development_name']+'-'+spec['meta']['handoff_version']+'.zip'
         if (expected_name or Path(path).name)!=filename: raise b.Invalid('ZIP filename differs')
         if 'excel' in roles:

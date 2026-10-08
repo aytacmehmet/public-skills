@@ -2,6 +2,14 @@
 
 English · [Türkçe](CHANGELOG.tr.md)
 
+## 3.1.0 — 2026-10-08
+
+- Import the exact private 3.1.0 commit recorded in PUBLICATION.json, preserving both host manifests and the full runtime/schema/test/codec package.
+- Add early read-only preflight/status, shared physical asset mapping, packaged reader reference content, stronger functional/plan/response binding and blind scenario inputs.
+- Reuse passed unchanged functional/UI/object/record checks with actual asset/checker fingerprints; batch strict codec operations without changing valid fixture ZIP bytes.
+- Preserve public 3.0 handoff format, approval/three-reader/two-round gates and separate immutable development ZIPs. Old private reviews require protocol 3.1 execution.
+- Retain historical qualification and public builder/hash checks. Native model evidence is bounded; comparative cost, full handoff-reader and SAP qualification are not claimed.
+
 ## 3.0.0 — 2026-10-02
 
 - Import the exact released private 3.0.0 source, preserving the public package hash checker and reproducible offline builder.
