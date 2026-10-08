@@ -57,6 +57,10 @@ Commit öncesinde `--base HEAD`, değişiklikleri önceki commit'li yayınla kar
 
 Kontroller metadata, arayüz çağrısı, yerel bağlantılar, dil eşliği, sürüm uyumu, arşiv hash'leri, yayımlanmış arşivlerin tutulması ve önceki paketin tam olarak korunmasını kapsar. Çalışma zamanı davranışını, arayüz uyumluluğunu veya token tasarrufunu kanıtlamaz; davranış değiştiğinde ilgili senaryoları ayrıca sınayın.
 
+## Standalone skill çiftini kaldırma
+
+İki dil paketini, katalog kayıtlarını ve pakete özel CI/testleri birlikte kaldırın. İki yolu, karşılıklı dil eşlerini ve son commit edilmiş `SKILL.md` dosyalarının SHA-256 değerlerini `.github/retired-skills.json` içine kaydedin (şema sürümü 1). Geçmiş doğrulayıcı yalnız bu açık kayıtların kaldırılmasına izin verir; farklı bir yayımlanmış giriş dosyasını veya kalan paket klasörünü reddeder. Eski paketler ve ZIP'leri Git geçmişinde erişilebilir kalır; aktif paketlerin bütün sürüm ve arşiv kontrolleri devam eder. Tam plugin'ler ve marketplace kayıtları bağımsızdır; standalone kopyalar kaldırılırken korunur.
+
 ## Başka bir host için kopya üretme
 
 Depo, skill'lerin tek kaynağıdır. Bir plugin veya başka bir host için kopya gerekiyorsa aktif paketi elle kopyalayıp düzenlemeyin:

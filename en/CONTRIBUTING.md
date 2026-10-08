@@ -57,6 +57,10 @@ Before committing, `--base HEAD` checks your edits against the previous committe
 
 Checks cover metadata, UI invocation, local links, language pairing, version alignment, archive hashes, retention of published archives, and preservation of the exact previous package. They do not establish runtime behavior, UI compatibility, or token savings; test relevant scenarios separately when behavior changes.
 
+## Retire a standalone skill pair
+
+Remove both language packages, their catalog entries and package-specific CI/tests together. Record both paths, reciprocal counterparts and SHA-256 hashes of their last committed `SKILL.md` files in `.github/retired-skills.json` (schema version 1). The history validator permits removal only for these explicit records and rejects a different published entrypoint or a remaining package directory. Historical packages and their ZIPs remain available in Git history; active packages retain all version and archive checks. Complete plugins and marketplace registrations are independent and remain unchanged when retiring standalone copies.
+
 ## Produce a copy for another host
 
 The repository is the single source of the skills. When a plugin or another host needs a copy, do not copy and edit the active package by hand:

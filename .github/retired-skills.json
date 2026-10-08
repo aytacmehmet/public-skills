@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "packages": {
+    "en/sap-development-documentation": {
+      "counterpart": "tr/sap-gelistirme-dokumantasyonu",
+      "entrypoint_sha256": "d07222c2cbcd436d88837b837ba580d42da8584274a43f42c684855c7958528f"
+    },
+    "tr/sap-gelistirme-dokumantasyonu": {
+      "counterpart": "en/sap-development-documentation",
+      "entrypoint_sha256": "97ad357bd095bfe3624973048c0e93838e7f696a51f4f00af1e4d7a5752af38b"
+    },
+    "en/spec-writer": {
+      "counterpart": "tr/belirtim-yazmani",
+      "entrypoint_sha256": "a3c84667de22727feba9c5bee882ddf10b1179c43da305e0ec6c4a5585282c3a"
+    },
+    "tr/belirtim-yazmani": {
+      "counterpart": "en/spec-writer",
+      "entrypoint_sha256": "1fc283027160ec93f88fdec8f6fd81d3c42f96d523e3f48ed0bbfe7a05645666"
+    }
+  }
+}

@@ -6,8 +6,8 @@ Dillere göre düzenlenmiş, yeniden kullanılabilir AI skill'leri. Skill'leri i
 
 | Language / Dil | Catalog / Katalog | Skills / Skill'ler |
 | --- | --- | --- |
-| English | [Browse English skills](en/README.md) | [Prompter](en/prompter/README.md), [SAP Development Documentation](en/sap-development-documentation/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md), [Spec Writer](en/spec-writer/README.md) |
-| Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yordamla](tr/yordamla/README.md), [SAP Geliştirme Dokümantasyonu](tr/sap-gelistirme-dokumantasyonu/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md), [Belirtim Yazmanı](tr/belirtim-yazmani/README.md) |
+| English | [Browse English skills](en/README.md) | [Prompter](en/prompter/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md) |
+| Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yordamla](tr/yordamla/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md) |
 
 ## Complete plugins / Tam plugin paketleri
 
@@ -34,12 +34,6 @@ en/
     agents/
     references/
     archived/          ← previous releases as versioned ZIPs
-  sap-development-documentation/
-    SKILL.md           ← English instructions; English Vault documents
-    scripts/
-    assets/
-    references/
-    archived/          ← first public release: guide only
   sap-fiori-design/
     SKILL.md           ← English instructions; shared scripts and UI5 templates
     scripts/
@@ -47,12 +41,6 @@ en/
     references/
     tests/
     archived/          ← first public release: guide only
-  spec-writer/
-    SKILL.md           ← English instructions; Turkish FS-TS content model
-    scripts/
-    assets/
-    references/
-    archived/          ← previous releases as versioned ZIPs
 tr/
   README.md
   CONTRIBUTING.md
@@ -62,12 +50,6 @@ tr/
     agents/
     references/
     archived/          ← önceki sürümlerin sürümlü ZIP'leri
-  sap-gelistirme-dokumantasyonu/
-    SKILL.md           ← Türkçe yönergeler; İngilizce Vault belgeleri
-    scripts/
-    assets/
-    references/
-    archived/          ← ilk herkese açık yayın: yalnız rehber
   sap-fiori-tasarim/
     SKILL.md           ← Türkçe yönergeler; ortak betikler ve UI5 şablonları
     scripts/
@@ -75,12 +57,6 @@ tr/
     references/
     tests/
     archived/          ← ilk herkese açık yayın: yalnız rehber
-  belirtim-yazmani/
-    SKILL.md           ← İngilizce yönergeler; Türkçe FS-TS içerik modeli
-    scripts/
-    assets/
-    references/
-    archived/          ← önceki sürümlerin sürümlü ZIP'leri
 ```
 
 The latest release always lives directly in its skill folder. Older releases are stored inside that skill's `archived/` folder. Shared repository checks live in `.github/`.
