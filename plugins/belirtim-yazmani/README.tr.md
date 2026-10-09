@@ -1,6 +1,14 @@
-# Belirtim Yazmanı 3.2.2
+# Belirtim Yazmanı 3.3.0
 
 [English](README.md) · Türkçe
+
+## 3.3 kabul ve seçici çalışma
+
+Protocol 3.3, üç atanmış rolü ve oracle kabulünü bağlar. Senaryo uyumu yanıt dizisinin sırasından bağımsız olarak okuyucu kimliğiyle karşılaştırılır. Preflight, sağlanan kaynak/sözleşme/metinlerde mevcut testlerin açık beklenen cevaplarını veya diğer okuyucu yanıtlarını engeller; özgün içerik tam korunur ve güvensiz kaynak sözleşmesi dispatch öncesi çözülmelidir. Eski 3.0/3.1/3.2 paketleri açık tarihsel salt okuma girdileri olarak kalır.
+
+Hazırlık engelleri çocuk kabulünü durdurur; tek yazar eksikleri kapatabilir. Ortak coordinator ACTIVE seçilmiş workspace/episode profillerini kaydeder; bunların en düşük profil/host eşzamanlılığını, en fazla üç çocuğu uygular. Başarılı ve kaydedilmiş handoff katılımı kapatır, harcanan girişim geçmişini silmez. Otomatik süre dolumu, kota iadesi veya model değişimi eklenmez.
+
+Kısa giriş ve yalnız gerekli intake, dispatch veya model rotası okunur. Birden fazla `--reference-id`, tek doğrulanmış paket yüklemesiyle seçili alt kümeyi çözer; tek kimlik çıktısı değişmez. `status` snapshot'ı bir kez değerlendirir. Ara değişikliklerde `python -X utf8 -B scripts/check.py --changed scripts/<changed-file>.py`; aday kararlı olduğunda bir kez `--final` kullanın. Doğrulayıcı etkilenen deterministik testleri seçer, LLM başlatmaz. Final handoff için tüm A-F kapıları, üç tam bağımsız okuyucu ve iki temiz kararlı tur gereklidir.
 
 ## 3.2.2 okuyucu kaynak havuzu
 
@@ -46,7 +54,7 @@ Command hook adaptörleri işlem kapsamıyla sınırlı ilerleme kontrolü/diagn
 ## 3.1 kullanımı
 Güncel engeller ve sonraki işlem için `status <workspace> --assets-root <inputs>` çalıştırın. Son okuyuculardan önce `preflight <workspace> --assets-root <inputs>` kullanın; eksik dosya, kaynak eşlemesi, referans, pointer, açık iş kararı ve bağımlılık sözleşmesi değerlendirme paketi üretimini durdurur. Salt okunurdur ve teslim onayı vermez. `check-plan`/`check-record` aynı dosya kökünü alır; doğrulayıcı byte ve gerçek dosya parmak izleri ile işlev, UI, nesne ve kayıt birimlerini kullanır.
 
-Özel inceleme protokolü 3.1, eski okuyucu kayıtlarının yeniden gerçekten yürütülmesini gerektirir. Her okuyucu her gereksinim için işlevsel soru ve somut plan kanıtı sunar. İlk iki okuyucu senaryo sonuçlarını `test_cases.expected` olmadan türetir; üçüncüsü tam belirtimi inceler. Paketler gerekli referans içeriğini ve sözleşmeleri içerir. Ayrıştırılmış gerçek yanıtlar hash'e bağlanır; insan teyidi zorunlu kalır ve sağlayıcı kimlik doğrulaması yerine geçmez. Public handoff şeması 3.0, üç okuyucu, iki temiz tur ve değişmez ayrı ZIP koşulları korunur. Danışman soruları gerçek `depends_on` önkoşulları tanımlayabilir; `blocked_by`/`unlocks` alanlarını gösterir.
+Tarihsel özel inceleme protokolü 3.1 kayıtları için güncel protokolle taze yürütme gerekir. Her okuyucu her gereksinim için işlevsel soru ve somut plan kanıtı sunar. İlk iki okuyucu senaryo sonuçlarını `test_cases.expected` olmadan türetir; üçüncüsü tam belirtimi inceler. Paketler gerekli referans içeriğini ve sözleşmeleri içerir. Ayrıştırılmış gerçek yanıtlar hash'e bağlanır; insan teyidi zorunlu kalır ve sağlayıcı kimlik doğrulaması yerine geçmez. Public handoff şeması 3.0, üç okuyucu, iki temiz tur ve değişmez ayrı ZIP koşulları korunur. Danışman soruları gerçek `depends_on` önkoşulları tanımlayabilir; `blocked_by`/`unlocks` alanlarını gösterir.
 
 ## İşleyiş
 `scripts/bv2.py` yolunu yüklenen skill'in mutlak konumundan çözün; cwd farklı olabilir.

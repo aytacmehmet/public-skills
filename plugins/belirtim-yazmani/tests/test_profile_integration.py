@@ -112,7 +112,7 @@ class ProfileIntegrationTests(unittest.TestCase):
                                     'readers':[row],'new_open_count':0})
 
     def test_new_profile_dispatch_metadata_is_rejected_in_public_spec(self):
-        for field in ('work_profile','coordinatorFile','model_suggestion','byw_task','tool_use_id','native_dispatch'):
+        for field in ('work_profile','coordinatorFile','model_suggestion','byw_task','tool_use_id','native_dispatch','review_role','blindness_sha256'):
             value=copy.deepcopy(self.doc['delivery']['spec'])
             value['naming_rules'][field]='private operational metadata'
             self.assertIn('C5_PRIVATE',{row['code'] for row in d.privacy(value)})

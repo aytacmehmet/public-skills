@@ -1,6 +1,14 @@
-# Belirtim Yazmanı 3.2.2
+# Belirtim Yazmanı 3.3.0
 
 English · [Türkçe](README.tr.md)
+
+## 3.3 acceptance and selective work
+
+Protocol 3.3 binds the three issued roles and oracle admission. Scenario agreement uses reader identity, independent of response-array order. Preflight blocks explicit current-case expected answers or peer replies in supplied sources/contracts/text; originals stay complete and unsafe source contracts must be resolved before dispatch. Legacy 3.0/3.1/3.2 packets remain explicit historical read-only inputs.
+
+Preparation blockers stop child admission while the single writer can close gaps. The shared coordinator registers ACTIVE selected workspace/episode profiles and enforces their lowest profile/host concurrency, at most three children. Successful saved handoff closes participation without removing charged history. No automatic expiration, quota refund or model switch is added.
+
+Read the compact entrypoint and only the needed intake, dispatch or model route. Multiple `--reference-id` arguments resolve a subset in one validated packet load; single-ID output is unchanged. `status` evaluates a snapshot once. During edits run `python -X utf8 -B scripts/check.py --changed scripts/<changed-file>.py`; run `--final` once when the candidate is stable. The checker selects affected deterministic tests and never launches LLMs. Final handoffs still need all A-F gates, three full independent readers and two clean stable rounds.
 
 ## 3.2.2 pooled reader sources
 
@@ -47,7 +55,7 @@ Command hook adapters add scoped admission/diagnostics. Native leaf PreToolUse r
 ## 3.1 operation
 Run `status <workspace> --assets-root <inputs>` for current blockers and the next action. Before final readers run `preflight <workspace> --assets-root <inputs>`; missing assets, source mappings, references, pointers, business closure and dependency contracts stop packet issuance. It is read-only and does not approve a release. `check-plan`/`check-record` accept the same assets root and use checker-byte/physical-file fingerprints plus functional, UI, object and record units.
 
-Private review protocol 3.1 requires fresh execution of old reader records. Every reader supplies a functional question per requirement and concrete plan evidence. The first two readers derive scenario outcomes without `test_cases.expected`; the third inspects the complete specification. Packets include needed reference content and contracts. Actual parsed replies are hash-bound; owner confirmation remains mandatory and does not authenticate providers. Public handoff schema 3.0, three readers, two clean rounds and immutable separate ZIPs remain unchanged. Consultant questions may declare real `depends_on` prerequisites and report `blocked_by`/`unlocks`.
+Historical private protocol 3.1 records require fresh current-protocol execution. Every reader supplies a functional question per requirement and concrete plan evidence. The first two readers derive scenario outcomes without `test_cases.expected`; the third inspects the complete specification. Packets include needed reference content and contracts. Actual parsed replies are hash-bound; owner confirmation remains mandatory and does not authenticate providers. Public handoff schema 3.0, three readers, two clean rounds and immutable separate ZIPs remain unchanged. Consultant questions may declare real `depends_on` prerequisites and report `blocked_by`/`unlocks`.
 
 ## Workflow
 Resolve `scripts/bv2.py` from the absolute loaded skill directory; cwd may differ.

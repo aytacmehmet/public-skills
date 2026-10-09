@@ -2,6 +2,10 @@
 
 English · [Türkçe](CHANGES.tr.md)
 
+## 3.3.0 — 2026-10-09
+
+Bind scenario agreement to issued reader identity; reject explicit oracle/peer exposure before issuing packets; retain historical 3.0/3.1/3.2 read-only compatibility and require fresh protocol 3.3 credit. Block preparation for explicit business/source contradictions. Register coordinated selected profiles and apply the lowest ACTIVE profile/host limit, closing participation only after saved successful handoff. Add batch pointer reads, single-evaluation status, compact task routes and one focused/final deterministic checker. Public schema 3.0, complete source content, all final quality gates and charged history remain.
+
 ## 3.2.2 — 2026-10-09
 
 Pool complete reader source content by file hash, bind lightweight references to pointers, cache decoding and enforce serialization limits before packet output. Private review protocol 3.2 and explicit historical read-only compatibility preserve the existing public specification, profiles and final gates.

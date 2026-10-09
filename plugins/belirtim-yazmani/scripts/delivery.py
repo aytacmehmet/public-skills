@@ -15,7 +15,7 @@ PRIVATE={'producerApproval','handoffApproval','approvalReceipt','onaylar','toolR
 PRIVATE_NORMALIZED={re.sub('[^a-z0-9]','',k.lower()) for k in PRIVATE}
 PRIVATE_NORMALIZED.update({'workprofile','workprofilerequired','episodeid','workassessment','workcapabilities','workcapacity','dispatchattempts',
                            'worktask','bywtask','coordinatorfile','modelsuggestion','preparationattempts','reviewattempts',
-                           'nativedispatch','tooluseid'})
+                           'nativedispatch','tooluseid','reviewrole','blindnesssha256'})
 AI_INSTRUCTION=re.compile(r'(?im)^\s*(?:you are (?:a|an) [^\n]*(?:developer|assistant|agent)|(?:system|developer|build) prompt\s*:|(?:use|invoke|call) \$[a-z-]+)|ignore (?:previous|all) [^\n]*instructions')
 COLLECTIONS=['requirements','acceptance_criteria','test_cases','objects','business_rules','screens','media','ui_callouts','ui_elements','ui_actions','messages','statuses','status_transitions','cds_fields','table_fields']
 NETWORK=re.compile(r'(?i)https?://|fetch\s*\(|XMLHttpRequest|WebSocket\s*\(|EventSource\s*\(|sendBeacon\s*\(|importScripts\s*\(|import\s*\(|\beval\s*\(|\bFunction\s*\(|(?:src|href)\s*=\s*[\"\x27]\s*//|(?:url\s*\(|@import)[^;\n]*//')
@@ -219,7 +219,7 @@ def eval_gate(spec,control):
             if not problems:valid_readers.append(reader)
         readers=valid_readers
         if r.get('revision_sha256')!=revision(spec): current.append(issue('F5_STALE_ROUND','/eval_rounds/'+str(rn),'Round is for another revision'))
-        if len(readers)<3 or len({x.get('reader_id') for x in readers})!=len(readers): current.append(issue('F2_READERS','/eval_rounds/'+str(rn),'Three independent readers required'))
+        if len(readers)!=3 or {x.get('reader_id') for x in readers}!=set(review_contract.READER_ROLES): current.append(issue('F2_READERS','/eval_rounds/'+str(rn),'Exactly the three issued independent reader roles are required'))
         for i,reader in enumerate(readers):
             ptr=f'/eval_rounds/{rn}/readers/{i}'
             cid=reader.get('context_id');ph=reader.get('request_sha256')
@@ -237,15 +237,20 @@ def eval_gate(spec,control):
             import review_contract
             current+=review_contract.findings(spec,reader,ptr)
             if request.get('reader_id')!=reader.get('reader_id'): current.append(issue('F2_REQUEST_BINDING',ptr,'Reader identity differs from issued packet'))
-            if request.get('protocol')!=source_pool.PROTOCOL or not re.fullmatch('[a-f0-9]{64}',request.get('source_pool_sha256','')):
+            if request.get('protocol')!=source_pool.PROTOCOL or not review_contract.valid_sha(request.get('source_pool_sha256')):
                 current.append(issue('F2_PROTOCOL',ptr,'Reissue legacy review packets with current pooled-source bindings'))
+            if request.get('review_role')!=review_contract.READER_ROLES.get(reader.get('reader_id')) or not review_contract.valid_sha(request.get('blindness_sha256')):
+                current.append(issue('F2_BLINDNESS_BINDING',ptr,'Fresh role-bound oracle admission is required'))
             if 'work_profile' in control or control.get('work_profile_required'):
                 try:validate_work_reader({'delivery':{'spec':spec,'control':control}},reader,request)
                 except b.Invalid as error:current.append(issue('F2_WORK_DISPATCH',ptr,str(error)))
             if not re.fullmatch('[a-f0-9]{64}',reader.get('response_sha256','')) or not reader.get('execution_evidence'): current.append(issue('F2_EXECUTION',ptr,'Recorded execution evidence and response hash required'))
-        if len(readers)>=2:
-            left=readers[0].get('expected_results',{});right=readers[1].get('expected_results',{})
+        scenario={reader['reader_id']:reader for reader in readers if reader['reader_id'] in review_contract.SCENARIO_READERS}
+        if len(scenario)==2:
+            left=scenario['reader-1'].get('expected_results',{});right=scenario['reader-2'].get('expected_results',{})
             if set(left)!=set(expected_cases) or set(right)!=set(expected_cases) or b.canonical(left)!=b.canonical(right) or b.canonical(left)!=b.canonical(expected_cases): current.append(issue('F3_DISAGREEMENT','/eval_rounds/'+str(rn),'Independent scenario results differ/incomplete'))
+        else:
+            current.append(issue('F3_DISAGREEMENT','/eval_rounds/'+str(rn),'Both issued scenario readers must return complete results'))
         pairs=set()
         for reader in readers:
             for visual in reader.get('visual_matches',[]):
@@ -348,15 +353,19 @@ def _issue_review_packets(doc,round_number,prepared):
     # Pure packet assembly is also used by explicitly synthetic test fixtures.
     import review_contract as review
     spec,control=get_state(doc);packets=[]
+    blindness=review.blind_binding(spec,prepared)
+    pooled=prepared.get('source_pool',{'version':source_pool.POOL_VERSION,'sources':[]})
+    pool_sha=source_pool.value_sha(pooled)
     pngs=[row for row in prepared['assets'] if row['path'] in {m['path'] for m in spec['media']}]
     for i in range(3):
         packet={'protocol':source_pool.PROTOCOL,'revision_sha256':revision(spec),'round':round_number,
           'reader_id':'reader-'+str(i+1),'context_id':str(uuid.uuid4()),
+          'review_role':review.READER_ROLES['reader-'+str(i+1)],'blindness_sha256':blindness,
           'instructions':'Use a fresh isolated context. Inspect functional requirements, approved defaults, packaged references and actual PNGs. Return one functional question per requirement with requirement_ref, its statement pointer and observed answer. The first two readers derive every test result from functional rules and inputs; expected test answers are withheld. The third reader checks the complete specification. Cover actual PNG callouts. Provide concrete plan decisions pointing to objects, architecture constraints, dependencies and each delegated technical decision that exists. Report every contradiction, missing business answer and missing reference. Do not fabricate execution evidence, choose tools or change the functional contract.',
           'scenario_reader':i<2,'authoritative':False,'spec':review.review_spec(spec,i<2),
           'png_files':[{'path':x['source_path'],'sha256':x['sha256']} for x in pngs],
           'references':copy.deepcopy(prepared['references']),
-          'source_pool':copy.deepcopy(prepared.get('source_pool',{'version':source_pool.POOL_VERSION,'sources':[]})),
+          'source_pool':copy.deepcopy(pooled),
           'dependency_contracts':prepared.get('dependency_contracts',[]),
           'input_sha256':prepared.get('input_sha256')}
         if 'work_profile' in control:
@@ -374,13 +383,13 @@ def _issue_review_packets(doc,round_number,prepared):
           'execution_evidence':'controller supplies genuine private execution reference',
           'response_sha256':'controller hashes the parsed response excluding response_sha256 and execution_evidence'}
         packet['instructions']+=' Resolve each reference using source_id, matching sha256/path and pointer into source_pool.sources[].content. Each complete source appears once. Initialize source_pool.Reader once for repeated access; legacy packets are read-only and cannot provide current review credit.'
-        packet['source_pool_sha256']=source_pool.value_sha(packet['source_pool'])
-        source_pool.check_volume([packet],control)
+        packet['source_pool_sha256']=pool_sha
         packet['request_sha256']=source_pool.value_sha(packet);packets.append(packet)
     source_pool.check_volume(packets,control)
     control['eval_requests'] += [{'protocol':source_pool.PROTOCOL,'revision_sha256':revision(spec),'round':round_number,
       'reader_id':x['reader_id'],'context_id':x['context_id'],'request_sha256':x['request_sha256'],
        'input_sha256':x['input_sha256'],'source_pool_sha256':x['source_pool_sha256'],
+       'review_role':x['review_role'],'blindness_sha256':x['blindness_sha256'],
        **({'task_id':x['work_task']['task_id']} if 'work_task' in x else {})} for x in packets]
     return packets
 
@@ -398,17 +407,21 @@ def eval_request(doc,round_number,assets_root=None):
     return _issue_review_packets(doc,round_number,prepared)
 
 def record_round(doc,record):
+    import review_contract
     spec,control=get_state(doc)
     if record.get('revision_sha256')!=revision(spec): raise b.Invalid('Review does not match current snapshot')
     expected={r['context_id']:r for r in control['eval_requests'] if r['round']==len(control['eval_rounds'])+1 and r['revision_sha256']==revision(spec)}
     for reader in record.get('readers',[]):
         if reader.get('context_id') not in expected or reader.get('request_sha256')!=expected[reader['context_id']]['request_sha256']: raise b.Invalid('Review is not bound to an issued independent packet')
         request=expected[reader['context_id']]
-        if request.get('protocol')!=source_pool.PROTOCOL or not re.fullmatch('[a-f0-9]{64}',request.get('source_pool_sha256','')):
+        if request.get('protocol')!=source_pool.PROTOCOL or not review_contract.valid_sha(request.get('source_pool_sha256')):
             raise b.Invalid('Legacy review records are read-only; issue fresh pooled-source packets')
-        import review_contract
+        if request.get('reader_id')!=reader.get('reader_id') or request.get('review_role')!=review_contract.READER_ROLES.get(reader.get('reader_id')) or not review_contract.valid_sha(request.get('blindness_sha256')):
+            raise b.Invalid('Review does not match a current role/oracle admission binding')
         reader['response_sha256']=review_contract.response_sha(reader)
         validate_work_reader(doc,reader,expected[reader['context_id']])
+    if len(record.get('readers',[]))!=3 or {row['reader_id'] for row in record['readers']}!=set(review_contract.READER_ROLES):
+        raise b.Invalid('Round needs the three unique issued reader roles')
     control['eval_rounds'].append(record)
 
 

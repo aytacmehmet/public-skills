@@ -10,12 +10,33 @@ from pathlib import Path
 import bv2 as b
 
 
+def checked_path(source):
+    """Reject reparse traversal without requiring access to every sandbox ancestor.
+
+    If an opaque ancestor cannot be inspected, prove the already-accessible target
+    (or existing parent for a new file) with strict physical resolution. Unknown or
+    changed physical paths still fail closed; no permissions or settings change.
+    """
+    raw=Path(source).absolute()
+    try:
+        linked=any(path.is_symlink() or getattr(path,'is_junction',lambda:False)() for path in (raw,*raw.parents))
+    except PermissionError:
+        try:
+            target=raw if raw.exists() else raw.parent
+            physical=target.resolve(strict=True)
+        except OSError as error:
+            raise b.Invalid('Physical lock target cannot be verified inside the granted sandbox') from error
+        if os.path.normcase(str(target))!=os.path.normcase(str(physical)):
+            raise b.Invalid('Workspace/coordinator lock path cannot traverse links or junctions')
+        return physical if target==raw else physical/raw.name
+    if linked:
+        raise b.Invalid('Workspace/coordinator lock path cannot traverse links or junctions')
+    return raw.resolve()
+
+
 @contextmanager
 def held(source, timeout=5, require_file=True):
-    raw=Path(source).absolute()
-    if any(path.is_symlink() or getattr(path,'is_junction',lambda:False)() for path in (raw,*raw.parents)):
-        raise b.Invalid('Workspace/coordinator lock path cannot traverse links or junctions')
-    source = raw.resolve()
+    source = checked_path(source)
     if require_file and not source.is_file():
         raise b.Invalid('Workspace file does not exist')
     lock = source.with_name(source.name + '.byw.lock')

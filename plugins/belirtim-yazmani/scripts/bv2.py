@@ -413,7 +413,7 @@ def main(argv=None):
     q=sub.add_parser('profile');q.add_argument('--collection',required=True)
     q=sub.add_parser('eval-request');q.add_argument('source');q.add_argument('--round',type=int,required=True);q.add_argument('--output',required=True);q.add_argument('--assets-root')
     q=sub.add_parser('eval-record');q.add_argument('source');q.add_argument('record')
-    q=sub.add_parser('read-reference');q.add_argument('source');q.add_argument('--reference-id',required=True);q.add_argument('--allow-legacy',action='store_true')
+    q=sub.add_parser('read-reference');q.add_argument('source');q.add_argument('--reference-id',required=True,action='append');q.add_argument('--allow-legacy',action='store_true')
     q=sub.add_parser('feedback');q.add_argument('source');q.add_argument('--category',required=True);q.add_argument('--defect',required=True)
 
     for op in ('release-upgrade','questions','check-plan','check-record','preflight','status'):
@@ -430,7 +430,12 @@ def main(argv=None):
     if a.cmd=='read-reference':
         import source_pool
         reader=source_pool.Reader(load(a.source),allow_legacy=a.allow_legacy)
-        output({'reference_id':a.reference_id,'legacy_read_only':reader.legacy_read_only,'value':reader.resolve(a.reference_id)});return
+        if len(a.reference_id)==1:
+            identity=a.reference_id[0]
+            output({'reference_id':identity,'legacy_read_only':reader.legacy_read_only,'value':reader.resolve(identity)})
+        else:
+            output({'values':reader.resolve_many(a.reference_id),'legacy_read_only':reader.legacy_read_only})
+        return
     if a.cmd=='work-profiles':
         import work_profiles
         output(work_profiles.catalog());return
@@ -489,6 +494,10 @@ def main(argv=None):
             for item,source in zip(items,paths):item['doc']=load(source)
             result=h.batch(items,a.output,a.batch_id)
             for item,source in zip(items,paths):save(item['doc'],source,True)
+            import profile_runtime
+            import dispatch_registry
+            for item,source in zip(items,paths):
+                if profile_runtime.managed(item['doc']):dispatch_registry.finish_selection(item['doc'],source)
         output(result);return
 
     import workspace_lock
@@ -540,7 +549,12 @@ def _workspace_command(a):
     if a.cmd=='handoff':
         import delivery
         result=delivery.package(doc,a.output,a.assets_root or Path(a.source).parent)
-        save(doc,a.source,True);output(result);return
+        save(doc,a.source,True)
+        import profile_runtime
+        if profile_runtime.managed(doc):
+            import dispatch_registry
+            dispatch_registry.finish_selection(doc,a.source)
+        output(result);return
     if a.cmd=='patch':
         prior_control=doc.get('delivery',{}).get('control',{}) if isinstance(doc.get('delivery'),dict) else {}
         protected={key:copy.deepcopy(prior_control[key]) for key in ('work_profile','work_profile_required') if key in prior_control}

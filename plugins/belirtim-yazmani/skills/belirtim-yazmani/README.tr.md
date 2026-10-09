@@ -13,4 +13,7 @@ Kullanıcının diliyle yanıt verir; varsayılan Türkçedir. Kural gövdesi İ
 
 3.2.1, Codex 0.160.0 sondalarından sonra native Codex manifest seçimini ve taşınabilir Windows hook başlatmayı düzeltir. Etkin host manifesti `.codex-plugin/plugin.json`; taşınabilir metadata `metadata/agent-plugin.json` içindedir. Beş profilli protokol, 22 kuralın tamamı ve mevcut kalite kapıları değişmez. Güncel tam plugin paketini kullanın; native güven/olay yürütmesi ve sağlayıcı maliyeti kendi kanıtlarını gerektirmeye devam eder.
 
-3.2.2 her tam okuyucu kaynağını dosya hash başına bir kez saklar ve pointer bağlarını korur. Protocol 3.2 paketlerini ve güncel protokol yürütme teyidini kullanın; tarihsel paketler açık salt okunur uyumluluktur.
+3.2.2 her tam okuyucu kaynağını dosya hash başına bir kez saklar ve pointer bağlarını korur. O tarihsel sürüm protocol 3.2 kullanır; güncel çalışma protocol 3.3 ve taze yürütme teyidi gerektirir; tarihsel paketler açık salt okunur uyumluluktur.
+
+## 3.3 seçici rotalar ve kabul
+Yalnız ihtiyaç olduğunda [intake/kapasite](references/work-profiles.md), [native dispatch](references/dispatch.md) veya [model/maliyet](references/models.md) okunur. Protocol 3.3 roller ve oracle kabulünü bağlar; paket kaynakları tam kalır. read-reference tek çağrıda yinelenen kimlik seçeneklerini destekler. Plugin kökündeki scripts/check.py etkilenen kontrolleri seçer ve kararlı final suite'i bir kez çalıştırır; handoff için üç okuyucu/iki temiz tur kapıları korunur.

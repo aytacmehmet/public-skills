@@ -2,6 +2,12 @@
 
 [English](VERIFICATION.md) · Türkçe
 
+## 3.3.0 doğrulama kapsamı
+
+Kararlı final doğrulama için `python -X utf8 -B scripts/check.py --final` kullanın. Ara değişikliklerde `--changed <plugin-relative-file>` etkilenen semantik regresyonları seçer; bilinmeyen runtime/schema yolları güvenli şekilde tüm suite'i seçer. Otomatik sağlayıcı çağrısı veya yeşile dönene kadar tekrar döngüsü yoktur. Ayrı izole Codex kanıtı tam plugin runtime/schema/vendor ve gerçek hedef okuması içermeli; raporlanabildiğinde yürütme/kullanım bağlanmalıdır. Yapısal veya sentetik PASS gerçek final okuyucu/görsel/SAP kanıtı olmaz. Yayın sonuçlarını açık bir kanıt yolunda plugin dışında saklayın; aşağıdaki tarihsel kayıtların sürümü değiştirilmez.
+
+2026-10-09 tarihli son Windows suite'i 182 test çalıştırdı: 180 geçti, failure/error yok, iki skip (symlink yetkisi ve açıkça sağlanması gereken isteğe bağlı gerçek kaynak fixture'ı). Tam runtime içeren native Codex `byw-3.3.0-q6-final` koşusunda altı aday davranışı ve olumsuz çeviri kontrolü geçti. Tam hedef okumaları, değişmeyen runtime/dependency payload'ları ve gerçek komut sonuçları denetlendi; eski 3.2.2, onarılan dört runtime vakasında başarısız oldu. Bu tek geçişli onarım kanıtıdır; istatistiksel maliyet veya gerçek üç okuyucu/görsel/onay/SAP kabulü değildir. İlk izolasyon denemeleri kapalı container ve dependency/interpreter sınırlarını gösterdi; bunlar doğrulanmamış olarak korundu ve ACL gevşetmeden veya credential kopyalamadan çözüldü. Altı görevde gözlenen input toplamları baseline 274091 / aday 281174 token'dır; buradan genel tasarruf veya en hızlı sonucu çıkarılmaz.
+
 ## 3.1.0 doğrulaması
 8 Ekim 2026'da 104 plugin testi ve 35 repo testi geçti. Paket, beceri, katalog, dil çifti, bağlantı ve kaynak kontrolleri geçti. Yeni regresyonlar source_path ile özgün PNG'yi koruyan inceleme, gerekli referansı erken reddetme, referans içeriğini sağlama, beklenen cevabı gizleyen senaryo girdileri, gerçek dosya/doğrulayıcı cache geçersizleştirme, seçici UI/kayıt yeniden kullanımı, bozuk profil tanısı, işlev/plan/yanıt bağlaması ve soru önkoşullarını kapsar. Özel inceleme protokolü 3.1 eski okuyucu kayıtlarını reddeder; public 3.0 handoff şeması ve son kapılar korunur.
 

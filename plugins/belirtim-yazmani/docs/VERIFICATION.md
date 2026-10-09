@@ -2,6 +2,12 @@
 
 English · [Türkçe](VERIFICATION.tr.md)
 
+## 3.3.0 qualification scope
+
+Use `python -X utf8 -B scripts/check.py --final` for stable final qualification. During edits `--changed <plugin-relative-file>` selects affected semantic regressions; unknown runtime/schema paths safely select the full suite. No automatic provider calls or repeat-until-green loop is included. Separate isolated Codex evidence must include complete plugin runtime/schema/vendor, exact target-read evidence and actual execution/usage where reported. Structural or synthetic PASS never becomes actual final-reader/vision/SAP proof. Save release results outside the plugin at an explicit evidence path; historical records below are not retagged.
+
+On 2026-10-09 the final Windows suite ran 182 tests: 180 passed, no failures/errors, two skips (symlink privilege and the optional explicitly supplied real-source fixture). The complete-runtime native Codex run `byw-3.3.0-q6-final` passed all six candidate behavior cases and its negative translation control. Exact target reads, unchanged runtime/dependency payloads and actual command results were checked; old 3.2.2 failed the four repaired runtime cases. This is single-pass repair evidence, not statistical cost qualification or real three-reader/vision/approval/SAP acceptance. Native isolation initially exposed opaque-container and dependency/interpreter limits; those trials remain unqualified and were resolved without relaxing ACLs or copying credentials. Observed input totals over six tasks were 274091 baseline / 281174 candidate tokens; no general saving or fastest claim follows.
+
 ## 3.1.0 qualification
 On 2026-10-08, 104 plugin tests and 35 repository tests passed. Package, skill, catalog, language-pair, link and source checks passed. New regressions cover source_path-preserving PNG review, early required-reference rejection, supplied reference content, blind scenario inputs, actual asset/checker cache invalidation, selective UI/record reuse, malformed-profile diagnostics, functional/plan/response binding and question prerequisites. Private review protocol 3.1 rejects legacy reader records; the public 3.0 handoff schema and final gates remain unchanged.
 

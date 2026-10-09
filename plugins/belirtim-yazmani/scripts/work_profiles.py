@@ -428,12 +428,12 @@ def admit(doc, operation):
         return report
     ignored = set()
     if operation in ('prepare', 'write'):
-        ignored.update({'ASSESSMENT_PENDING', 'BLOCKED_PREPARATION', 'READER_ISOLATION_UNAVAILABLE',
+        ignored.update({'ASSESSMENT_PENDING', 'READER_ISOLATION_UNAVAILABLE',
                         'VISION_UNAVAILABLE', 'SPEC_NEEDS_REFRESH', 'CHECKER_NEEDS_REFRESH'})
     if operation == 'write':
         # A selected draft can be authored to close the missing inputs that
         # prevent measured capacity. This does not authorize any child dispatch.
-        ignored.update({'HOST_CHILD_LIMIT_PENDING', 'CAPACITY_PENDING', 'CAPACITY_BLOCKED'})
+        ignored.update({'BLOCKED_PREPARATION', 'HOST_CHILD_LIMIT_PENDING', 'CAPACITY_PENDING', 'CAPACITY_BLOCKED'})
     blocked = [issue for issue in report['issues'] if issue not in ignored]
     if blocked:
         _error('ADMISSION', 'Work profile admission is blocked', operation=operation, issues=blocked)

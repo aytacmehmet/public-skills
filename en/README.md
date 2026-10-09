@@ -17,4 +17,4 @@ English and Turkish counterparts share a version and behavior but have localized
 
 [Yula 1.4.1](../plugins/yula/README.md) bundles released-object advice, ABAP Cloud contracts, configuration architecture, four offline MCP read tools and its populated SQLite corpus for Codex and Claude Code. Install the complete plugin from the repository marketplace; its three skills depend on shared files. [Plugin contribution rules](CONTRIBUTING.md#complete-plugins).
 
-[Belirtim Yazmanı 3.1.0](../plugins/belirtim-yazmani/README.md) documents SAP Cloud ERP developments as self-contained TOON FS-TS, consultant-owned questions and coordinated separate-development handoffs. Install the complete plugin with its shared Python/Node runtime and pinned codec.
+[Belirtim Yazmanı 3.3.0](../plugins/belirtim-yazmani/README.md) documents SAP Cloud ERP developments as self-contained TOON FS-TS, consultant-owned questions and coordinated separate-development handoffs. Install the complete plugin with its shared Python/Node runtime and pinned codec.

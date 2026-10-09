@@ -6,7 +6,7 @@ from pathlib import Path
 
 import bv2 as b
 
-PROTOCOL = '3.2'
+PROTOCOL = '3.3'
 POOL_VERSION = 1
 MAX_PACKET_BYTES = 16 * 1024 * 1024
 MAX_TOTAL_BYTES = 3 * MAX_PACKET_BYTES
@@ -110,13 +110,18 @@ class Reader:
     """Validate once, then resolve all references without decoding/re-embedding."""
     def __init__(self, packet, allow_legacy=False):
         import delivery as d
+        if not isinstance(packet,dict):
+            raise b.Invalid('Reader packet must be an object')
+        references=packet.get('references',[])
+        if not isinstance(references,list) or any(not isinstance(row,dict) or not isinstance(row.get('id'),str) or not row['id'] for row in references):
+            raise b.Invalid('Reader references must be identity-bound objects')
         protocol = packet.get('protocol')
-        if protocol != PROTOCOL:
+        if protocol != PROTOCOL and protocol != '3.2':
             if not allow_legacy or protocol not in ('3.0', '3.1'):
-                raise b.Invalid('Unsupported or stale reader protocol; fresh 3.2 issuance required')
+                raise b.Invalid('Unsupported or stale reader protocol; fresh 3.3 issuance required')
             self.legacy_read_only = True
-            self.references = {r['id']: r for r in packet.get('references', [])}
-            if len(self.references) != len(packet.get('references', [])):
+            self.references = {r['id']: r for r in references}
+            if len(self.references) != len(references):
                 raise b.Invalid('Duplicate legacy reference identity')
             if packet.get('request_sha256') != value_sha({k: v for k, v in packet.items() if k != 'request_sha256'}):
                 raise b.Invalid('Legacy request hash differs')
@@ -130,12 +135,17 @@ class Reader:
                     raise b.Invalid('Conflicting legacy source content')
                 self.sources.setdefault(key, {'content': ref['content'], 'content_sha256': digest})
             return
-        self.legacy_read_only = False
+        if protocol == '3.2' and not allow_legacy:
+            raise b.Invalid('Unsupported or stale reader protocol; fresh 3.3 issuance required')
+        self.legacy_read_only = protocol != PROTOCOL
+        self.pooled = True
         pool = packet.get('source_pool', {})
-        if pool.get('version') != POOL_VERSION or not isinstance(pool.get('sources'), list):
+        if not isinstance(pool,dict) or pool.get('version') != POOL_VERSION or not isinstance(pool.get('sources'), list):
             raise b.Invalid('Source pool version or shape differs')
         self.sources = {}
         for row in pool['sources']:
+            if not isinstance(row,dict) or not isinstance(row.get('source_id'),str) or not isinstance(row.get('sha256'),str) or not isinstance(row.get('paths'),list) or any(not isinstance(path,str) for path in row['paths']) or row.get('format') not in ('TOON','TEXT'):
+                raise b.Invalid('Source pool records must have valid identity/path/format')
             key = row.get('source_id')
             if key in self.sources or key != 'SRC-' + str(row.get('sha256')):
                 raise b.Invalid('Duplicate or mismatched source identity')
@@ -143,7 +153,9 @@ class Reader:
                 raise b.Invalid('Source content hash differs')
             self.sources[key] = row
         self.references = {}
-        for ref in packet.get('references', []):
+        for ref in references:
+            if not all(isinstance(ref.get(key),str) for key in ('path','sha256','source_id')) or ref.get('pointer') is not None and not isinstance(ref['pointer'],str):
+                raise b.Invalid('Reference source/path/hash/pointer shape differs')
             if ref['id'] in self.references or 'content' in ref:
                 raise b.Invalid('References must be unique lightweight source bindings')
             source = self.sources.get(ref.get('source_id'))
@@ -161,20 +173,30 @@ class Reader:
             raise b.Invalid('Source pool binding hash differs')
         if packet.get('request_sha256') != value_sha({k: v for k, v in packet.items() if k != 'request_sha256'}):
             raise b.Invalid('Issued request hash differs')
+        if not self.legacy_read_only:
+            import review_contract
+            review_contract.assert_scenario_packet(packet)
 
     def resolve(self, reference_id):
         import delivery as d
         if reference_id not in self.references:
             raise b.Invalid('Unknown reference identity: ' + reference_id)
         ref = self.references[reference_id]
-        key = ref['sha256'] if self.legacy_read_only else ref['source_id']
+        key = ref['source_id'] if getattr(self, 'pooled', False) else ref['sha256']
         content = self.sources[key]['content']
         return content if ref['pointer'] is None else d.resolve(content, ref['pointer'])
+
+    def resolve_many(self, reference_ids):
+        """Read a validated pool once, then resolve a requested ordered subset."""
+        return {identity: self.resolve(identity) for identity in reference_ids}
 
 
 def save_packets(packets, directory, control=None):
     """Bound all three encodings before writing any new packet file."""
     check_volume(packets, control)
+    import review_contract
+    if any(type(p.get('round')) is not int or p['round']<1 or p.get('reader_id') not in review_contract.READER_ROLES for p in packets):
+        raise b.Invalid('Invalid reader packet output identity')
     names = {str(p['round']) + '-' + p['reader_id'] + '.toon': p for p in packets}
     if len(names) != len(packets):
         raise b.Invalid('Duplicate packet output identity')
