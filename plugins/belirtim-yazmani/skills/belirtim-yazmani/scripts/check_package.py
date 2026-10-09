@@ -12,7 +12,7 @@ SKILL = ROOT / 'skills/belirtim-yazmani'
 def main():
     identities = [json.loads((ROOT / p).read_text(encoding='utf-8')) for p in
                   ('metadata/agent-plugin.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json')]
-    assert all(x['name'] == 'belirtim-yazmani' and x['version'] == '3.2.2' for x in identities)
+    assert all(x['name'] == 'belirtim-yazmani' and x['version'] == '3.3.0' for x in identities)
     assert not (ROOT/'plugin.json').exists(), 'Native Codex 0.160 hooks require the legacy manifest format'
     manifest = json.loads((ROOT / 'PACKAGE-MANIFEST.json').read_text(encoding='utf-8'))
     assert manifest['version'] == identities[0]['version']
@@ -20,17 +20,20 @@ def main():
     assert set(files) == set(manifest['files']), 'Unlisted or missing package file'
     for name,path in files.items():
         expected = manifest['files'][name]
-        assert len(path.read_bytes()) == expected['bytes'] and hashlib.sha256(path.read_bytes()).hexdigest() == expected['sha256'],name
+        data = path.read_bytes()
+        assert len(data) == expected['bytes'] and hashlib.sha256(data).hexdigest() == expected['sha256'],name
     text = (SKILL / 'SKILL.md').read_text(encoding='utf-8')
     rules = re.findall(r'^- \*\*(R-BYW-\d{2})\*\* ', text, re.M)
     assert rules == [f'R-BYW-{number:02d}' for number in range(1, 23)]
     for path in ('references/workflow.md', 'references/format.md', 'references/eval.md',
-                 'references/work-profiles.md'):
+                 'references/work-profiles.md', 'references/dispatch.md', 'references/models.md'):
         assert (SKILL / path).is_file() and path in text
     assert (ROOT / 'scripts/bv2.py').is_file()
     assert (ROOT / 'scripts/delivery.py').is_file()
     assert (ROOT / 'scripts/preflight.py').is_file()
     assert (ROOT / 'scripts/review_contract.py').is_file()
+    assert (ROOT / 'scripts/check.py').is_file()
+    assert len((SKILL / 'SKILL.md').read_bytes()) < 8000, 'Keep the complete entrypoint below its attachment budget'
     for path in ('scripts/work_profiles.py', 'scripts/profile_runtime.py',
                  'scripts/profile_hooks.py', 'scripts/workspace_lock.py',
                  'scripts/dispatch_registry.py', 'scripts/source_pool.py',

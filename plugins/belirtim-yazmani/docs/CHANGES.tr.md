@@ -2,6 +2,10 @@
 
 [English](CHANGES.md) · Türkçe
 
+## 3.3.0 — 2026-10-09
+
+Senaryo uyumunu atanmış okuyucu kimliğine bağla; paket basımı öncesinde açık oracle/peer erişimini reddet; tarihsel 3.0/3.1/3.2 salt okuma uyumluluğunu koru ve yeni kredi için taze protocol 3.3 iste. Açık iş/kaynak çelişkisinde hazırlığı durdur. Koordineli seçilmiş profilleri kaydet, en düşük ACTIVE profil/host sınırını uygula ve katılımı yalnız kaydedilmiş başarılı handoff sonrası kapat. Toplu pointer okuması, tek değerlendirmeli status, kısa görev rotaları ve ortak hedefli/final deterministik doğrulayıcı ekle. Public şema 3.0, tam kaynak içeriği, tüm son kalite kapıları ve harcanan girişim geçmişi korunur.
+
 ## 3.2.2 — 2026-10-09
 
 Tam okuyucu kaynaklarını dosya hash başına havuzla, hafif referansları pointer üzerinden bağla, decode sonucunu önbellekle ve paket çıktısından önce serileştirme sınırını uygula. Private inceleme protocol 3.2 ve açık tarihsel salt okunur uyumluluk mevcut public belirtimi, profilleri ve final kapıları korur.

@@ -1,25 +1,25 @@
 {
   "format": "plugin-publication/1",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "repository": "aytacmehmet/public-skills",
   "marketplace": "aytacmehmet-public",
   "firstPublicPluginRelease": false,
-  "previousPublicVersion": "3.1.0",
+  "previousPublicVersion": "3.2.2",
   "upstream": {
     "repository": "aytacmehmet/private-skills-plugins",
-    "ref": "fix/byw-reference-pool-3.2.2-20261009",
-    "commit": "c4da3aa4a90ae2df43f038bf59547a9e99703cef",
+    "ref": "update/belirtim-yazmani-3.3.0-20261009",
+    "commit": "4c6b67dfe008df3becaa38fd1b70a607d4df7f37",
     "path": "plugins/belirtim-yazmani",
-    "version": "3.2.2"
+    "version": "3.3.0"
   },
   "upstreamFiles": {
     ".claude-plugin/plugin.json": {
       "bytes": 349,
-      "sha256": "8eaab38017c6eee17ceddea37e16c19e80be6af522617373b9df4e3920115609"
+      "sha256": "82007070a62baab421a45a7839a494ed81349b49cb5de915c70a1ce33306a605"
     },
     ".codex-plugin/plugin.json": {
       "bytes": 407,
-      "sha256": "143290aff233f85fc4b0460b7be51c1f0ac0795347d143cdc94485857952d692"
+      "sha256": "e5aa1aa6e485ced4628cc2c53378fb17860bbdca1b7554935dec313653f0b7c7"
     },
     "LICENSE": {
       "bytes": 35149,
@@ -34,44 +34,44 @@
       "sha256": "f38d7f387b3c0cef3345ea236878153b5b9dded78d6c6d5e5c52b952dbedc6dd"
     },
     "README.md": {
-      "bytes": 10272,
-      "sha256": "32439d173248ec2871643478fccda802f36077d3f7b70e5d9040d90912ac52a4"
+      "bytes": 11651,
+      "sha256": "fe7f29391f8fa0f553f6d01bb855ff71b7b9fbbeeed79d42c26902d8d042a321"
     },
     "README.tr.md": {
-      "bytes": 10750,
-      "sha256": "9fa485e8ad1bf5170291b636cbbdf6e28b7ea83c3583fa6b80ec4000abdb9b8a"
+      "bytes": 12264,
+      "sha256": "ef65ecba12aee1b57e2ef70dea045956b5b144b98c05b5dd0bf1985d0a6fe5e0"
     },
     "agents/byw-preparation.md": {
       "bytes": 1683,
       "sha256": "43c4bf9c416a6ab356b4cdc1b65b8b57f37894690519a9b89f32f79aa030009c"
     },
     "agents/byw-reader-a.md": {
-      "bytes": 2862,
-      "sha256": "d625ee75477013753d036b26673ebb21df05a3fe5aa9ed9b64b3aba0ae6d7597"
+      "bytes": 3123,
+      "sha256": "a44f33d63dcd66a44bf98aa631f24b84ccdc3b2a8a9bdb39f45440e5357b6591"
     },
     "agents/byw-reader-b.md": {
-      "bytes": 2988,
-      "sha256": "3441b9f7be3e38fe10f0314d3b093989169e0cca6ba16e37000416458b05bc72"
+      "bytes": 3249,
+      "sha256": "7c095bb06d58c6247632b64695fb17dc4d66e9edfd89d3de8d9486815c6b7fdc"
     },
     "agents/byw-reader-c.md": {
-      "bytes": 3129,
-      "sha256": "6df7a12edda5ad1658e48224e8abd8f82575d76615f17f7980d0746ca79b3687"
+      "bytes": 3366,
+      "sha256": "8cbf11b20c7c7be743dd1b7611109d6dafcd1a778b04dc6c5909860803004c92"
     },
     "agents/codex/byw-preparation.toml": {
       "bytes": 2180,
       "sha256": "bd4c309d82221cdad21ee913c6f8da5fd7bdfb0ad764165e4fe9e5816ed4312b"
     },
     "agents/codex/byw-reader-a.toml": {
-      "bytes": 3380,
-      "sha256": "bf1338d48d50108984812b474c1f95642f537d20b4f1c03a6757ec1453554b04"
+      "bytes": 3641,
+      "sha256": "68997fb023240a046bcb81ab69e5baa79f218ef1ac54c75dbe88f5c6a1ccda37"
     },
     "agents/codex/byw-reader-b.toml": {
-      "bytes": 3506,
-      "sha256": "24961f4d46d4f7cadfd26b45d709a8904ba87e38b3492191e74c64e4ff811ba4"
+      "bytes": 3767,
+      "sha256": "dd4a31e0655899599615baed363a5e7e4a5ee6540db5ddb032500c24dab876ab"
     },
     "agents/codex/byw-reader-c.toml": {
-      "bytes": 3647,
-      "sha256": "6f9242195cc8c57b8958f81d02d1e9f8d25b7bdc32d30460688098b2811459cd"
+      "bytes": 3884,
+      "sha256": "439b73d94ffc0a953293c17ee6d5e3d144b40d7af4a5d35f2cb7a6262bfbb586"
     },
     "assets/EXAMPLE.md": {
       "bytes": 362,
@@ -90,12 +90,12 @@
       "sha256": "e0ba565684f1b59b9381bda05f0bfb89345a02abc4e2fd71c41393aeadda1342"
     },
     "docs/CHANGES.md": {
-      "bytes": 3838,
-      "sha256": "5bf9e62b8595232c8ccb84aabf3ea9600902a1131759176423021729df022dee"
+      "bytes": 4490,
+      "sha256": "d1a6c721ae74e3404b21d9a6502a25986812e1158d6c0709d218cb2d717afe55"
     },
     "docs/CHANGES.tr.md": {
-      "bytes": 4200,
-      "sha256": "c74e671405c3fda832d4a7af08903a9c43fcf307cbcd320296c27d9234388694"
+      "bytes": 4898,
+      "sha256": "375a164aa265f8f428f8371e36f6b7c2743633f0396af5ae7259aecc74dee9d1"
     },
     "docs/QUALIFICATION-3.1.toon": {
       "bytes": 1956,
@@ -110,12 +110,12 @@
       "sha256": "c884824c9b60ceb475b801e4842f5f769de6b02805a7ee750c8ddf9ed1e77891"
     },
     "docs/VERIFICATION.md": {
-      "bytes": 6610,
-      "sha256": "7524c02bcf76b29691891f26e238e990adcae5ba7e06a7c757ddbc1febc1c045"
+      "bytes": 8182,
+      "sha256": "81e470cac2b6f92978567566ac83639e958c00b65db315ed371c63ec568f3f1f"
     },
     "docs/VERIFICATION.tr.md": {
-      "bytes": 6868,
-      "sha256": "9c91d9679d4e6c9406ed1f9f684395673464d7b8cd709d82faeeafddb8bd3a8d"
+      "bytes": 8589,
+      "sha256": "34a9c5aa6c4514b264b4f5311794b89a3c690d17a315fe7c45c84bddc40c5ffe"
     },
     "hooks/capabilities.json": {
       "bytes": 2273,
@@ -131,7 +131,7 @@
     },
     "metadata/agent-plugin.json": {
       "bytes": 509,
-      "sha256": "79614e33da55c575c6e731b0a5480707d72c65dba4e77359f01a145052f0a6c4"
+      "sha256": "ed725df1ee14e2ce8350823b7ce3242f3f4820edea72e9af63f15fa0c0321c2a"
     },
     "provenance/upstream-export.json": {
       "bytes": 264,
@@ -162,20 +162,24 @@
       "sha256": "de66aea41294980bb22596e509869e12826d16ec79a22b3acbfdf842e48a2888"
     },
     "scripts/bv2.py": {
-      "bytes": 41009,
-      "sha256": "b8792e4dc089f1f26686fe7281dedc40dbcb10a9fb2d80c559118cf5439b6d48"
+      "bytes": 41633,
+      "sha256": "dc6d7364ea6ed1abfc192897dd6ec72edb8dbddbc428790abb0aa5cd81addfbe"
+    },
+    "scripts/check.py": {
+      "bytes": 4714,
+      "sha256": "edf21d088499de5ec64165fb3d2ed6ed122ffd6d6c62cc4cd451062d4a88023c"
     },
     "scripts/codec.mjs": {
       "bytes": 1063,
       "sha256": "ac1b0e4d1c92c0750ea7a51c0878bc4d347499f233572b39ecab60ba2eb81930"
     },
     "scripts/delivery.py": {
-      "bytes": 57890,
-      "sha256": "d9b5bbaf63cbf0a6ce12126782d1f2002d405c7abac3a1cc9cd37662dc5e3104"
+      "bytes": 59244,
+      "sha256": "cc35fd1bd78c1a825086fe0e0776fe6ad15f6be7fc6563669a901bb52a07a923"
     },
     "scripts/dispatch_registry.py": {
-      "bytes": 6746,
-      "sha256": "ceecaf02db1c22dfe845bfe5d2ecf777d5e498307a8ca747cc90c19d7b0c0b81"
+      "bytes": 9498,
+      "sha256": "84ae6809a63ce9795e7ce182fab633575be21dce7e1e8989dbf00db7af276d15"
     },
     "scripts/handoff3.py": {
       "bytes": 36672,
@@ -186,72 +190,88 @@
       "sha256": "2ebd5b3bbd1b1c2cf34609a714d6bc01fa79a9cbb8da6ff2e5422c4fac1ac11f"
     },
     "scripts/preflight.py": {
-      "bytes": 6880,
-      "sha256": "e8ee87a78d2ad0783d2bfd60d1baabef48288b3d1e1390cf9a7b4529687814f8"
+      "bytes": 7407,
+      "sha256": "b0d8eaa1bf8a51e9f4255a3e1d8544fd5d40bb60d72d38a036ceb4fd728487c5"
     },
     "scripts/profile_hooks.py": {
       "bytes": 20268,
       "sha256": "0dba512dfc939bf6fd15f87fa9a7dec5d7e993a43a245a8bbaf4d12e8ad9cba4"
     },
     "scripts/profile_runtime.py": {
-      "bytes": 9658,
-      "sha256": "58fc6828027b316edade840ddd6751e1671bc7f287275ab112e3811e6db60207"
+      "bytes": 9753,
+      "sha256": "1536034cceafd115741bf53399893d83926cd954ad3a2024bdb9f6d1bb700af1"
     },
     "scripts/review_contract.py": {
-      "bytes": 5471,
-      "sha256": "49dcebd54fe54c238ccc2d39a1622ef8a07d9da988d4f5cb1e3f1b05aeb5de05"
+      "bytes": 10362,
+      "sha256": "6bac141be8381a9f34a6a8a1874a2cee2546fbe6564385db8a300c8429df5cc1"
     },
     "scripts/source_pool.py": {
-      "bytes": 9428,
-      "sha256": "f99ad47905babe9ca9a36602c0a6673b34716c9def7982c05cb617b0819d14a9"
+      "bytes": 11187,
+      "sha256": "312b683c2df1d53d53e0b1a46abcd91dbba61cbd4de7184f3e432500ef700f69"
     },
     "scripts/work_profiles.py": {
       "bytes": 30313,
-      "sha256": "39574e77dced017f411666edd0329b040ecf40c01c4875a80bb8ef8e5729a0f3"
+      "sha256": "db3b8f7a9d11d03d7bcee70547dfd6bef142857b28d3fdd7f226060e8d1d44d0"
     },
     "scripts/workspace_lock.py": {
-      "bytes": 1464,
-      "sha256": "bd8bf88893ea993219ca58ca646d20450e338e7f01bf339eac25e5719d803a00"
+      "bytes": 2418,
+      "sha256": "35b1898013808addc07948675f39c8a06e6c0452ebba6af8a7168cbca0491213"
     },
     "skills/belirtim-yazmani/README.md": {
-      "bytes": 1769,
-      "sha256": "7cddcc08b7e5d623bf149fd9dfd6221c579a8e547da8a32378c6d113988ab9a9"
+      "bytes": 2282,
+      "sha256": "cbd173e1e056efe5489a37eb34d666ed837519e40a09110597f2ac713a9ce327"
     },
     "skills/belirtim-yazmani/README.tr.md": {
-      "bytes": 1864,
-      "sha256": "486e715b9fe590a2a7ccb5f60b4f947f42274a552a29836c831eb41d23995c45"
+      "bytes": 2433,
+      "sha256": "ddc10eb9bf7f557a2a85868cc72887f88d4bc6efcbe53e34cd619cf3d2bc0214"
     },
     "skills/belirtim-yazmani/SKILL.md": {
-      "bytes": 9952,
-      "sha256": "734c59342b393bf5690741ace094703d706fc5ae3c39c36a1bc548cca531f62c"
+      "bytes": 7965,
+      "sha256": "09c515615317099adabc742e8310ab57f9dd6d32c7090d3fc5d32e711174c68b"
     },
     "skills/belirtim-yazmani/agents/openai.yaml": {
       "bytes": 475,
       "sha256": "e2295853f5d89ade415be47130d85e07e3002a100745d6331a3c981caccda3e1"
     },
+    "skills/belirtim-yazmani/references/dispatch.md": {
+      "bytes": 8878,
+      "sha256": "a8b8a876740ee8119ba7ba281018077bea20923d4cc1f474b3d338ebff70cec1"
+    },
     "skills/belirtim-yazmani/references/eval.md": {
-      "bytes": 3958,
-      "sha256": "89ecdd573c478427817e6f678f18223f1ecf3b1fecafca053046aff6323eb251"
+      "bytes": 3756,
+      "sha256": "c7456c72ba716adcf82807c9f5f728112ecdb5c4cf1ea3f58ba07aaa931adaa7"
     },
     "skills/belirtim-yazmani/references/format.md": {
       "bytes": 1713,
       "sha256": "9647bc6f182c4aa3e6eb79e8e30187b30649283be03f9ed4fb0c6ee2b4d1d064"
     },
+    "skills/belirtim-yazmani/references/models.md": {
+      "bytes": 2606,
+      "sha256": "c212aac9852b393826fdc93761838b56778d4437b57e513029a64a9f8a1bf3e7"
+    },
     "skills/belirtim-yazmani/references/work-profiles.md": {
-      "bytes": 18311,
-      "sha256": "ee383bd43caf55db5aec61013bdfcf938fc73eb36f216b66dc7baa0d0b14a2d6"
+      "bytes": 7789,
+      "sha256": "35bee9ab02f6b21ebf55a24280aa8218ec4f309f8521ae826a061df20bad8fff"
     },
     "skills/belirtim-yazmani/references/workflow.md": {
-      "bytes": 4696,
-      "sha256": "650fdeaed6691b69aa748e92f77efc19f65887ea0748c66a30f57b7829eea762"
+      "bytes": 4866,
+      "sha256": "4a9ff9185c60d5c3780716b351af88aa969d7c5dc85300a7bd8c4cc300c56d18"
     },
     "skills/belirtim-yazmani/scripts/check_package.py": {
-      "bytes": 2411,
-      "sha256": "0c213a5c64528cf847cd6cf1bd30b6a07248041eeb48f7f13bdf1f426e3b1d03"
+      "bytes": 2627,
+      "sha256": "0b559b925d740bfbcfa78d0df72950a750cafef8051017ecb88a267c19b114e1"
     },
     "tests/fixture_v4.py": {
       "bytes": 9235,
       "sha256": "80feaef2c7a4571f3b572a2bac93e5edf5108f7c3c59c0ba4f1ce8ec452c217b"
+    },
+    "tests/test_check_selection.py": {
+      "bytes": 1590,
+      "sha256": "ac5ae664202ab7d4c2577fc485c65290300432916bb27c0d5659ed468d14467d"
+    },
+    "tests/test_coordination_limits.py": {
+      "bytes": 4721,
+      "sha256": "cc0dfa0612408aa602e8cd4cee5af61cc219f8bbb4fcac50b6ea15b579188289"
     },
     "tests/test_effectiveness.py": {
       "bytes": 9507,
@@ -270,20 +290,28 @@
       "sha256": "f236c5868267f7002271db61019554fe303500d23134056503599b3325d6de36"
     },
     "tests/test_profile_integration.py": {
-      "bytes": 13898,
-      "sha256": "84cad4ac23ff5bded7debfc971bdefb8788f990d3cafd32d9f971af65ed04d92"
+      "bytes": 13931,
+      "sha256": "89bf4e8472df3ea7deca4f9008be836e16c07e0149b7e176cfee56a581a44ab0"
     },
     "tests/test_release.py": {
       "bytes": 14922,
       "sha256": "141c361f0e28c2ab01cb5b35128f09bee45264517e7a9a1fdf81c3d97f0b95ec"
+    },
+    "tests/test_review_safety.py": {
+      "bytes": 8196,
+      "sha256": "94006908864225ac207cc708cbf9f33e6b36548c88a5b2acc7095b88d509a0b7"
     },
     "tests/test_source_pool.py": {
       "bytes": 9549,
       "sha256": "a20369724330551f110050a1a0f75ada64b64d8e518d448e48c5a51d2e23d1ba"
     },
     "tests/test_work_profiles.py": {
-      "bytes": 18827,
-      "sha256": "a7193612a54102fb4580646450ecbceb620a54637ed82eabbdaddd2e9e55f3fc"
+      "bytes": 19251,
+      "sha256": "7f2bd4f0e50f8bad400bcec6f57b9d8dc872ae16ceca199ab6d4aa7bec0bd475"
+    },
+    "tests/test_workspace_paths.py": {
+      "bytes": 2152,
+      "sha256": "630ff6148dd86d31c17f0447c6ba5a4173f88e210e7776168abd9ab4671dc6c6"
     },
     "vendor/toon/LICENSE": {
       "bytes": 1082,
@@ -314,8 +342,8 @@
     "docs/QUALIFICATION-3.1.toon"
   ],
   "boundaries": [
-    "Exact complete upstream plugin with declared public installation/hash-check adaptations.",
-    "No real RMP review, model/billing/SAP operation or merge.",
-    "Historical records do not provide current protocol 3.2 credit."
+    "Complete upstream runtime/instructions with declared public installation/hash-check adaptations.",
+    "Public import validation does not create new provider, final handoff-reader, vision or SAP evidence.",
+    "Historical private records cannot provide current protocol 3.3 credit."
   ]
 }

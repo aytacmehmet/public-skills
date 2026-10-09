@@ -27,14 +27,14 @@ def checker_hash():
                                  for path in paths}))
 
 
-def inspect(doc, assets_root):
+def inspect(doc, assets_root, report=None):
     import delivery as d
     import handoff3 as h
     spec, control = d.get_state(doc)
     issues = d.shape_and_profile(spec)
     if issues:
         return {'status': 'BLOCKED', 'issues': issues, 'assets': [], 'references': []}
-    report = d.evaluate(doc)
+    report = d.evaluate(doc) if report is None else report
     # Snapshot approval and final readers remain separate gates. Business defaults
     # must already be approved before spending independent-reader resources.
     issues += [row for row in report['issues']
@@ -89,9 +89,15 @@ def inspect(doc, assets_root):
                   for name, data in files.items() if name in sources]
         references, pool = source_pool.collect(spec['references'], files, decoded=decoded)
         source_pool.size(pool, source_pool.limits(control)[0])
+        import review_contract
+        visible_text={name:data.decode('utf-8') for name,data in files.items()
+                      if name in sources and Path(name).suffix in ('.txt','.md','.json','.csv','.xml','.html')}
+        review_contract.blind_binding(spec,{'source_pool':pool,'dependency_contracts':list(contracts.values()),
+                                          'assets':assets,'visible_text':visible_text})
         result = {'status': 'PASS' if not issues else 'BLOCKED', 'issues': issues,
                   'assets': assets, 'references': references, 'source_pool': pool,
-                  'dependency_contracts': list(contracts.values()), 'spec_sha256': d.revision(spec)}
+                  'dependency_contracts': list(contracts.values()), 'spec_sha256': d.revision(spec),
+                  'visible_text':visible_text}
         result['input_sha256'] = b.digest(b.canonical({'spec': d.revision(spec), 'assets': assets,
                                                       'contracts': list(contracts.values()),
                                                       'source_pool': source_pool.value_sha(pool),
@@ -105,7 +111,7 @@ def inspect(doc, assets_root):
 def status(doc, assets_root):
     import delivery as d
     report = d.evaluate(doc)
-    inputs = inspect(doc, assets_root)
+    inputs = inspect(doc, assets_root, report=report)
     if inputs['status'] != 'PASS':
         action = 'Resolve the listed profile, business and input issues; rerun preflight'
     elif any(row['code'] == 'APPROVAL_CURRENT' for row in report['issues']):

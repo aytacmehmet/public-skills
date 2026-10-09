@@ -156,6 +156,8 @@ def run(args, doc):
                                             else Path(args.source).resolve().parent/'.byw-dispatch.json')
         result = w.choose(doc, args.profile, assessment, capabilities, capacity,
                           {'confirmed': args.confirmed, 'receipt': args.receipt})
+        import dispatch_registry
+        dispatch_registry.register_selection(doc,args.source)
         return result, True
     if args.cmd == 'work-status':
         return w.status(doc), False

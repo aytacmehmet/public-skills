@@ -95,6 +95,20 @@ python -B plugins/yula/scripts/build_package.py --output-dir <harici-artifact-kl
 
 Üretilen paket manifestini plugin'e kopyalayın; commit öncesi doğrulamayı yeniden çalıştırıp diff'i inceleyin. Tarihsel yeterlilik raporlarının sürümlerini koruyun. Yerel kontroller ve hosted CI ayrı kanıtlardır; ikisi de SAP tenant uygunluğunu kanıtlamaz. Branch üzerinde çalışıp inceleme için PR açın; branch'in yayımlanması main'e merge edildiği anlamına gelmez.
 
+## Belirtim Yazmani doğrulaması
+
+Belirtim Yazmani'yi commit edilmiş upstream sürümünden tek bir tam plugin olarak yayımlayın. `PUBLICATION.json` dosyasını tam kaynak commit'ine, dosya bazlı hash'lere ve açık public uyarlamalara bağlayın. İngilizce/Türkçe tanıtımları, değişiklik günlüklerini, katalogları ve host/skill sürümlerini birlikte güncelleyin. 3.3.0 sürümü private protokol 3.3'ü kullanır; public belirtim şeması 3.0 olarak kalır. Tarihsel yeterlilik kayıtlarının özgün sürümlerini koruyun.
+
+Uygulama değişikliğinde etkilenen kontrolleri plugin'e göre yollarla seçin:
+
+```text
+python -X utf8 -B plugins/belirtim-yazmani/scripts/check.py --changed scripts/work_profiles.py
+```
+
+Son runtime değişikliklerinden sonra `check.py --final` komutunu bir kez, yukarıdaki repo kontrolleriyle birlikte çalıştırın. Çevrimdışı dağıtımı `scripts/build_package.py --output-dir <harici-artifact-klasörü>` ile harici bir klasöre üretin; oluşturulan `PACKAGE-MANIFEST.json` dosyasını plugin'e kopyalayın ve yeni bir üretimle bayt eşitliğini doğrulayın. Her payload değişikliğinden sonra manifesti yeniden üretin. Public kurulum adresleri ve manifest doğrulaması dağıtım uyarlamalarıdır; upstream runtime'ı ve modele dönük yönergeleri koruyun.
+
+Sağlayıcı eval'ini yalnız değişen davranış, başarısız probe veya açık yeterlilik boşluğu gerektiriyorsa yineleyin. Yalnız belge veya dağıtım güncellemesi, kimliği belirli yeterlilik kanıtını yeniden kullanabilir; yeni sağlayıcı koşusu iddia edemez. Seçici kontroller, gerçek handoff için gerekli beş final katmanının, üç bağımsız okuyucunun, iki temiz ve kararlı turun veya insan kabulünün yerine geçmez. Private yürütme receipt'lerini, ham sağlayıcı loglarını, kurulum yollarını ve yinelenen teslim ZIP'lerini repo dışında tutun.
+
 ## Claude inceleme işletimi
 
 Otomatik incelemeler varsayılan olarak mevcut `CLAUDE_CODE_OAUTH_TOKEN` secret'ını kullanır. Action, `subtype: success` ile birlikte `is_error: true` döndürebilir; bu başarısız yürütmedir. Workflow, SDK yürütme dosyasından yalnız sınırlı hata sınıfı ve sıfırlanma bilgisini saklar. Ham model/araç çıktısı ve kimlik bilgileri yüklenmez. Kullanım limiti hatası başarısız kalır; yeniden çalıştırmadan önce bildirilen sıfırlanmayı bekleyin veya hesapta kullanılabilir kullanım sağlayın. Manuel kimlik kontrolü workflow'u mevcut OAuth kimliğiyle iki kısa, araçsız sorgu yapar.

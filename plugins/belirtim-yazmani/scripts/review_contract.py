@@ -1,8 +1,93 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Private review evidence; no provider authentication or automatic approval."""
 import copy
+import json
 import re
+from functools import lru_cache
 import bv2 as b
+
+SCENARIO_READERS = ('reader-1', 'reader-2')
+READER_ROLES = {'reader-1': 'SCENARIO', 'reader-2': 'SCENARIO', 'reader-3': 'FULL_REVIEW'}
+ORACLE_LABEL = re.compile(r'(?im)["\']?(?:expected(?:_results?)?|expected_results)["\']?\s*[:=]')
+
+
+def valid_sha(value):
+    return isinstance(value, str) and re.fullmatch('[a-f0-9]{64}', value) is not None
+
+
+@lru_cache(maxsize=8)
+def _case_pattern(identities):
+    return re.compile(r'(?<![\w-])(?:' + '|'.join(re.escape(x) for x in identities) + r')(?![\w-])')
+
+
+def assert_blind_content(value, case_ids, path='input'):
+    """Reject explicit current-case oracles and peer replies; preserve source bytes."""
+    if isinstance(value, dict):
+        identities = [value.get(key) for key in ('id', 'test_case_id', 'case_id')]
+        labels = {re.sub('[^a-z]', '', str(key).lower()): child for key, child in value.items()}
+        if any(isinstance(identity, str) and identity in case_ids for identity in identities):
+            if set(labels).intersection(('expected', 'expectedresult', 'expectedresults')):
+                raise b.Invalid('BLOCKED: REVIEW_ORACLE_EXPOSURE at ' + path)
+        if isinstance(labels.get('expectedresults'), dict) and case_ids.intersection(labels['expectedresults']):
+            raise b.Invalid('BLOCKED: REVIEW_ORACLE_EXPOSURE peer/scenario results at ' + path)
+        if {'reader_id', 'context_id', 'request_sha256'} <= set(value) or any(value.get(key) for key in ('eval_rounds', 'peer_verdicts', 'reader_results')):
+            raise b.Invalid('BLOCKED: REVIEW_PEER_EXPOSURE at ' + path)
+        for identity in case_ids.intersection(value):
+            child=value[identity]
+            if isinstance(child, dict) and any(re.sub('[^a-z]', '', key.lower()) in ('expected', 'expectedresult', 'expectedresults') for key in child):
+                raise b.Invalid('BLOCKED: REVIEW_ORACLE_EXPOSURE case-keyed result at ' + path)
+        for key, child in value.items():
+            assert_blind_content(child, case_ids, path + '/' + str(key))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            assert_blind_content(child, case_ids, path + '/' + str(index))
+    elif isinstance(value, str):
+        # Text sources can contain quoted JSON or TOON. Only explicit oracle labels
+        # together with the current case identity are blocked, not business prose
+        # saying that a functional outcome is expected.
+        if value.lstrip().startswith(('{','[','"')):
+            try:
+                decoded=json.loads(value)
+            except ValueError:
+                decoded=value
+            if decoded!=value:
+                assert_blind_content(decoded,case_ids,path)
+                return
+        if case_ids and ORACLE_LABEL.search(value) and _case_pattern(tuple(sorted(case_ids))).search(value):
+            raise b.Invalid('BLOCKED: REVIEW_ORACLE_EXPOSURE text at ' + path)
+        if re.search(r'(?im)["\']?(?:eval_rounds|peer_verdicts|reader_results)["\']?\s*[:=]', value):
+            raise b.Invalid('BLOCKED: REVIEW_PEER_EXPOSURE text at ' + path)
+
+
+def blind_binding(spec, prepared):
+    """Validate complete reader-visible sources once before issuing any packet."""
+    case_ids = {row['id'] for row in spec['test_cases']}
+    functional = review_spec(spec, True)
+    assert_blind_content(functional, case_ids, 'spec')
+    sources = prepared.get('source_pool', {'sources': []})
+    assert_blind_content(sources, case_ids, 'source_pool')
+    contracts = prepared.get('dependency_contracts', [])
+    assert_blind_content(contracts, case_ids, 'dependency_contracts')
+    for name, value in prepared.get('visible_text', {}).items():
+        assert_blind_content(value, case_ids, 'asset/' + name)
+    return b.digest(b.canonical({'functional': functional, 'source_pool': sources,
+                                'contracts': contracts, 'assets': prepared.get('assets', [])}))
+
+
+def assert_scenario_packet(packet):
+    """Do not allow a self-declared SCENARIO packet to carry an exposed oracle."""
+    if not isinstance(packet.get('reader_id'),str):
+        raise b.Invalid('Reader identity must be a string')
+    role = READER_ROLES.get(packet.get('reader_id'))
+    if role is None or packet.get('review_role') != role or packet.get('scenario_reader') is not (role == 'SCENARIO'):
+        raise b.Invalid('Reader role differs from issued identity')
+    if not valid_sha(packet.get('blindness_sha256')):
+        raise b.Invalid('Current packet needs its oracle-admission binding')
+    if role == 'SCENARIO':
+        case_ids = {row['id'] for row in packet['spec']['test_cases']}
+        assert_blind_content(packet['spec'], case_ids, 'spec')
+        assert_blind_content(packet.get('source_pool'), case_ids, 'source_pool')
+        assert_blind_content(packet.get('dependency_contracts'), case_ids, 'dependency_contracts')
 
 
 def response_payload(reader):

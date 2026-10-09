@@ -2,6 +2,13 @@
 
 English · [Türkçe](CHANGELOG.tr.md)
 
+## 3.3.0 — 2026-10-09
+
+- Import the complete committed private 3.3.0 plugin recorded in PUBLICATION.json, including shared runtime, schemas, codec, reader definitions, hooks, all tests and selective instruction routes.
+- Bind the two scenario readers by issued identity, reject explicit oracle/peer exposure and enforce explicit preparation blockers plus the lowest ACTIVE coordinated profile/host limit. Historical 3.0/3.1/3.2 packets stay read-only; fresh credit requires private protocol 3.3.
+- Add batch reference access, one snapshot evaluation, focused/final qualification and strict physical-path handling for opaque sandbox ancestors. Keep public schema 3.0, immutable separate ZIPs, human approval and the full three-reader/two-clean-round quality floor.
+- Preserve public-only builder/hash checks and historical records. Local/provider/host evidence remains separate from hosted CI, actual handoff-reader/vision and SAP acceptance; no general speed or token saving is claimed.
+
 ## 3.2.2 — 2026-10-09
 
 - Import the complete private 3.2.2 plugin at the exact commit in PUBLICATION.json, including governed profiles and native 3.2.1 compatibility.

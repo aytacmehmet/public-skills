@@ -17,7 +17,7 @@
       "name": "belirtim-yazmani",
       "source": "./plugins/belirtim-yazmani",
       "description": "Profile-guided SAP Cloud ERP specifications with pooled reader sources and bounded serialization.",
-      "version": "3.2.2"
+      "version": "3.3.0"
     }
   ]
 }

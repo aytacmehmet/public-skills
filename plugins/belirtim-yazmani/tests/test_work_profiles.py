@@ -172,9 +172,14 @@ class WorkProfileTests(unittest.TestCase):
         self.select('plus', assessment=assessment((0, None, 0, 0, 0, 0),
                     preparation_blockers=['Missing source']),
                     capabilities={'child_limit': 1, 'reader_isolation': False, 'vision': False})
-        w.admit(self.doc, 'prepare')
+        self.error('ADMISSION', lambda: w.admit(self.doc, 'prepare'))
         w.admit(self.doc, 'write')
-        attempt = w.begin(self.doc, 'source-research', 'prep', INPUT)
+        self.assertEqual(w.status(self.doc)['usage']['preparation_attempts'], 0)
+        # Uncertainty without an explicit stop condition can use bounded discovery.
+        self.select('plus', assessment=assessment((0, None, 0, 0, 0, 0)),
+                    capabilities={'child_limit': 1, 'reader_isolation': False, 'vision': False})
+        w.admit(self.doc, 'prepare')
+        attempt = w.begin(self.doc, 'source-research', 'prep', INPUT, 'source-context')
         self.complete(attempt)
         self.error('ADMISSION', lambda: w.admit(self.doc, 'review'))
         self.select('plus')

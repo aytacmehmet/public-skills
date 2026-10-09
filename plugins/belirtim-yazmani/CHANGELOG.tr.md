@@ -2,6 +2,13 @@
 
 [English](CHANGELOG.md) · Türkçe
 
+## 3.3.0 — 2026-10-09
+
+- PUBLICATION.json içinde kaydedilen commit edilmiş tam private 3.3.0 plugin'i aktar; ortak runtime, schema, codec, okuyucu tanımları, hook'lar, tüm testler ve seçici talimat rotaları dahil.
+- İki senaryo okuyucusunu atanmış kimlikle bağla, açık oracle/peer erişimini reddet, açık hazırlık engellerini ve en düşük ACTIVE koordineli profil/host sınırını uygula. Tarihsel 3.0/3.1/3.2 paketleri salt okuma kalır; yeni kredi özel protokol 3.3 ister.
+- Toplu referans erişimi, tek snapshot değerlendirmesi, hedefli/final doğrulama ve kapalı sandbox üst klasörleri için strict fiziksel yol doğrulaması ekle. Public şema 3.0, değişmez ayrı ZIP, insan onayı ve tam üç okuyucu/iki temiz tur tabanı korunur.
+- Public'e özel builder/hash kontrollerini ve tarihsel kayıtları koru. Yerel/sağlayıcı/host kanıtı hosted CI, gerçek handoff okuyucusu/görsel ve SAP kabulünden ayrıdır; genel hız veya token tasarrufu iddia edilmez.
+
 ## 3.2.2 — 2026-10-09
 
 - Yönetişimli profiller ve native 3.2.1 uyumluluğu dahil tam private 3.2.2 pluginini PUBLICATION.json kesin commit’inden aktar.

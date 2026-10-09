@@ -95,6 +95,20 @@ python -B plugins/yula/scripts/build_package.py --output-dir <external-artifacts
 
 Copy the generated package manifest into the plugin and rerun validation before committing; inspect the diff. Preserve historical qualification versions. Local checks and hosted CI are separate evidence, and neither establishes SAP tenant readiness. Work on a branch and open a PR for review; publishing a branch does not merge it into main.
 
+## Belirtim Yazmani qualification
+
+Publish Belirtim Yazmani as one complete plugin from a committed upstream revision. Keep `PUBLICATION.json` bound to that exact commit, its per-file hashes and the explicit public adaptations. Update the English/Turkish introductions, changelogs, catalogs and host/skill versions together. Version 3.3.0 uses private protocol 3.3 while the public specification schema remains 3.0; historical qualification records retain their original versions.
+
+For an implementation change, select the affected checks with plugin-relative paths:
+
+```text
+python -X utf8 -B plugins/belirtim-yazmani/scripts/check.py --changed scripts/work_profiles.py
+```
+
+Run `check.py --final` once after the final runtime changes, alongside the repository checks above. Build the offline distribution into an external directory with `scripts/build_package.py --output-dir <external-artifacts>`, copy its generated `PACKAGE-MANIFEST.json` into the plugin, and verify its bytes against a fresh build. Rebuild the manifest after any payload edit. Public installation addresses and manifest verification are distribution adaptations; preserve the upstream runtime and model-facing instructions.
+
+Rerun a provider eval only when changed behavior, a failed probe or an unresolved qualification gap requires it. A documentation or distribution-only update may reuse identified qualification evidence; it must not claim a new provider run. Selective checks do not replace the five final layers, three independent readers, two clean stable rounds or human acceptance required for an actual handoff. Keep private execution receipts, raw provider logs, installation paths and duplicate delivery ZIPs outside the repository.
+
 ## Claude review operation
 
 Automatic reviews use the existing `CLAUDE_CODE_OAUTH_TOKEN` secret by default. The action can report `subtype: success` together with `is_error: true`; that is a failed execution. The workflow retains only a bounded error category and reset hint from the SDK execution file. Raw model/tool output and credentials are not uploaded. A usage-limit failure remains failed; wait for the reported reset or restore available account usage before rerunning. The manual authentication-check workflow uses two short tool-free probes with the existing OAuth credential.
