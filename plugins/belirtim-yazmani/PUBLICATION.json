@@ -1,25 +1,25 @@
 {
   "format": "plugin-publication/1",
-  "version": "3.1.0",
+  "version": "3.2.2",
   "repository": "aytacmehmet/public-skills",
   "marketplace": "aytacmehmet-public",
   "firstPublicPluginRelease": false,
-  "previousPublicVersion": "3.0.0",
+  "previousPublicVersion": "3.1.0",
   "upstream": {
     "repository": "aytacmehmet/private-skills-plugins",
-    "ref": "update/belirtim-yazmani-3.1.0-20261008",
-    "commit": "b6541aa70894d22223723b87ce29992582555ba1",
+    "ref": "fix/byw-reference-pool-3.2.2-20261009",
+    "commit": "c4da3aa4a90ae2df43f038bf59547a9e99703cef",
     "path": "plugins/belirtim-yazmani",
-    "version": "3.1.0"
+    "version": "3.2.2"
   },
   "upstreamFiles": {
     ".claude-plugin/plugin.json": {
-      "bytes": 345,
-      "sha256": "594515d6a21dfdb2de5eebad5581905bb920733612577697e5f216b3a717c201"
+      "bytes": 349,
+      "sha256": "8eaab38017c6eee17ceddea37e16c19e80be6af522617373b9df4e3920115609"
     },
     ".codex-plugin/plugin.json": {
-      "bytes": 370,
-      "sha256": "afdfc0b3b03adc7ac61449b202d2ba436c053e348ae00ef953f58f8c9cfc6f46"
+      "bytes": 407,
+      "sha256": "143290aff233f85fc4b0460b7be51c1f0ac0795347d143cdc94485857952d692"
     },
     "LICENSE": {
       "bytes": 35149,
@@ -34,12 +34,44 @@
       "sha256": "f38d7f387b3c0cef3345ea236878153b5b9dded78d6c6d5e5c52b952dbedc6dd"
     },
     "README.md": {
-      "bytes": 5893,
-      "sha256": "d943b7a9d8083c13dd1d301a4f67f982513ed0c71bc614f15cb3538a72c00122"
+      "bytes": 10272,
+      "sha256": "32439d173248ec2871643478fccda802f36077d3f7b70e5d9040d90912ac52a4"
     },
     "README.tr.md": {
-      "bytes": 6047,
-      "sha256": "97282e0d73823ce6edd18b3cd228eb77a9f8dbed0c5fa469a3f191c60bb5c3f5"
+      "bytes": 10750,
+      "sha256": "9fa485e8ad1bf5170291b636cbbdf6e28b7ea83c3583fa6b80ec4000abdb9b8a"
+    },
+    "agents/byw-preparation.md": {
+      "bytes": 1683,
+      "sha256": "43c4bf9c416a6ab356b4cdc1b65b8b57f37894690519a9b89f32f79aa030009c"
+    },
+    "agents/byw-reader-a.md": {
+      "bytes": 2862,
+      "sha256": "d625ee75477013753d036b26673ebb21df05a3fe5aa9ed9b64b3aba0ae6d7597"
+    },
+    "agents/byw-reader-b.md": {
+      "bytes": 2988,
+      "sha256": "3441b9f7be3e38fe10f0314d3b093989169e0cca6ba16e37000416458b05bc72"
+    },
+    "agents/byw-reader-c.md": {
+      "bytes": 3129,
+      "sha256": "6df7a12edda5ad1658e48224e8abd8f82575d76615f17f7980d0746ca79b3687"
+    },
+    "agents/codex/byw-preparation.toml": {
+      "bytes": 2180,
+      "sha256": "bd4c309d82221cdad21ee913c6f8da5fd7bdfb0ad764165e4fe9e5816ed4312b"
+    },
+    "agents/codex/byw-reader-a.toml": {
+      "bytes": 3380,
+      "sha256": "bf1338d48d50108984812b474c1f95642f537d20b4f1c03a6757ec1453554b04"
+    },
+    "agents/codex/byw-reader-b.toml": {
+      "bytes": 3506,
+      "sha256": "24961f4d46d4f7cadfd26b45d709a8904ba87e38b3492191e74c64e4ff811ba4"
+    },
+    "agents/codex/byw-reader-c.toml": {
+      "bytes": 3647,
+      "sha256": "6f9242195cc8c57b8958f81d02d1e9f8d25b7bdc32d30460688098b2811459cd"
     },
     "assets/EXAMPLE.md": {
       "bytes": 362,
@@ -58,12 +90,12 @@
       "sha256": "e0ba565684f1b59b9381bda05f0bfb89345a02abc4e2fd71c41393aeadda1342"
     },
     "docs/CHANGES.md": {
-      "bytes": 2093,
-      "sha256": "9ae0d7e5a2427b9053bf92528e28a3bebc80bcec97c54c64a9dee4f66fa0448c"
+      "bytes": 3838,
+      "sha256": "5bf9e62b8595232c8ccb84aabf3ea9600902a1131759176423021729df022dee"
     },
     "docs/CHANGES.tr.md": {
-      "bytes": 2256,
-      "sha256": "d510e578c3799bd7ea4dac9b5b0ffb50a8196da6c5c0a8ffa78c5d21cf90afee"
+      "bytes": 4200,
+      "sha256": "c74e671405c3fda832d4a7af08903a9c43fcf307cbcd320296c27d9234388694"
     },
     "docs/QUALIFICATION-3.1.toon": {
       "bytes": 1956,
@@ -85,9 +117,21 @@
       "bytes": 6868,
       "sha256": "9c91d9679d4e6c9406ed1f9f684395673464d7b8cd709d82faeeafddb8bd3a8d"
     },
-    "plugin.json": {
-      "bytes": 420,
-      "sha256": "10ca597244dc1a10dbdd33e5a25530f0de0b42b9af9cc8677550139677e36eae"
+    "hooks/capabilities.json": {
+      "bytes": 2273,
+      "sha256": "716e9c089b29e0ac541c78aba4b33fd1ff7b9c7150e9bec4325f850ec228d2e4"
+    },
+    "hooks/codex.json": {
+      "bytes": 2132,
+      "sha256": "bb6c60a647202210946e77324550123707a67f59d5f0d7cb73b3865542b3c10a"
+    },
+    "hooks/hooks.json": {
+      "bytes": 1682,
+      "sha256": "eb10def162b6cd19a86fc3f967cc5ebbb0d7d14517b84116497f0d13834474a7"
+    },
+    "metadata/agent-plugin.json": {
+      "bytes": 509,
+      "sha256": "79614e33da55c575c6e731b0a5480707d72c65dba4e77359f01a145052f0a6c4"
     },
     "provenance/upstream-export.json": {
       "bytes": 264,
@@ -118,72 +162,100 @@
       "sha256": "de66aea41294980bb22596e509869e12826d16ec79a22b3acbfdf842e48a2888"
     },
     "scripts/bv2.py": {
-      "bytes": 38626,
-      "sha256": "cc9fc796b9cc151686ac480f91340d894c61e93facda0f4e07f44a39c2151cc9"
+      "bytes": 41009,
+      "sha256": "b8792e4dc089f1f26686fe7281dedc40dbcb10a9fb2d80c559118cf5439b6d48"
     },
     "scripts/codec.mjs": {
       "bytes": 1063,
       "sha256": "ac1b0e4d1c92c0750ea7a51c0878bc4d347499f233572b39ecab60ba2eb81930"
     },
     "scripts/delivery.py": {
-      "bytes": 53638,
-      "sha256": "ef1ca1cce56f6d7e01e1adc33b96e2aa102da7e6fc0396e1d1e3cde222263521"
+      "bytes": 57890,
+      "sha256": "d9b5bbaf63cbf0a6ce12126782d1f2002d405c7abac3a1cc9cd37662dc5e3104"
+    },
+    "scripts/dispatch_registry.py": {
+      "bytes": 6746,
+      "sha256": "ceecaf02db1c22dfe845bfe5d2ecf777d5e498307a8ca747cc90c19d7b0c0b81"
     },
     "scripts/handoff3.py": {
-      "bytes": 36495,
-      "sha256": "bfd2c4c3f4d5321f88333ba98246ddf6802bea9e5e50411a00fe42a747ddccd5"
+      "bytes": 36672,
+      "sha256": "bf30f6d51bb5aa7c96da82114c8733b1c08eb64cf7b1569c07a21430b75738bb"
     },
     "scripts/legacy_core.py": {
       "bytes": 46452,
       "sha256": "2ebd5b3bbd1b1c2cf34609a714d6bc01fa79a9cbb8da6ff2e5422c4fac1ac11f"
     },
     "scripts/preflight.py": {
-      "bytes": 6764,
-      "sha256": "1ea402fb78b692f77cb00043714c86bbe3d05beecae440a99ac388f521d44f72"
+      "bytes": 6880,
+      "sha256": "e8ee87a78d2ad0783d2bfd60d1baabef48288b3d1e1390cf9a7b4529687814f8"
+    },
+    "scripts/profile_hooks.py": {
+      "bytes": 20268,
+      "sha256": "0dba512dfc939bf6fd15f87fa9a7dec5d7e993a43a245a8bbaf4d12e8ad9cba4"
+    },
+    "scripts/profile_runtime.py": {
+      "bytes": 9658,
+      "sha256": "58fc6828027b316edade840ddd6751e1671bc7f287275ab112e3811e6db60207"
     },
     "scripts/review_contract.py": {
       "bytes": 5471,
       "sha256": "49dcebd54fe54c238ccc2d39a1622ef8a07d9da988d4f5cb1e3f1b05aeb5de05"
     },
+    "scripts/source_pool.py": {
+      "bytes": 9428,
+      "sha256": "f99ad47905babe9ca9a36602c0a6673b34716c9def7982c05cb617b0819d14a9"
+    },
+    "scripts/work_profiles.py": {
+      "bytes": 30313,
+      "sha256": "39574e77dced017f411666edd0329b040ecf40c01c4875a80bb8ef8e5729a0f3"
+    },
+    "scripts/workspace_lock.py": {
+      "bytes": 1464,
+      "sha256": "bd8bf88893ea993219ca58ca646d20450e338e7f01bf339eac25e5719d803a00"
+    },
     "skills/belirtim-yazmani/README.md": {
-      "bytes": 434,
-      "sha256": "127792f400ac16a2daeed533f9f4a6d43540e31f1bd80fce77fe8505352c11cb"
+      "bytes": 1769,
+      "sha256": "7cddcc08b7e5d623bf149fd9dfd6221c579a8e547da8a32378c6d113988ab9a9"
     },
     "skills/belirtim-yazmani/README.tr.md": {
-      "bytes": 452,
-      "sha256": "0362c4c822992028bfed7216e9c986ab216cc553bfdb95cf3715a2a30860e6b4"
+      "bytes": 1864,
+      "sha256": "486e715b9fe590a2a7ccb5f60b4f947f42274a552a29836c831eb41d23995c45"
     },
     "skills/belirtim-yazmani/SKILL.md": {
-      "bytes": 7179,
-      "sha256": "e62f0986435da1571234f337929806e944301c2f6bb62506b14fb7c5d3892355"
+      "bytes": 9952,
+      "sha256": "734c59342b393bf5690741ace094703d706fc5ae3c39c36a1bc548cca531f62c"
     },
     "skills/belirtim-yazmani/agents/openai.yaml": {
-      "bytes": 349,
-      "sha256": "a336032846b820a36c7b417d7c530a0c6b925afe40ecd53f94a7f1f4d3a3ed21"
+      "bytes": 475,
+      "sha256": "e2295853f5d89ade415be47130d85e07e3002a100745d6331a3c981caccda3e1"
     },
     "skills/belirtim-yazmani/references/eval.md": {
-      "bytes": 3149,
-      "sha256": "97cb37c5f38132ebf441ddc976a568baec1e2394bd79601e50029f43f05b855a"
+      "bytes": 3958,
+      "sha256": "89ecdd573c478427817e6f678f18223f1ecf3b1fecafca053046aff6323eb251"
     },
     "skills/belirtim-yazmani/references/format.md": {
       "bytes": 1713,
       "sha256": "9647bc6f182c4aa3e6eb79e8e30187b30649283be03f9ed4fb0c6ee2b4d1d064"
+    },
+    "skills/belirtim-yazmani/references/work-profiles.md": {
+      "bytes": 18311,
+      "sha256": "ee383bd43caf55db5aec61013bdfcf938fc73eb36f216b66dc7baa0d0b14a2d6"
     },
     "skills/belirtim-yazmani/references/workflow.md": {
       "bytes": 4696,
       "sha256": "650fdeaed6691b69aa748e92f77efc19f65887ea0748c66a30f57b7829eea762"
     },
     "skills/belirtim-yazmani/scripts/check_package.py": {
-      "bytes": 1544,
-      "sha256": "1070db3816425d57c28baf52e87d92ea092a8851484fa138104e5d7a5f5c0bae"
+      "bytes": 2411,
+      "sha256": "0c213a5c64528cf847cd6cf1bd30b6a07248041eeb48f7f13bdf1f426e3b1d03"
     },
     "tests/fixture_v4.py": {
-      "bytes": 9162,
-      "sha256": "5efa9d137bccd49df33ad0d8c306f9f2a7db90484b2ed843283661c4d84fef8b"
+      "bytes": 9235,
+      "sha256": "80feaef2c7a4571f3b572a2bac93e5edf5108f7c3c59c0ba4f1ce8ec452c217b"
     },
     "tests/test_effectiveness.py": {
-      "bytes": 9458,
-      "sha256": "faf90acd3fcfa5db08b30e2054a4eabe2c7bb258bdb33d195c67cb466be878dd"
+      "bytes": 9507,
+      "sha256": "fe7795ba7cd39d892e34f56e0f9f2a342d4968f0e47170e1b86557c584439b2a"
     },
     "tests/test_handoff.py": {
       "bytes": 10374,
@@ -193,9 +265,25 @@
       "bytes": 15042,
       "sha256": "31dd4a457bda231134b9678af57678c213da11f83da47cc420e84f21536a3b12"
     },
+    "tests/test_profile_hooks.py": {
+      "bytes": 16690,
+      "sha256": "f236c5868267f7002271db61019554fe303500d23134056503599b3325d6de36"
+    },
+    "tests/test_profile_integration.py": {
+      "bytes": 13898,
+      "sha256": "84cad4ac23ff5bded7debfc971bdefb8788f990d3cafd32d9f971af65ed04d92"
+    },
     "tests/test_release.py": {
       "bytes": 14922,
       "sha256": "141c361f0e28c2ab01cb5b35128f09bee45264517e7a9a1fdf81c3d97f0b95ec"
+    },
+    "tests/test_source_pool.py": {
+      "bytes": 9549,
+      "sha256": "a20369724330551f110050a1a0f75ada64b64d8e518d448e48c5a51d2e23d1ba"
+    },
+    "tests/test_work_profiles.py": {
+      "bytes": 18827,
+      "sha256": "a7193612a54102fb4580646450ecbceb620a54637ed82eabbdaddd2e9e55f3fc"
     },
     "vendor/toon/LICENSE": {
       "bytes": 1082,
@@ -226,9 +314,8 @@
     "docs/QUALIFICATION-3.1.toon"
   ],
   "boundaries": [
-    "Public adaptations are installation documentation and payload validation only.",
-    "Private qualification records precede publication; bounded native skill behavior is not full handoff-reader execution.",
-    "No comparative provider-cost, new Claude model or SAP qualification is claimed.",
-    "Public package transfer does not install a second active skill or change credentials."
+    "Exact complete upstream plugin with declared public installation/hash-check adaptations.",
+    "No real RMP review, model/billing/SAP operation or merge.",
+    "Historical records do not provide current protocol 3.2 credit."
   ]
 }

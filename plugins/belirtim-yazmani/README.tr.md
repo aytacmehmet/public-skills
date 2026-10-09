@@ -1,6 +1,10 @@
-# Belirtim Yazmanı 3.1.0
+# Belirtim Yazmanı 3.2.2
 
 [English](README.md) · Türkçe
+
+## 3.2.2 okuyucu kaynak havuzu
+
+Her protocol 3.2 okuyucu paketinde dosya hash başına tek tam kaynak bulunur; referanslar kaynak kimliği/hash/pointer bağını korur. Runtime kaynağı bir kez decode eder ve aşırı serileştirme hacminde çıktı üretmeden BLOCKED verir. `read-reference <packet> --reference-id <ID>` kullanın veya tekrar erişim için `source_pool.Reader` nesnesini bir kez oluşturun. Eski paketler açık `--allow-legacy` seçeneğiyle salt okunur erişimdir; eski inceleme kayıtları ve yürütme teyidi yeni protokol için güncel kredi sağlamaz. Public şema, profil bütçeleri, üç tam okuyucu, körlük, onaylar ve iki temiz tur korunur.
 
 ## Amaç
 SAP Cloud ERP için ortak Claude Code/Codex belgeleme skill'i. Danışman iş/tasarım kararları en fazla üç sıralı öneriyle toplanır; uygulama tekniği soruları ABAP developer'a aittir. Bağlı geliştirmelerin ayrı ZIP'leri iş, mimari, referans ve son inceleme kapıları geçince topluca teslim edilir. Paketler kendi bağlamını içerir; developer'ın araç/model seçimine bağımlı değildir.
@@ -18,6 +22,26 @@ codex plugin add belirtim-yazmani@aytacmehmet-public
 ```
 
 Claude Code'da tam skill adını, Codex'te `$belirtim-yazmani` kullanın. Bu repo yayını kurulum yapmaz veya model seçmez.
+
+## 3.2.1 native host uyumluluğu
+Codex 0.160.0 native sondaları, ilk 3.2.0 paketinde manifest seçimi ve Windows hook başlatma uyumluluğu sorunlarını belirledi. 3.2.1, etkin Codex giriş noktası olarak `.codex-plugin/plugin.json` kullanır; taşınabilir agent-plugin metadata'sını `metadata/agent-plugin.json` içinde korur. Windows hook komutu, native runtime'ın `${PLUGIN_ROOT}` yer değiştirmesini tırnaklı yollarla kullanarak runtime'ın varsayılan komut kabuğuyla uyum sağlar. Bu değişiklikler için tam plugin paketini yeniden kurun/güncelleyin. Native hook yüklenmesi, güveni, olay yürütmesi ve sağlayıcı işi ayrı kontroller olarak kalır; yama beş profili ve bütün iş, onay ve final inceleme kapılarını korur.
+
+## 3.2 çalışma profilleri
+Geliştirmenin çalışma yoğunluğu için **Lite / Yalın, Plus / Gelişmiş, Pro / Yetkin, Max / Doruk veya Ultra / Üstün** seçin. Skill önce risk/kaynak gerekçesi, bilinmeyenler, tüm kapsamı okuyacak okuyucu kapasitesi, koşullu hazırlık bütçesi ve mevcut sağlayıcı ailesindeki model önerisini tek seçim kartında sunar. Kullanıcının gerçek seçimi özel çalışma kaydına alınır. Seçim iş varsayılanlarını, belirtimi, model/ayar değişikliğini veya teslimi onaylamaz. Mevcut belge profilleri `hafif/standart/tam` ayrı kalır.
+
+| Profil | En çok hazırlık denemesi | En çok eşzamanlı alt ajan | Episode başına en çok toplam deneme |
+| --- | ---: | ---: | ---: |
+| Lite / Yalın | 0 | 1 | 12 |
+| Plus / Gelişmiş | 1 | 1 | 13 |
+| Pro / Yetkin | 2 | 2 | 14 |
+| Max / Doruk | 4 | 3 | 16 |
+| Ultra / Üstün | 6 | 3 | 18 |
+
+Her profil final tur başına tüm kapsamı okuyan üç bağımsız okuyucuyu ve aynı güncel snapshot üzerinde iki temiz turu korur. Okuyucu deneme tavanı her episode'da 12'dir; hazırlık tavanları koşulludur, hedef değildir. Başarısız/iptal denemeler, tekrarlar ve revizyonlar bütçede sayılmaya devam eder. Profil/host/koordineli çalışma sınırları birlikte uygulanır; en çok üç alt ajan açılır, iç içe ajan açılmaz. Bağlı workspace'ler ortak coordinator dosyasını kullanır; ilgisiz host işlerinin dolu slotları ayrıca hesaba katılır. Bilinmeyen/yetersiz tam-okuyucu kapasitesi final çalıştırmayı/teslimi durdurur. Daha düşük seçim korunur; sığmayan plan için açık bölme/profil/bütçe kararı beklenir.
+
+Skill dizininden mutlak `scripts/bv2.py` yolunu çözerek `work-profiles catalog`, `work-recommend`, `work-select`, `work-status`, `work-admit`, `work-begin` ve `work-finish` kullanın. Gerçek alt ajan çalıştırma host skill'ine aittir; CLI özel seçim, kota rezervasyonu, receipt ve ilerleme kontrollerini saklar. Sabit modelle subprocess başlatmaz. Okuyucu paketi üretimi gerçek okuyucu yürütmesi değildir: her çalıştırılan okuyucu ayrı rezerve edilir ve tamamlanır. Argümanlar, puanlama, kapasite ve toparlama için [çalışma profili protokolüne](skills/belirtim-yazmani/references/work-profiles.md) bakın.
+
+Command hook adaptörleri işlem kapsamıyla sınırlı ilerleme kontrolü/diagnostic ekler. Native leaf PreToolUse gerçek çağrı kimliğini gerektirir ve zaten bütçede sayılan rezervasyonu açıkça seçilen harici coordinator içinde atomik olarak bu çağrıya bağlar; aynı host/olay kimliği tekrarında işlem yinelenmez, farklı çağrı kimliği aynı denemeyi kullanamaz. Bu hook yalnız coordinator rezervasyonuna yazar; workspace belirtimi ve kullanıcı ayarları değişmez. Hook keşfi, güveni ve runtime ayrı kanıtlardır; hook atlandığında veya desteklenmediğinde açık core kontrolü final teslimi korur. Yetenek/model erişimi, görsel destek ve telemetri özel kayıtta açıkça tutulur; ölçülmüş tasarruf, sağlayıcı çalıştırma ve native host hook kalifikasyonu ayrı kanıt gerektirir. Çalışma profili kaydı geliştirici ZIP'ine girmez.
 
 ## 3.1 kullanımı
 Güncel engeller ve sonraki işlem için `status <workspace> --assets-root <inputs>` çalıştırın. Son okuyuculardan önce `preflight <workspace> --assets-root <inputs>` kullanın; eksik dosya, kaynak eşlemesi, referans, pointer, açık iş kararı ve bağımlılık sözleşmesi değerlendirme paketi üretimini durdurur. Salt okunurdur ve teslim onayı vermez. `check-plan`/`check-record` aynı dosya kökünü alır; doğrulayıcı byte ve gerçek dosya parmak izleri ile işlev, UI, nesne ve kayıt birimlerini kullanır.
@@ -39,10 +63,4 @@ Güncel engeller ve sonraki işlem için `status <workspace> --assets-root <inpu
 ## Sözleşme ve sınırlar
 Tek düzenlenebilir/public belirtim otoritesi TOON'dur; Excel türev, PNG yalnız yerleşim içindir. Gerekli bağlı sözleşme ve kaynak parçaları her ZIP'e dahil edilir; başka dosya/URL'den aranmaz. Tarafsız developer rehberi okuma sırasını, sınırları belli teknik kararları ve kabul kontrollerini açıklar; lokal skill/plugin/model, uygulama kaynağı, scaffold veya çalıştırılabilir geliştirme/test script'i teslim edilmez. Mevcut açıkça onaylanmış offline interaktif istisna ayrıdır.
 
-Üç bağımsız okuyucu, senaryo uyuşması, gerçek PNG incelemesi ve kodsuz mimari/plan kontrolü son teslim kapılarıdır. Fixture sentetiktir; yürütme/görsel yetenek yoksa NOT_RUN. Yerel şema/ZIP kontrolü SAP yetkisi, aktivasyon, ATC, runtime veya UAT kanıtı değildir. [Doğrulama](docs/VERIFICATION.tr.md) ve [değişiklikler](docs/CHANGES.tr.md) içindedir. 3.0.0 için yeni token/latency benchmark'ı çalıştırılmadı.
-
-## Public paket kontrolleri
-
-`python -B skills/belirtim-yazmani/scripts/check_package.py` ve ilgili runtime testlerini çalıştırın. Tam çevrimdışı marketplace ZIP'i `python -B scripts/build_package.py --output-dir <external-artifacts>` ile oluşturun. Üretilen PACKAGE-MANIFEST.json dosyasını plugin'e kopyalayıp commit öncesi repo doğrulamasını çalıştırın. Teslim ZIP'leri repo dışında kalır. Eski Spec Writer standalone çifti emekli edilmiştir; tam plugin geçmişi ve önceki arşivler Git'te korunur. Aynı anda tek etkin Spec Writer sürümü kurun. [Public değişiklikler](CHANGELOG.tr.md) ve [yayın kökeni](PUBLICATION.json) kayıtlarına bakın.
-
-Upstream doğrulama kayıtları private yerel aday üzerinde commit ve yayın öncesinde toplanmıştır. PUBLICATION.json aktarılan gerçek private commit'i sabitler; hosted kontroller ve merge kayıtları ayrı kanıttır. Public paketleme doğrulamanın model, maliyet veya SAP kapsamını genişletmez.
+Üç bağımsız okuyucu, senaryo uyuşması, gerçek PNG incelemesi ve kodsuz mimari/plan kontrolü son teslim kapılarıdır. Fixture sentetiktir; yürütme/görsel yetenek yoksa NOT_RUN. Yerel şema/ZIP kontrolü SAP yetkisi, aktivasyon, ATC, runtime veya UAT kanıtı değildir. [Doğrulama](docs/VERIFICATION.tr.md) ve [değişiklikler](docs/CHANGES.tr.md) içindedir. Tarihsel 3.0.0 benchmark sınırı geçerlidir; profil/sağlayıcı maliyeti ve native host yürütmesi 3.2.1 için ayrı kalifikasyon kapsamları olarak kalır.

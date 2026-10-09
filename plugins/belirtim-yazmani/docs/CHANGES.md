@@ -2,6 +2,16 @@
 
 English · [Türkçe](CHANGES.tr.md)
 
+## 3.2.2 — 2026-10-09
+
+Pool complete reader source content by file hash, bind lightweight references to pointers, cache decoding and enforce serialization limits before packet output. Private review protocol 3.2 and explicit historical read-only compatibility preserve the existing public specification, profiles and final gates.
+
+## 3.2.1 — 2026-10-08
+Fix native Codex manifest selection and Windows hook launch compatibility found by Codex 0.160.0 probes. Keep `.codex-plugin/plugin.json` as the active Codex entrypoint and preserve portable agent-plugin metadata at `metadata/agent-plugin.json`. Use the runtime's `${PLUGIN_ROOT}` substitution and quoted paths for Windows hook commands without assuming a PowerShell shell. Preserve all five work profiles, the 22 rule IDs/content, A-F gates, three full readers and two clean final rounds. Historical qualification records remain scoped to their original versions; provider cost and complete native execution need separate evidence.
+
+## 3.2.0 — 2026-10-08
+Add five private work profiles, explicit user selection, evidence-aware score bounds/risk floors, full-reader capacity admission, persisted child-attempt limits and native host orchestration instructions. Add scoped command hook adapters and read-only leaf-agent definitions. Failed/revised/resumed work retains episode costs; model suggestions remain private and provider-local. The existing document profiles, public 3.0 specification schema, 3.1 reader protocol, A-F gates, three full readers and two clean final rounds remain. R-BYW-01..17 retain their IDs and content; R-BYW-18..22 govern the additive protocol. Synthetic/local checks do not prove provider cost, routing, native hook execution, model access or SAP runtime.
+
 ## 3.1.0 — 2026-10-08
 Shared physical asset resolution, read-only preflight/status, locally supplied reader references, requirement/plan/response binding and blind scenario derivation. Actual file/checker fingerprints and record checks reduce stale evidence and unrelated repeats. Batch codec operations retain strict decoding and exact round trips. Public 3.0 handoff schema and all approval/three-reader/two-round gates remain; legacy private reader packets need new protocol 3.1 execution. Discovery uses explicit FS/TS and Turkish task triggers; consultant questions support real prerequisites.
 

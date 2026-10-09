@@ -231,9 +231,11 @@ def verify_references(spec,files,decoded=None):
     import delivery as d
     refs={r['id']:r for r in spec['references']}
     decoded=decoded if decoded is not None else b.decode_many({name:data.decode('utf-8') for name,data in files.items() if Path(name).suffix=='.toon'})
+    hashes={}
     for row in refs.values():
         path=row['path']
-        if path not in files or b.digest(files[path])!=row['sha256']: raise b.Invalid('Referenced file missing or hash differs: '+path)
+        if path in files and path not in hashes:hashes[path]=b.digest(files[path])
+        if path not in files or hashes[path]!=row['sha256']: raise b.Invalid('Referenced file missing or hash differs: '+path)
         if row['pointer'] is not None:
             if Path(path).suffix!='.toon': raise b.Invalid('Pointers require a decoded TOON document')
             try: d.resolve(decoded[path],row['pointer'])
@@ -298,6 +300,8 @@ Recorded local/reviewer checks do not prove SAP activation, runtime or UAT.
 ''').encode()}
 
 def build(doc,assets_root,include_excel=True):
+    import profile_runtime
+    profile_runtime.physical_admit(doc,'release',assets_root)
     import delivery as d
     spec,control=state(doc)
     if spec['schemaVersion']!='3.0': raise b.Invalid('2.0 handoffs are read-only references; run release-upgrade')

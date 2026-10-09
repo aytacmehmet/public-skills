@@ -47,8 +47,9 @@ def valid(root):
     return doc
 
 def seal(doc):
+    import source_pool
     spec,control=d.get_state(doc);control['eval_rounds']=[];control['eval_requests']=[]
-    control.update(approved_spec_sha256=d.revision(spec),approval_receipt='SYNTHETIC_FIXTURE_ONLY',approved_defaults_sha256=d.defaults_sha(spec),defaults_approval_receipt='SYNTHETIC_FIXTURE_ONLY',review_execution_confirmed=True,review_confirmation_receipt='SYNTHETIC_FIXTURE_ONLY')
+    control.update(approved_spec_sha256=d.revision(spec),approval_receipt='SYNTHETIC_FIXTURE_ONLY',approved_defaults_sha256=d.defaults_sha(spec),defaults_approval_receipt='SYNTHETIC_FIXTURE_ONLY',review_execution_confirmed=True,review_confirmation_receipt='SYNTHETIC_FIXTURE_ONLY',review_confirmation_protocol=source_pool.PROTOCOL)
     for n in [1,2]:
         packets=d._issue_review_packets(doc,n,{'assets':[],'references':[],'input_sha256':'SYNTHETIC_FIXTURE_ONLY'});readers=[]
         for i,packet in enumerate(packets):

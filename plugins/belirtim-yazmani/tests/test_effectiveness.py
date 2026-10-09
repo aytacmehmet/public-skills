@@ -67,7 +67,8 @@ class EffectivenessTests(unittest.TestCase):
         self.control['assets'].append({'path': path, 'sha256': b.digest(data)})
         seal(self.doc)
         packets = d.eval_request(self.doc, 3, self.root)
-        self.assertEqual(packets[0]['references'][0]['content'], {'values': ['approved']})
+        import source_pool
+        self.assertEqual(source_pool.Reader(packets[0]).resolve(self.spec['references'][0]['id']), ['approved'])
         for packet in packets[:2]:
             self.assertTrue(all('expected' not in row for row in packet['spec']['test_cases']))
         self.assertEqual(packets[2]['spec']['test_cases'], self.spec['test_cases'])
