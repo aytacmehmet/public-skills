@@ -1,0 +1,47 @@
+{
+  "contractVersion": "3.2.2",
+  "runtime": {
+    "python": ">=3.11",
+    "node": "Existing BYW TOON codec requirement",
+    "dependencies": "Existing plugin requirements.txt",
+    "pythonCommand": "python must resolve to the selected interpreter on PATH"
+  },
+  "claude": {
+    "config": "hooks/hooks.json",
+    "format": "command exec form",
+    "rootVariable": "CLAUDE_PLUGIN_ROOT",
+    "support": "DOCUMENTED_CONDITIONAL",
+    "nativeExecution": "NOT_RUN",
+    "agentDefinitions": "agents/*.md"
+  },
+  "codex": {
+    "config": "hooks/codex.json",
+    "format": "Legacy manifest; native ${PLUGIN_ROOT} expansion before the configured shell, no shell-specific override",
+    "rootVariable": "PLUGIN_ROOT",
+    "support": "DOCUMENTED_CONDITIONAL_LOCAL",
+    "nativeExecution": "NOT_RUN",
+    "hookTrust": "USER_REVIEW_REQUIRED",
+    "cloudInterception": "UNKNOWN",
+    "agentDefinitions": "agents/codex/*.toml are explicit project/user opt-in candidates; plugin auto-discovery UNKNOWN",
+    "manifestCompatibility": "Codex 0.160 skips AgentPlugin hooks; portable manifest preserved at metadata/agent-plugin.json"
+  },
+  "scope": {
+    "commands": "Direct actual package scripts/bv2.py argv with explicit TOON source; selected core-admission operations only",
+    "leafDispatch": "Recognized BYW role plus BYW_WORKSPACE, issued strict-JSON byw_task identity, matching shared coordinator RUNNING reservation and one host tool_use_id claim per charged attempt",
+    "otherEvents": "Explicit BYW_WORKSPACE environment opt-in only",
+    "permissionAllow": false,
+    "workspaceWrites": false,
+    "coordinatorWrites": "Only a locked atomic native-call claim in the selected existing external JSON coordinator; same event ID idempotent, different call ID denied",
+    "stopContinuation": false,
+    "executionAuthentication": false
+  },
+  "fallback": "Run explicit work-admit and native core gates; hook errors/timeouts/skips never supply release proof",
+  "sources": [
+    "https://code.claude.com/docs/en/hooks",
+    "https://code.claude.com/docs/en/sub-agents",
+    "https://learn.chatgpt.com/docs/hooks",
+    "https://learn.chatgpt.com/docs/agent-configuration/subagents",
+    "https://developers.openai.com/plugins/build/plugins"
+  ],
+  "sourceReviewDate": "2026-10-08"
+}

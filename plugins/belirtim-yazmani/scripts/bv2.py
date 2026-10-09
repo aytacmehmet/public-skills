@@ -413,6 +413,7 @@ def main(argv=None):
     q=sub.add_parser('profile');q.add_argument('--collection',required=True)
     q=sub.add_parser('eval-request');q.add_argument('source');q.add_argument('--round',type=int,required=True);q.add_argument('--output',required=True);q.add_argument('--assets-root')
     q=sub.add_parser('eval-record');q.add_argument('source');q.add_argument('record')
+    q=sub.add_parser('read-reference');q.add_argument('source');q.add_argument('--reference-id',required=True);q.add_argument('--allow-legacy',action='store_true')
     q=sub.add_parser('feedback');q.add_argument('source');q.add_argument('--category',required=True);q.add_argument('--defect',required=True)
 
     for op in ('release-upgrade','questions','check-plan','check-record','preflight','status'):
@@ -422,8 +423,17 @@ def main(argv=None):
         if op=='check-record':
             q.add_argument('--check',required=True);q.add_argument('--input-sha256',required=True);q.add_argument('--status',required=True,choices=['PASS','FAIL'])
     q=sub.add_parser('handoff-batch');q.add_argument('manifest');q.add_argument('--output',required=True);q.add_argument('--batch-id',required=True)
+    import profile_runtime
+    profile_runtime.add_parsers(sub)
 
     a=p.parse_args(argv)
+    if a.cmd=='read-reference':
+        import source_pool
+        reader=source_pool.Reader(load(a.source),allow_legacy=a.allow_legacy)
+        output({'reference_id':a.reference_id,'legacy_read_only':reader.legacy_read_only,'value':reader.resolve(a.reference_id)});return
+    if a.cmd=='work-profiles':
+        import work_profiles
+        output(work_profiles.catalog());return
     if a.cmd=='profile':
         import delivery
         if a.collection not in delivery.SCHEMA['properties']: raise Invalid('Unknown collection')
@@ -471,10 +481,30 @@ def main(argv=None):
                 return result.resolve()
             source=scoped(entry['workspace']);assets=scoped(entry['assets_root'])
             items.append({'doc':load(source),'assets_root':assets});paths.append(source)
-        result=h.batch(items,a.output,a.batch_id)
-        for item,source in zip(items,paths): save(item['doc'],source,True)
+        if len(set(paths))!=len(paths): raise Invalid('Batch repeats a workspace')
+        from contextlib import ExitStack
+        import workspace_lock
+        with ExitStack() as locks:
+            for source in sorted(paths,key=str):locks.enter_context(workspace_lock.held(source))
+            for item,source in zip(items,paths):item['doc']=load(source)
+            result=h.batch(items,a.output,a.batch_id)
+            for item,source in zip(items,paths):save(item['doc'],source,True)
         output(result);return
+
+    import workspace_lock
+    with workspace_lock.held(a.source):
+        return _workspace_command(a)
+
+
+def _workspace_command(a):
     doc=load(a.source)
+    if a.cmd.startswith('work-'):
+        import profile_runtime
+        result,changed=profile_runtime.run(a,doc)
+        if changed:
+            save(doc,a.source,True)
+            profile_runtime.after_save(a,doc,result)
+        output(result);return
     if a.cmd in ('release-upgrade','questions','check-plan','check-record','preflight','status'):
         import handoff3 as h
         if a.cmd=='questions': output({'questions':h.consultant_questions(doc),'technical_questions_sent_to_consultant':False});return
@@ -488,7 +518,9 @@ def main(argv=None):
         save(doc,a.source,True);output(result);return
     if a.cmd in ('release-init','release-inspect','release-approve','confirm-reviews','eval-request','eval-record','feedback'):
         import delivery
-        if a.cmd=='release-init': delivery.release_init(doc)
+        if a.cmd=='release-init':
+            delivery.release_init(doc)
+            doc['delivery']['control']['work_profile_required']=True
         elif a.cmd=='release-inspect': output(delivery.evaluate(doc));return
         elif a.cmd=='release-approve':
             spec,control=delivery.get_state(doc)
@@ -496,10 +528,12 @@ def main(argv=None):
             if a.defaults: control.update(approved_defaults_sha256=delivery.defaults_sha(spec),defaults_approval_receipt=a.receipt)
             else: control.update(approved_spec_sha256=delivery.revision(spec),approval_receipt=a.receipt)
         elif a.cmd=='confirm-reviews':
-            _,control=delivery.get_state(doc);control.update(review_execution_confirmed=True,review_confirmation_receipt=a.receipt)
+            import source_pool
+            _,control=delivery.get_state(doc);control.update(review_execution_confirmed=True,review_confirmation_receipt=a.receipt,review_confirmation_protocol=source_pool.PROTOCOL)
         elif a.cmd=='eval-request':
-            packets=delivery.eval_request(doc,a.round,a.assets_root or Path(a.source).parent);directory=Path(a.output);directory.mkdir(parents=True,exist_ok=True)
-            for packet in packets: save(packet,directory/(str(a.round)+'-'+packet['reader_id']+'.toon'))
+            import source_pool
+            packets=delivery.eval_request(doc,a.round,a.assets_root or Path(a.source).parent)
+            source_pool.save_packets(packets,a.output,doc['delivery']['control'])
         elif a.cmd=='eval-record': delivery.record_round(doc,load(a.record))
         else: delivery.feedback(doc,a.defect,a.category)
         save(doc,a.source,True);output({'path':a.source,'operation':a.cmd,'deliveryGate':delivery.evaluate(doc)['decision']});return
@@ -508,9 +542,19 @@ def main(argv=None):
         result=delivery.package(doc,a.output,a.assets_root or Path(a.source).parent)
         save(doc,a.source,True);output(result);return
     if a.cmd=='patch':
+        prior_control=doc.get('delivery',{}).get('control',{}) if isinstance(doc.get('delivery'),dict) else {}
+        protected={key:copy.deepcopy(prior_control[key]) for key in ('work_profile','work_profile_required') if key in prior_control}
         if a.path.startswith('/approval'): raise Invalid('Use explicit approve command')
+        if a.path.startswith('/delivery/control/work_profile'):
+            raise Invalid('Use work-select/begin/finish; the episode ledger cannot be reset by patch')
+        if doc.get('delivery') is not None:
+            import work_profiles
+            work_profiles.admit(doc,'write')
         if doc.get('delivery') is not None and a.path.startswith('/content'): raise Invalid('Imported legacy content is reference-only after release-init; edit delivery.spec')
         pointer(doc,a.path,json.loads(a.value) if a.value is not None else None,a.remove)
+        after_control=doc.get('delivery',{}).get('control',{}) if isinstance(doc.get('delivery'),dict) else {}
+        if protected!={key:after_control[key] for key in ('work_profile','work_profile_required') if key in after_control}:
+            raise Invalid('Patch cannot replace or remove a managed episode or selection requirement')
         if doc.get('delivery') is not None and a.path.startswith('/delivery/spec'):
             import delivery
             delivery.invalidate(doc,defaults=a.path.startswith('/delivery/spec/functional_defaults'))
@@ -560,4 +604,4 @@ def main(argv=None):
 if __name__=='__main__':
     try: main()
     except (Invalid,OSError,KeyError,ValueError,TypeError,ImportError,subprocess.SubprocessError) as e:
-        print(json.dumps({'status':'FAIL','message':str(e)},ensure_ascii=False)); sys.exit(1)
+        print(json.dumps({'status':'BLOCKED' if str(e).startswith('BLOCKED:') else 'FAIL','message':str(e)},ensure_ascii=False)); sys.exit(1)

@@ -2,6 +2,16 @@
 
 [English](CHANGES.md) · Türkçe
 
+## 3.2.2 — 2026-10-09
+
+Tam okuyucu kaynaklarını dosya hash başına havuzla, hafif referansları pointer üzerinden bağla, decode sonucunu önbellekle ve paket çıktısından önce serileştirme sınırını uygula. Private inceleme protocol 3.2 ve açık tarihsel salt okunur uyumluluk mevcut public belirtimi, profilleri ve final kapıları korur.
+
+## 3.2.1 — 2026-10-08
+Codex 0.160.0 sondalarında bulunan native Codex manifest seçimi ve Windows hook başlatma uyumluluğunu düzeltir. `.codex-plugin/plugin.json` etkin Codex giriş noktası olarak kalır; taşınabilir agent-plugin metadata'sı `metadata/agent-plugin.json` içinde korunur. Windows hook komutları PowerShell kabuğu varsaymadan runtime'ın `${PLUGIN_ROOT}` yer değiştirmesini ve tırnaklı yolları kullanır. Beş çalışma profili, 22 kuralın kimliği/içeriği, A-F kapıları, tüm kapsamı okuyan üç okuyucu ve iki temiz final turu korunur. Tarihsel kalifikasyon kayıtları kendi sürüm kapsamlarında kalır; sağlayıcı maliyeti ve tam native yürütme ayrı kanıt gerektirir.
+
+## 3.2.0 — 2026-10-08
+Beş özel çalışma profili, açık kullanıcı seçimi, kanıtı gözeten puan aralıkları/risk tabanları, tam-okuyucu kapasite kontrolü, kalıcı alt ajan deneme sınırları ve native host çalışma talimatları eklenir. Kapsamlı command hook adaptörleri ve salt okunur leaf-agent tanımları eklenir. Başarısız/revizyonlu/devam ettirilen iş episode maliyetini korur; model önerileri özel kayıtta ve mevcut sağlayıcı ailesinde kalır. Mevcut belge profilleri, public 3.0 belirtim şeması, 3.1 okuyucu protokolü, A-F kapıları, tüm kapsamı okuyan üç okuyucu ve iki temiz final turu korunur. R-BYW-01..17 kimlik ve içerikleri değişmez; R-BYW-18..22 ek protokolü yönetir. Sentetik/yerel kontroller sağlayıcı maliyeti, yönlendirme, native hook yürütmesi, model erişimi veya SAP runtime kanıtı değildir.
+
 ## 3.1.0 — 2026-10-08
 Ortak fiziksel dosya çözümleme, salt okunur preflight/status, okuyuculara yerel referans içeriği, gereksinim/plan/yanıt bağlaması ve beklenen cevabı gizleyen senaryo türetme. Gerçek dosya/doğrulayıcı parmak izleri ve kayıt kontrolleri eski kanıtı ve ilgisiz tekrarları azaltır. Toplu codec işlemleri katı ayrıştırma ve tam round-trip denetimini korur. Public 3.0 handoff şeması ile bütün onay/üç okuyucu/iki tur kapıları korunur; eski özel okuyucu paketleri protokol 3.1 ile yeniden yürütülmelidir. Keşif açıklaması açık FS/TS ve Türkçe görev tetikleyicilerini içerir; danışman soruları gerçek önkoşulları destekler.
 

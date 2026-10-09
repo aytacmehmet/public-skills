@@ -38,7 +38,7 @@ def inspect(doc, assets_root):
     # Snapshot approval and final readers remain separate gates. Business defaults
     # must already be approved before spending independent-reader resources.
     issues += [row for row in report['issues']
-               if not row['code'].startswith('F') and row['code'] != 'APPROVAL_CURRENT']
+               if not row['code'].startswith('F') and row['code'] not in ('APPROVAL_CURRENT','WORK_PROFILE_GATE')]
     if assets_root is None:
         issues.append(d.issue('INPUT_ROOT_REQUIRED', '/assets', 'Supply the physical assets root'))
         return {'status': 'BLOCKED', 'issues': issues, 'assets': [], 'references': []}
@@ -82,19 +82,19 @@ def inspect(doc, assets_root):
             files[roles['baseline']] = b.encode(spec['baseline']).encode()
             files[roles['baseline_spec']] = b.encode(control['baseline_spec']).encode()
             files[roles['changes']] = b.encode(d.changes(control['baseline_spec'], spec)).encode()
-        h.verify_references(spec, files)
+        import source_pool
+        decoded = source_pool.decode_documents(files)
+        h.verify_references(spec, files, decoded=decoded)
         assets = [{'path': name, 'source_path': sources[name], 'sha256': b.digest(data)}
                   for name, data in files.items() if name in sources]
-        references = []
-        for row in spec['references']:
-            raw = files[row['path']].decode('utf-8')
-            references.append({**row, 'content': json.loads(b.codec('decode', raw))
-                               if Path(row['path']).suffix == '.toon' else raw})
+        references, pool = source_pool.collect(spec['references'], files, decoded=decoded)
+        source_pool.size(pool, source_pool.limits(control)[0])
         result = {'status': 'PASS' if not issues else 'BLOCKED', 'issues': issues,
-                  'assets': assets, 'references': references,
+                  'assets': assets, 'references': references, 'source_pool': pool,
                   'dependency_contracts': list(contracts.values()), 'spec_sha256': d.revision(spec)}
         result['input_sha256'] = b.digest(b.canonical({'spec': d.revision(spec), 'assets': assets,
                                                       'contracts': list(contracts.values()),
+                                                      'source_pool': source_pool.value_sha(pool),
                                                       'checker': checker_hash()}))
         return result
     except (b.Invalid, OSError, KeyError, ValueError, TypeError) as error:

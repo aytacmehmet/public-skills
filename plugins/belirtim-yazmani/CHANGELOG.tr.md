@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.md) · Türkçe
 
+## 3.2.2 — 2026-10-09
+
+- Yönetişimli profiller ve native 3.2.1 uyumluluğu dahil tam private 3.2.2 pluginini PUBLICATION.json kesin commit’inden aktar.
+- Her tam okuyucu kaynağını bir kez havuzla, hash/pointer erişimini koru ve serileştirme aşımını engelle. Protocol 3.2 yeni kayıt ve güncel yürütme teyidi gerektirir; eski paketler açık salt okunur veridir.
+- Profil/onay/kör okuyucu/iki temiz tur kapılarını koru; gerçek RMP incelemesi veya benchmark çalıştırılmaz.
+
 ## 3.1.0 — 2026-10-08
 
 - PUBLICATION.json içindeki kesin private 3.1.0 commit'ini aktarır; iki host manifestini ve tam runtime/şema/test/codec paketini korur.

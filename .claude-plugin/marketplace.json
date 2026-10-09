@@ -16,8 +16,8 @@
     {
       "name": "belirtim-yazmani",
       "source": "./plugins/belirtim-yazmani",
-      "description": "Role-owned SAP Cloud ERP TOON specifications and self-contained, coordinated separate development handoffs.",
-      "version": "3.1.0"
+      "description": "Profile-guided SAP Cloud ERP specifications with pooled reader sources and bounded serialization.",
+      "version": "3.2.2"
     }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "description": "Scoped BYW command admission and read-only observations. Core release checks remain required.",
+  "hooks": {
+    "PreToolUse": [{"matcher": "Bash|PowerShell|Agent", "hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "PreToolUse"], "timeout": 10}]}],
+    "PostToolUse": [{"matcher": "Bash|PowerShell|Agent", "hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "PostToolUse"], "timeout": 10}]}],
+    "SessionStart": [{"matcher": "startup|resume|clear|compact", "hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "SessionStart"], "timeout": 10}]}],
+    "SubagentStop": [{"matcher": "^belirtim-yazmani:(byw-reader-[abc]|byw-preparation)$", "hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "SubagentStop"], "timeout": 10}]}],
+    "PreCompact": [{"hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "PreCompact"], "timeout": 10}]}],
+    "PostCompact": [{"hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "PostCompact"], "timeout": 10}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "python", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/profile_hooks.py", "--host", "claude", "--event", "Stop"], "timeout": 10}]}]
+  }
+}

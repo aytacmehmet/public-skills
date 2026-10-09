@@ -1,6 +1,10 @@
-# Belirtim Yazmanı 3.1.0
+# Belirtim Yazmanı 3.2.2
 
 English · [Türkçe](README.tr.md)
+
+## 3.2.2 pooled reader sources
+
+One complete source per byte hash is carried in each protocol 3.2 reader packet; references retain source identity/hash/pointer. The runtime decodes each source once and blocks excessive serialization before output. Use `read-reference <packet> --reference-id <ID>` or initialize `source_pool.Reader` once for repeated pointer access. Legacy packets use explicit `--allow-legacy` read-only access; their old review records and owner execution confirmation do not provide current-protocol credit. Public schema, profile budgets, three full readers, blindness, approvals and two clean rounds are unchanged.
 
 ## Purpose
 Shared Claude Code/Codex documentation skill for SAP Cloud ERP. Consultant business/design decisions are collected with at most three ranked suggestions; implementation questions belong to the ABAP developer. Separate linked-development ZIPs are delivered together after all business, architecture, reference and final review gates pass. The package is self-contained and neutral to the developer's tools/model.
@@ -19,6 +23,26 @@ codex plugin add belirtim-yazmani@aytacmehmet-public
 ```
 
 Invoke the namespaced skill in Claude Code or `$belirtim-yazmani` in Codex. This repository publication does not install anything or select a model.
+
+## 3.2.1 native host compatibility
+Codex 0.160.0 native probes identified manifest selection and Windows hook launch compatibility issues in the initial 3.2.0 package. Version 3.2.1 uses `.codex-plugin/plugin.json` as the active Codex entrypoint and retains portable agent-plugin metadata at `metadata/agent-plugin.json`. Its Windows hook command uses the native runtime's `${PLUGIN_ROOT}` substitution with quoted paths, compatible with the runtime's default command shell. Reinstall/update the complete plugin package to receive these changes. Native hook loading, trust, event execution and provider work remain separate checks; this patch preserves the five profiles and every business, approval and final review gate.
+
+## 3.2 work profiles
+Choose **Lite / Yalın, Plus / Gelişmiş, Pro / Yetkin, Max / Doruk or Ultra / Üstün** for the development's working intensity. The skill first presents one grounded recommendation card with risk/source rationale, unknowns, full-reader capacity, conditional preparation budget and a model suggestion inside the current provider family. The user's actual choice is recorded privately. It does not approve business defaults, the specification, a model/setting change or release. Existing document profiles `hafif/standart/tam` remain separate.
+
+| Profile | Preparation attempts at most | Concurrent children at most | Total attempts per episode at most |
+| --- | ---: | ---: | ---: |
+| Lite / Yalın | 0 | 1 | 12 |
+| Plus / Gelişmiş | 1 | 1 | 13 |
+| Pro / Yetkin | 2 | 2 | 14 |
+| Max / Doruk | 4 | 3 | 16 |
+| Ultra / Üstün | 6 | 3 | 18 |
+
+Each profile keeps three full-scope independent readers per final round and two clean current-snapshot rounds. The reviewer attempt ceiling is 12 in every episode; preparation ceilings are conditional, not targets. Failed/cancelled attempts, retries and revisions remain charged. Profile/host/coordinated-run limits apply together, with no more than three children and no nested agents. Linked workspaces share one coordinator file; unrelated host jobs require explicit slot accounting. Unknown/insufficient full-reader capacity blocks final dispatch/release. A lower selection is honored; a plan that does not fit waits for an explicit split/profile/budget decision.
+
+Resolve the absolute `scripts/bv2.py` path from the skill directory, then use `work-profiles catalog`, `work-recommend`, `work-select`, `work-status`, `work-admit`, `work-begin` and `work-finish`. Native child dispatch belongs to the host skill; the CLI persists private selections, quota reservations, receipts and admission checks. It never launches a fixed-model subprocess. Packet issuance is not actual reader execution: reserve and finish each dispatched reader separately. See the [work profile protocol](skills/belirtim-yazmani/references/work-profiles.md) for arguments, scoring, capacity and recovery.
+
+Command hook adapters add scoped admission/diagnostics. Native leaf PreToolUse requires the actual call ID and atomically claims an already charged reservation in the explicitly selected external coordinator; the same host/event ID is idempotent and a different call ID cannot reuse the attempt. This hook writes only the coordinator reservation; workspace specifications and user configuration are unchanged. Hook discovery, trust and runtime remain distinct; explicit core admission protects final release when hooks are skipped or unsupported. Capability/model access, vision and telemetry stay private and explicit; measured savings, provider dispatch and native host hook qualification require separate evidence. Final work-profile state never enters developer ZIPs.
 
 ## 3.1 operation
 Run `status <workspace> --assets-root <inputs>` for current blockers and the next action. Before final readers run `preflight <workspace> --assets-root <inputs>`; missing assets, source mappings, references, pointers, business closure and dependency contracts stop packet issuance. It is read-only and does not approve a release. `check-plan`/`check-record` accept the same assets root and use checker-byte/physical-file fingerprints plus functional, UI, object and record units.
@@ -40,10 +64,4 @@ Resolve `scripts/bv2.py` from the absolute loaded skill directory; cwd may diffe
 ## Contract and limits
 TOON is the only editable/public specification authority; optional Excel is derived, PNG layout-only. Required dependency contracts and source excerpts are included in each ZIP, not obtained from other files or URLs. Neutral developer instructions describe the reading order, bounded technical decisions and acceptance checks; no local skill/plugin/model, application source, scaffolds or executable development/test scripts are shipped. An existing explicitly authorized offline interactive exception remains separate.
 
-Three independent readers, scenario agreement, real PNG inspection and code-free architecture/plan checks are still final release gates. Fixtures are synthetic; unavailable execution/vision is NOT_RUN. Local schema/ZIP checks are not SAP authorization, activation, ATC, runtime or UAT proof. See [verification](docs/VERIFICATION.md) and [changes](docs/CHANGES.md). No new token/latency benchmark was run for 3.0.0.
-
-## Public package checks
-
-Run `python -B skills/belirtim-yazmani/scripts/check_package.py` and targeted runtime tests. Build the complete offline marketplace ZIP with `python -B scripts/build_package.py --output-dir <external-artifacts>`. Copy its generated PACKAGE-MANIFEST.json into the plugin and run repository validation before committing. Delivery ZIPs remain outside the repository. The former Spec Writer standalone pair is retired; complete plugin history and previous archives are preserved in Git. Install one active Spec Writer version at a time. See [public changes](CHANGELOG.md) and [publication provenance](PUBLICATION.json).
-
-The upstream qualification records were collected on the private local candidate before commit and publication. PUBLICATION.json pins the actual imported private commit; hosted checks and merge records are separate evidence. Public packaging does not extend the qualification's model, cost or SAP scope.
+Three independent readers, scenario agreement, real PNG inspection and code-free architecture/plan checks are still final release gates. Fixtures are synthetic; unavailable execution/vision is NOT_RUN. Local schema/ZIP checks are not SAP authorization, activation, ATC, runtime or UAT proof. See [verification](docs/VERIFICATION.md) and [changes](docs/CHANGES.md). The historical 3.0.0 benchmark limitation remains; profile/provider cost and native host execution remain separate qualification scopes for 3.2.1.

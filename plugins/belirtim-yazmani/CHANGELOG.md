@@ -2,6 +2,12 @@
 
 English · [Türkçe](CHANGELOG.tr.md)
 
+## 3.2.2 — 2026-10-09
+
+- Import the complete private 3.2.2 plugin at the exact commit in PUBLICATION.json, including governed profiles and native 3.2.1 compatibility.
+- Pool each complete reader source once, preserve hash/pointer access and block serialization overflow. Protocol 3.2 requires fresh records and current execution confirmation; old packets remain explicit read-only data.
+- Preserve all profile/approval/blind-reader/two-clean-round gates; no real RMP review or benchmark is executed.
+
 ## 3.1.0 — 2026-10-08
 
 - Import the exact private 3.1.0 commit recorded in PUBLICATION.json, preserving both host manifests and the full runtime/schema/test/codec package.

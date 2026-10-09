@@ -3,6 +3,7 @@
 import copy, io, json, re, tempfile, zipfile, uuid
 from pathlib import Path
 import bv2 as b
+import source_pool
 from jsonschema import Draft202012Validator
 
 SCHEMA=json.loads((b.ROOT/'schema/handoff.schema.json').read_text(encoding='utf-8'))
@@ -12,6 +13,9 @@ CODE=re.compile(r'(?im)\bCAST\s*\(|\bCASE\s+WHEN\b|\bSELECT\s+.+\bFROM\b|\bdefin
 TOOL=re.compile(b.PRODUCER.pattern+r'|(?i:belirtim[- ]yazman[ıi]|spec[- ]writer|\bbv2?\.py\b|legacy_core\.py|@toon-format/toon|tool_receipt|tool_capabilities|execution_mode|mutation_policy|reasoning_effort|token_budget|obsidian|\[\[[^\]]+\]\]|\b(?:skill|plugin|mcp)[/-]|(?:^|\s)/plan\b)')
 PRIVATE={'producerApproval','handoffApproval','approvalReceipt','onaylar','toolReceipts','tool_receipts','executionMode','mutationPolicy','llmModel','llm_model','developerModel','modelProvider','producerModel','providerSettings','reasoningEffort','reasoningLevel','tokenBudget','buildPrompt','systemPrompt','developerPrompt','agentName','toolCapabilities','producerMetadata'}
 PRIVATE_NORMALIZED={re.sub('[^a-z0-9]','',k.lower()) for k in PRIVATE}
+PRIVATE_NORMALIZED.update({'workprofile','workprofilerequired','episodeid','workassessment','workcapabilities','workcapacity','dispatchattempts',
+                           'worktask','bywtask','coordinatorfile','modelsuggestion','preparationattempts','reviewattempts',
+                           'nativedispatch','tooluseid'})
 AI_INSTRUCTION=re.compile(r'(?im)^\s*(?:you are (?:a|an) [^\n]*(?:developer|assistant|agent)|(?:system|developer|build) prompt\s*:|(?:use|invoke|call) \$[a-z-]+)|ignore (?:previous|all) [^\n]*instructions')
 COLLECTIONS=['requirements','acceptance_criteria','test_cases','objects','business_rules','screens','media','ui_callouts','ui_elements','ui_actions','messages','statuses','status_transitions','cds_fields','table_fields']
 NETWORK=re.compile(r'(?i)https?://|fetch\s*\(|XMLHttpRequest|WebSocket\s*\(|EventSource\s*\(|sendBeacon\s*\(|importScripts\s*\(|import\s*\(|\beval\s*\(|\bFunction\s*\(|(?:src|href)\s*=\s*[\"\x27]\s*//|(?:url\s*\(|@import)[^;\n]*//')
@@ -233,7 +237,11 @@ def eval_gate(spec,control):
             import review_contract
             current+=review_contract.findings(spec,reader,ptr)
             if request.get('reader_id')!=reader.get('reader_id'): current.append(issue('F2_REQUEST_BINDING',ptr,'Reader identity differs from issued packet'))
-            if request.get('protocol')!='3.1': current.append(issue('F2_PROTOCOL',ptr,'Reissue legacy review packets for protocol 3.1'))
+            if request.get('protocol')!=source_pool.PROTOCOL or not re.fullmatch('[a-f0-9]{64}',request.get('source_pool_sha256','')):
+                current.append(issue('F2_PROTOCOL',ptr,'Reissue legacy review packets with current pooled-source bindings'))
+            if 'work_profile' in control or control.get('work_profile_required'):
+                try:validate_work_reader({'delivery':{'spec':spec,'control':control}},reader,request)
+                except b.Invalid as error:current.append(issue('F2_WORK_DISPATCH',ptr,str(error)))
             if not re.fullmatch('[a-f0-9]{64}',reader.get('response_sha256','')) or not reader.get('execution_evidence'): current.append(issue('F2_EXECUTION',ptr,'Recorded execution evidence and response hash required'))
         if len(readers)>=2:
             left=readers[0].get('expected_results',{});right=readers[1].get('expected_results',{})
@@ -254,7 +262,8 @@ def eval_gate(spec,control):
         round_reports.append({'round':rn+1,'reader_count':len(readers),'new_open_count':r.get('new_open_count'),'status':'PASS' if not current else 'FAIL'})
         if rn>=len(rounds)-2: errors+=current
     if len(rounds)<2 or any(x['status']!='PASS' for x in round_reports[-2:]): errors.append(issue('F5_TWO_CLEAN','/eval_rounds','Two consecutive clean rounds required'))
-    if control.get('review_execution_confirmed') is not True or not control.get('review_confirmation_receipt'): errors.append(issue('F2_EXECUTION_CONFIRMATION','/control','Owner must confirm real independent execution; fixture checks are not model eval'))
+    if control.get('review_execution_confirmed') is not True or not control.get('review_confirmation_receipt') or control.get('review_confirmation_protocol')!=source_pool.PROTOCOL:
+        errors.append(issue('F2_EXECUTION_CONFIRMATION','/control','Owner must confirm real current-protocol independent execution; fixtures are not model eval'))
     return errors,round_reports
 
 def evaluate(doc):
@@ -267,6 +276,9 @@ def evaluate(doc):
           'layers':[{'layer':1,'status':'FAIL'}]+[{'layer':n,'status':'NOT_RUN'} for n in range(2,6)],
           'rounds':[],'eval_round_count':0,'confidence_limit':'Invalid data has not been evaluated'}
     errors=shape_and_profile(spec);counts={}
+    import work_profiles
+    try:work_profiles.assert_release(doc)
+    except b.Invalid as error:errors.append(issue('WORK_PROFILE_GATE','/control/work_profile',str(error)))
     def closed(row):
         if not isinstance(row,dict) or row.get('status')!='CLOSED' or row.get('owner_confirmed') is not True: return False
         try: resolve(spec,row.get('answer_pointer'));return True
@@ -338,13 +350,19 @@ def _issue_review_packets(doc,round_number,prepared):
     spec,control=get_state(doc);packets=[]
     pngs=[row for row in prepared['assets'] if row['path'] in {m['path'] for m in spec['media']}]
     for i in range(3):
-        packet={'protocol':'3.1','revision_sha256':revision(spec),'round':round_number,
+        packet={'protocol':source_pool.PROTOCOL,'revision_sha256':revision(spec),'round':round_number,
           'reader_id':'reader-'+str(i+1),'context_id':str(uuid.uuid4()),
           'instructions':'Use a fresh isolated context. Inspect functional requirements, approved defaults, packaged references and actual PNGs. Return one functional question per requirement with requirement_ref, its statement pointer and observed answer. The first two readers derive every test result from functional rules and inputs; expected test answers are withheld. The third reader checks the complete specification. Cover actual PNG callouts. Provide concrete plan decisions pointing to objects, architecture constraints, dependencies and each delegated technical decision that exists. Report every contradiction, missing business answer and missing reference. Do not fabricate execution evidence, choose tools or change the functional contract.',
           'scenario_reader':i<2,'authoritative':False,'spec':review.review_spec(spec,i<2),
           'png_files':[{'path':x['source_path'],'sha256':x['sha256']} for x in pngs],
-          'references':prepared['references'],'dependency_contracts':prepared.get('dependency_contracts',[]),
+          'references':copy.deepcopy(prepared['references']),
+          'source_pool':copy.deepcopy(prepared.get('source_pool',{'version':source_pool.POOL_VERSION,'sources':[]})),
+          'dependency_contracts':prepared.get('dependency_contracts',[]),
           'input_sha256':prepared.get('input_sha256')}
+        if 'work_profile' in control:
+            packet['work_task']={'task_id':'review:'+str(round_number)+':'+packet['reader_id'],'role':'reviewer',
+                                'context_id':packet['context_id'],'agent':'byw-reader-'+chr(97+i),
+                                'dispatch_required':True,'private':True}
         packet['reply_shape']={'reader_id':'echo request','context_id':'echo request','request_sha256':'echo request',
           'status':'COMPLETED or BLOCKED','isolated':True,'saw_other_results':False,
           'covered_requirements':['all inspected requirement IDs'],
@@ -355,15 +373,22 @@ def _issue_review_packets(doc,round_number,prepared):
           'findings':['unresolved issues'],
           'execution_evidence':'controller supplies genuine private execution reference',
           'response_sha256':'controller hashes the parsed response excluding response_sha256 and execution_evidence'}
-        packet['request_sha256']=b.digest(b.canonical(packet));packets.append(packet)
-    control['eval_requests'] += [{'protocol':'3.1','revision_sha256':revision(spec),'round':round_number,
+        packet['instructions']+=' Resolve each reference using source_id, matching sha256/path and pointer into source_pool.sources[].content. Each complete source appears once. Initialize source_pool.Reader once for repeated access; legacy packets are read-only and cannot provide current review credit.'
+        packet['source_pool_sha256']=source_pool.value_sha(packet['source_pool'])
+        source_pool.check_volume([packet],control)
+        packet['request_sha256']=source_pool.value_sha(packet);packets.append(packet)
+    source_pool.check_volume(packets,control)
+    control['eval_requests'] += [{'protocol':source_pool.PROTOCOL,'revision_sha256':revision(spec),'round':round_number,
       'reader_id':x['reader_id'],'context_id':x['context_id'],'request_sha256':x['request_sha256'],
-      'input_sha256':x['input_sha256']} for x in packets]
+       'input_sha256':x['input_sha256'],'source_pool_sha256':x['source_pool_sha256'],
+       **({'task_id':x['work_task']['task_id']} if 'work_task' in x else {})} for x in packets]
     return packets
 
 def eval_request(doc,round_number,assets_root=None):
     import preflight
+    import profile_runtime
     spec,control=get_state(doc)
+    profile_runtime.physical_admit(doc,'review',assets_root)
     if shape_and_profile(spec):raise b.Invalid('Complete deterministic profile before reader evaluation')
     if round_number!=len(control['eval_rounds'])+1 or round_number>control.get('round_limit',4):
         raise b.Invalid('Round sequence/limit reached; resolve with owner before continuing')
@@ -378,9 +403,38 @@ def record_round(doc,record):
     expected={r['context_id']:r for r in control['eval_requests'] if r['round']==len(control['eval_rounds'])+1 and r['revision_sha256']==revision(spec)}
     for reader in record.get('readers',[]):
         if reader.get('context_id') not in expected or reader.get('request_sha256')!=expected[reader['context_id']]['request_sha256']: raise b.Invalid('Review is not bound to an issued independent packet')
+        request=expected[reader['context_id']]
+        if request.get('protocol')!=source_pool.PROTOCOL or not re.fullmatch('[a-f0-9]{64}',request.get('source_pool_sha256','')):
+            raise b.Invalid('Legacy review records are read-only; issue fresh pooled-source packets')
         import review_contract
         reader['response_sha256']=review_contract.response_sha(reader)
+        validate_work_reader(doc,reader,expected[reader['context_id']])
     control['eval_rounds'].append(record)
+
+
+def validate_work_reader(doc,reader,request):
+    """Bind managed reader records to actual counted dispatch receipts."""
+    import profile_runtime
+    if not profile_runtime.managed(doc):return
+    import work_profiles
+    work_profiles.admit(doc,'review')
+    profile=doc['delivery']['control'].get('work_profile',{})
+    if not isinstance(request,dict) or not all(key in request for key in ('round','reader_id','request_sha256','revision_sha256')):
+        raise b.Invalid('Managed reader has no complete issued request binding')
+    if request['revision_sha256']!=revision(doc['delivery']['spec']):
+        raise b.Invalid('Managed reader request belongs to another specification')
+    # Work-profile storage is private; no receipt is a provider-authentication claim.
+    attempts=profile.get('attempts',[])
+    task_id=request.get('task_id','review:'+str(request['round'])+':'+request['reader_id'])
+    matches=[row for row in attempts if row.get('task_id')==task_id
+             and row.get('context_id')==reader['context_id']
+             and row.get('input_sha256')==request['request_sha256']]
+    if not matches:raise b.Invalid('Managed reader has no counted dispatch attempt')
+    row=matches[-1]
+    if row.get('role')!='reviewer' or row.get('status')!='PASS' or row.get('evidence',{}).get('response_sha256')!=reader['response_sha256']:
+        raise b.Invalid('Managed reader completion/hash differs from its counted dispatch receipt')
+    if row.get('spec_sha256')!=revision(doc['delivery']['spec']) or row.get('checker_sha256')!=profile.get('capacity',{}).get('checker_sha256'):
+        raise b.Invalid('Managed reader dispatch belongs to a stale specification or checker')
 
 def feedback(doc,text,category):
     spec,control=get_state(doc)

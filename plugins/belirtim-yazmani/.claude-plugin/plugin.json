@@ -1,7 +1,7 @@
 {
   "name": "belirtim-yazmani",
-  "version": "3.1.0",
-  "description": "Role-owned SAP Cloud ERP TOON specifications and self-contained, coordinated separate development handoffs.",
+  "version": "3.2.2",
+  "description": "Profile-guided SAP Cloud ERP TOON specifications and self-contained, coordinated separate development handoffs.",
   "author": {
     "name": "aytacmehmet"
   },
