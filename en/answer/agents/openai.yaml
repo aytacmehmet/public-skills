@@ -1,0 +1,6 @@
+interface:
+  display_name: "Answer"
+  short_description: "Context-aware next messages with prediction scores"
+  default_prompt: "/answer $answer"
+policy:
+  allow_implicit_invocation: true
