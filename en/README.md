@@ -4,6 +4,7 @@
 
 | Skill | What it does | Turkish equivalent |
 | --- | --- | --- |
+| [Answer](answer/README.md) | Suggests 2–5 context-aware next messages with prediction scores; call `/answer`. | [Yanıt](../tr/yanit/README.md) |
 | [Prompter](prompter/README.md) | Drafts a contextual prompt, recommends an execution model, asks for approval, and executes in the same conversation. | [Yordamla](../tr/yordamla/README.md) |
 | [SAP Fiori Design](sap-fiori-design/README.md) | Designs SAP Fiori for Web screens, reads an ABAP package (and optionally the service `$metadata`) into an evidence-backed contract, and produces a UI5 prototype, recorded PNG captures, and production code from it. | [SAP Fiori Tasarım](../tr/sap-fiori-tasarim/README.md) |
 

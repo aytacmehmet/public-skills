@@ -6,8 +6,8 @@ Dillere göre düzenlenmiş, yeniden kullanılabilir AI skill'leri. Skill'leri i
 
 | Language / Dil | Catalog / Katalog | Skills / Skill'ler |
 | --- | --- | --- |
-| English | [Browse English skills](en/README.md) | [Prompter](en/prompter/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md) |
-| Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yordamla](tr/yordamla/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md) |
+| English | [Browse English skills](en/README.md) | [Answer](en/answer/README.md), [Prompter](en/prompter/README.md), [SAP Fiori Design](en/sap-fiori-design/README.md) |
+| Türkçe | [Türkçe skill'leri incele](tr/README.md) | [Yanıt](tr/yanit/README.md), [Yordamla](tr/yordamla/README.md), [SAP Fiori Tasarım](tr/sap-fiori-tasarim/README.md) |
 
 ## Complete plugins / Tam plugin paketleri
 
@@ -28,6 +28,7 @@ plugins/belirtim-yazmani/         ← complete TOON FS-TS plugin
 en/
   README.md
   CONTRIBUTING.md
+  answer/             ← next-message suggestions with /answer
   prompter/
     README.md          ← current introduction
     SKILL.md           ← current instructions
@@ -44,6 +45,7 @@ en/
 tr/
   README.md
   CONTRIBUTING.md
+  yanit/              ← /yanıt ile devam mesajı önerileri
   yordamla/
     README.md          ← güncel tanıtım
     SKILL.md           ← güncel yönerge

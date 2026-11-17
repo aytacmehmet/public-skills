@@ -4,6 +4,7 @@
 
 | Skill | Ne yapar? | İngilizce karşılığı |
 | --- | --- | --- |
+| [Yanıt](yanit/README.md) | Bağlama uygun 2–5 devam mesajını tahmin puanlarıyla önerir; `/yanıt` ile çağrılır. | [Answer](../en/answer/README.md) |
 | [Yordamla](yordamla/README.md) | Bağlama uygun prompt üretir, yürütme modeli önerir, onay ister ve aynı sohbette uygular. | [Prompter](../en/prompter/README.md) |
 | [SAP Fiori Tasarım](sap-fiori-tasarim/README.md) | SAP Fiori for Web ekranı tasarlar, ABAP paketini (isteğe bağlı olarak servis `$metadata`'sını da) kanıtlı sözleşmeye çevirir; aynı sözleşmeden UI5 prototipi, kayıtlı PNG'ler ve üretim kodu üretir. | [SAP Fiori Design](../en/sap-fiori-design/README.md) |
 

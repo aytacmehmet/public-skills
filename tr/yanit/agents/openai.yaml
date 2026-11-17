@@ -1,0 +1,6 @@
+interface:
+  display_name: "Yanıt"
+  short_description: "Bağlama uygun devam mesajları ve tahmin puanları"
+  default_prompt: "/yanıt $yanit"
+policy:
+  allow_implicit_invocation: true
